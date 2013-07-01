@@ -2,3 +2,4 @@ Flask
 flask-mongoengine
 Flask-gzip
 CherryPy
+watchdog
