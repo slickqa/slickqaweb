@@ -67,7 +67,7 @@
   <![endif]-->
 
     <div class="flex-layout-row-nowrap flex-container" ng-controller="ParentCtrl">
-        <section ng-controller="NavCtrl" class="flex-grow-off sidenav sidenav-&#123;{ nav.mode() }}" ng-show="nav.show()" ng-include src="'views/nav.html'" ng-animate="{show: 'animated bounceInLeft', hide: 'animated bounceOutLeft'}"></section>
+        <section ng-controller="NavCtrl" class="flex-grow-off sidenav sidenav-{{ '{{' }} nav.mode() {{ '}}' }}" ng-show="nav.show()" ng-include src="'views/nav.html'" ng-animate="{show: 'animated bounceInLeft', hide: 'animated bounceOutLeft'}"></section>
         <section class="flex-grow-on container" ng-view ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}"></section>
     </div>
 
