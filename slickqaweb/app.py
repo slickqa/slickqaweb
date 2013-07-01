@@ -1,6 +1,5 @@
 from flask import Flask
-app = Flask(__name__)
+app = Flask('slickqaweb')
 
-@app.route("/")
-def hello():
-    return "Hello World!"
+
+
