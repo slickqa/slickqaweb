@@ -1,0 +1,10 @@
+<div class="sidenav-pin-box">
+    <a href="javascript:;" ng-click="nav.toggleMode()"><img class="sidenav-mode-image" src="images/sidenav-{{ nav.mode() }}.png"/></a>
+</div>
+<a href="{{slickHomeUrl}}"><img src="images/home.png" class="nav-image"/>Home</a><br />
+<div ng-repeat="group in nav.sections()">
+    <a href="javasript:;" ng-click="toggleShow(group)"><img src="{{group.icon}}" class="nav-image"/>{{group.name}}</a>
+    <ul ng-show="group.show">
+        <li ng-repeat="link in group.links"><a href="{{link.url}}">{{link.name}}</a></li>
+    </ul>
+</div>

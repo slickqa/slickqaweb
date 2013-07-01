@@ -1,0 +1,7 @@
+{
+  "dependencies" : {
+    "angular" : "PatternConsulting/bower-angular",
+    "underscore": "1.4.4",
+    "animate.css": "git://github.com/daneden/animate.css.git"
+  }
+}
