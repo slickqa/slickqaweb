@@ -14,37 +14,37 @@ angular.module('slickServicesModule')
       var _nav = [
           {name: "Bookmarks",
            show: true,
-           icon: "images/bookmarks.png",
+           icon: "static/images/bookmarks.png",
            links: [
            ]},
           {name: "Settings",
            show: false,
-           icon: "images/settings.png",
+           icon: "static/images/settings.png",
            links: [
            ]},
           {name: "Dashboards",
            show: false,
-           icon: "images/dashboards.png",
+           icon: "static/images/dashboards.png",
            links: [
            ]},
           {name: "Project Management",
            show: false,
-           icon: "images/project.png",
+           icon: "static/images/project.png",
            links: [
            ]},
           {name: "Test Management",
            show: false,
-           icon: "images/testmgmt.png",
+           icon: "static/images/testmgmt.png",
            links: [
            ]},
           {name: "Run Tests",
            show: false,
-           icon: "images/runtests.png",
+           icon: "static/images/runtests.png",
            links: [
            ]},
           {name: "Reports",
            show: false,
-           icon: "images/reports.png",
+           icon: "static/images/reports.png",
            links: [
            ]}
       ];

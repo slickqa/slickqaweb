@@ -9,7 +9,7 @@ angular.module('slickPrototypeApp')
     .config(['$routeProvider', 'NavigationServiceProvider', function ($routeProvider, nav) {
         $routeProvider
             .when('/projects', {
-                templateUrl: 'views/projects.html',
+                templateUrl: 'static/views/projects.html',
                 controller: 'ProjectsCtrl'
             });
         nav.addLink('Project Management', 'Projects', 'projects')

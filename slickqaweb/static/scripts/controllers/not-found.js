@@ -8,7 +8,7 @@
 angular.module('slickPrototypeApp')
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.otherwise({
-            templateUrl: 'views/not-found.html',
+            templateUrl: 'static/views/not-found.html',
             controller: 'NotFoundCtrl'
         });
     }])
