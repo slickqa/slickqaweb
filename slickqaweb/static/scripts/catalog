@@ -1,0 +1,9 @@
+app.js
+services/slick-navigation.js
+services/Project.js
+controllers/nav.js
+controllers/main.js
+controllers/projects.js
+controllers/parent.js
+controllers/header.js
+controllers/not-found.js
