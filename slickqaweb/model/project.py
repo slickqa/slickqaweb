@@ -17,3 +17,4 @@ class Project(Document):
     name = StringField(required=True)
     releases = ListField(EmbeddedDocumentField(Release))
     tags = ListField(StringField())
+    meta = {'collection': 'projects'}
