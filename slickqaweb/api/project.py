@@ -10,6 +10,8 @@ def get_projects():
 
 @app.route('/api/projects/<project_name>')
 def get_project_by_name(project_name):
-    for p in Project.objects:
-        if p.name == project_name:
-            return p
+    return Response(Project.objects(name=project_name).first().to_json(), mimetype='application/json')
+
+@app.route('/api/projects', methods=["POST"])
+def add_project():
+    pass
