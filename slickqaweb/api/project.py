@@ -1,6 +1,6 @@
 from slickqaweb.app import app
 from slickqaweb.model.project import Project
-from flask import Response
+from flask import Response, request
 
 
 @app.route('/api/projects')
@@ -14,4 +14,7 @@ def get_project_by_name(project_name):
 
 @app.route('/api/projects', methods=["POST"])
 def add_project():
-    pass
+    print(request.json)
+    new_project = Project(**request.json)
+    new_project.save()
+    return request.json
