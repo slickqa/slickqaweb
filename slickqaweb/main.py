@@ -10,8 +10,16 @@ import subprocess
 from slickqaweb.app import app
 import api
 
+app.config['DEBUG'] = True
+
 for module in api.modules:
     print "Found module slickqaweb.api.{}".format(module)
+
+
+from mongoengine import connect
+dbname = 'slickij'
+print "Connecting to database: {}".format(dbname)
+connect(dbname)
 
 def find_files(dir, pattern):
     matches = []
