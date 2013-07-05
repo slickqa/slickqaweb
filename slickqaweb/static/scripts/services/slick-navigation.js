@@ -13,38 +13,38 @@ angular.module('slickServicesModule')
       var _mode = "overlay";
       var _nav = [
           {name: "Bookmarks",
-           show: true,
+           show: false,
            icon: "static/images/bookmarks.png",
            links: [
            ]},
+          {name: "Reports",
+           show: false,
+           icon: "static/images/reports.png",
+           links: [
+          ]},
+          {name: "Run Tests",
+           show: false,
+           icon: "static/images/runtests.png",
+           links: [
+          ]},
           {name: "Settings",
            show: false,
            icon: "static/images/settings.png",
-           links: [
-           ]},
-          {name: "Dashboards",
-           show: false,
-           icon: "static/images/dashboards.png",
            links: [
            ]},
           {name: "Project Management",
            show: false,
            icon: "static/images/project.png",
            links: [
-           ]},
+          ]},
           {name: "Test Management",
            show: false,
            icon: "static/images/testmgmt.png",
            links: [
-           ]},
-          {name: "Run Tests",
+          ]},
+          {name: "Dashboards",
            show: false,
-           icon: "static/images/runtests.png",
-           links: [
-           ]},
-          {name: "Reports",
-           show: false,
-           icon: "static/images/reports.png",
+           icon: "static/images/dashboards.png",
            links: [
            ]}
       ];
@@ -79,31 +79,38 @@ angular.module('slickServicesModule')
       };
       this.addLink = addLink;
 
-      this.$get = function() {
+      this.$get = ['$cookieStore', function(cookieStore) {
+        if(getSection('Bookmarks').links.length > 0) {
+            getSection('Bookmarks').show = true;
+        }
         window.nav = {
             NOICON: "NO ICON",
 
             show: function() {
-                return _show;
+                return Boolean(cookieStore.get('nav-show'))
             },
 
             mode: function() {
-                return _mode;
+                if(cookieStore.get('nav-mode') == "pinned") {
+                    return "pinned";
+                } else {
+                    return "overlay";
+                }
             },
 
             toggleShow: function() {
-                if(_show && _mode != "pinned") {
-                    _show = false;
+                if(this.show() && this.mode() != "pinned") {
+                    cookieStore.put('nav-show', false);
                 } else {
-                    _show = true;
+                    cookieStore.put('nav-show', true);
                 }
             },
 
             toggleMode: function() {
-                if(_mode == "overlay") {
-                    _mode = "pinned";
+                if(this.mode() == "overlay") {
+                    cookieStore.put("nav-mode", 'pinned');
                 } else {
-                    _mode = "overlay";
+                    cookieStore.put("nav-mode", 'overlay');
                 }
             },
 
@@ -116,5 +123,5 @@ angular.module('slickServicesModule')
             addLink: addLink
         };
         return window.nav;
-      };
+      }];
     });

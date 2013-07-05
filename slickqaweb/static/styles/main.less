@@ -144,10 +144,26 @@ header h1 {
   color: white;
 }
 
+@nav-image-width: .5in;
+@nav-image-margin: .1in;
 .nav-image {
-  width: .5in;
-  margin-right: .1in;
+  width: @nav-image-width;
+  margin-right: @nav-image-margin;
   vertical-align: middle;
+}
+
+.nav-group-link {
+  font-size: 1.2em;
+}
+
+.nav-link {
+}
+
+.nav-group-box {
+  border-top: 1px solid white;
+  border-left: 1px solid white;
+  margin-left: @nav-image-width + @nav-image-margin;
+  padding-left: .1in;
 }
 
 .sidenav-pin-box {

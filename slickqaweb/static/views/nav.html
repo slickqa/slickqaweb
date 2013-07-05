@@ -3,8 +3,8 @@
 </div>
 <a href="{{slickHomeUrl}}"><img src="static/images/home.png" class="nav-image"/>Home</a><br />
 <div ng-repeat="group in nav.sections()">
-    <a href="javasript:;" ng-click="toggleShow(group)"><img src="{{group.icon}}" class="nav-image"/>{{group.name}}</a>
-    <ul ng-show="group.show">
-        <li ng-repeat="link in group.links"><a href="{{link.url}}">{{link.name}}</a></li>
-    </ul>
+    <a href="javasript:;" class="nav-group-link" ng-click="toggleShow(group)"><img src="{{group.icon}}" class="nav-image"/>{{group.name}}</a>
+    <div class="nav-group-box" ng-show="group.show" ng-animate="{show: 'animated flipInX', hide: 'animated flipOutX'}">
+        <span ng-repeat="link in group.links"><a class="nav-link" href="{{link.url}}">{{link.name}}</a><br /></span>
+    </div>
 </div>
