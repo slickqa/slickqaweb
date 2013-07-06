@@ -80,6 +80,7 @@ body {
   .no-padding;
   .no-margins;
   font-family: @font;
+
 }
 
 header {
@@ -88,6 +89,9 @@ header {
   .flex-layout-row-nowrap;
   padding: 0;
   height: .5in;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
 }
 
 header div {
@@ -101,6 +105,10 @@ header div img {
   border: 1px solid black;
   height: .2in;
   padding: 5px 3px;
+}
+
+.main {
+  margin-top: .5in;
 }
 
 header h1 {
@@ -125,6 +133,10 @@ header h1 {
   height: 100%;
   z-index: 1;
   width: 3in;
+  margin-top: -.5in;
+}
+.sidenav-inner {
+  margin-top: .5in;
 }
 
 .sidenav-overlay {
