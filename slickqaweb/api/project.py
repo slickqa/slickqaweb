@@ -17,7 +17,7 @@ def add_project():
     print(request.json)
     new_project = Project(**request.json)
     new_project.save()
-    return new_project.to_json()
+    return Response(new_project.to_json(), mimetype='application/json')
 
 @app.route('/api/projects', methods=["PUT"])
 def update_project():
