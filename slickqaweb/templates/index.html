@@ -22,10 +22,12 @@
   </head>
   <body ng-app="slickPrototypeApp">
     <header ng-controller="HeaderCtrl">
-      <div>
-        <a href="javascript:;" class="sidenav-button-link" ng-click="showNav()"><img src="static/images/icon-menu.svg"/></a>
+      <div class="inner-header">
+        <div>
+          <a href="#" class="sidenav-button-link" ng-click="showNav()"><img src="static/images/icon-menu.svg"/></a>
+        </div>
+        <h1 ng-bind="title">Title of Page</h1>
       </div>
-      <h1 ng-bind="title">Title of Page</h1>
     </header>
   <!--[if IE]>
     <script type="text/javascript"
