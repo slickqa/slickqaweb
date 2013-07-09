@@ -10,8 +10,11 @@ angular.module('slickPrototypeApp')
     .controller('HeaderCtrl', ['$scope', 'NavigationService',function ($scope, nav) {
         $scope.title = 'Slick';
 
-        $scope.showNav = function() {
+        $scope.showNav = function($event) {
             nav.toggleShow();
+            if($event) {
+                $event.preventDefault();
+            }
         }
 
         $scope.$on('$routeChangeSuccess', function() {

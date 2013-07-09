@@ -13,11 +13,16 @@ angular.module('slickPrototypeApp')
         $scope.addProject = function() {
             nav.addLink('Projects', 'Foo Project', 'projects/foo')
         }
-        $scope.toggleShow = function(group) {
+        $scope.toggleShow = function(group, $event) {
             if(group.show) {
                 group.show = false;
             } else {
                 group.show = true;
             }
+            $event.preventDefault();
+        }
+        $scope.toggleMode = function($event) {
+            nav.toggleMode();
+            $event.preventDefault();
         }
     }]);
