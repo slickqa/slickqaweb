@@ -1,12 +1,17 @@
 __author__ = 'jcorbett'
 
 from slickqaweb.app import app
-from flask import Response
+
+from flask import Response, request
 
 import os
 import fnmatch
 from cStringIO import StringIO
 import subprocess
+import hashlib
+import logging
+
+logger = logging.getLogger('slickqaweb.compiledResources')
 
 
 def find_files(dir, pattern):
@@ -50,11 +55,17 @@ for script in get_catalog_files(scripts_dir, "*.js"):
         with open(os.path.join(scripts_dir, script), 'r') as script_file:
             scriptsjs.write(script_file.read())
 
+scripts_hash = hashlib.sha256()
+scriptsjs.seek(0)
+scripts_hash.update(scriptsjs.read())
+scripts_etag = scripts_hash.hexdigest()
 
 @app.route('/scripts.js')
 def combined_scriptsjs():
+    if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == scripts_etag:
+        return Response(status=304)
     scriptsjs.seek(0)
-    return Response(scriptsjs.read(), mimetype='application/javascript')
+    return Response(scriptsjs.read(), headers={'Etag': scripts_etag}, mimetype='application/javascript')
 
 
 ########################### build style.css #############################
@@ -73,8 +84,15 @@ main_css.write(less_compiler.communicate(less_source.read())[0])
 
 less_compiler.wait()
 
+main_css_hash = hashlib.sha256()
+main_css.seek(0)
+main_css_hash.update(main_css.read())
+maincss_etag = main_css_hash.hexdigest()
+
 @app.route('/style.css')
 def compiled_style():
+    if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == maincss_etag:
+        return Response(status=304)
     main_css.seek(0)
-    return Response(main_css.read(), mimetype='text/css')
+    return Response(main_css.read(), headers={'Etag': maincss_etag}, mimetype='text/css')
 
