@@ -31,12 +31,13 @@ mongo_dbname = app.config['MONGODB_DBNAME']
 logger.debug("Connecting to mongo database '%s' on host '%s'.", mongo_dbname, mongo_hostname)
 connect(host=mongo_hostname, db=mongo_dbname)
 
-request_logger = logging.getLogger("access")
 
-@app.after_request
-def write_access_log(response):
-    request_logger.debug("%s = %d", request.path, response.status_code)
-    return response
+if app.debug:
+    request_logger = logging.getLogger("access")
+    @app.after_request
+    def write_access_log(response):
+        request_logger.debug("%s = %d", request.path, response.status_code)
+        return response
 
 # initialize with other apis
 @app.route('/', defaults={'path': ''})
