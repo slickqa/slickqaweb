@@ -3,4 +3,5 @@
 vpy
 *.pyc
 *.swp
+*.log
 slickqaweb/static/components
