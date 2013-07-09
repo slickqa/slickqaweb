@@ -1,6 +1,6 @@
 __author__ = 'jcorbett'
 
-from flask import render_template, Response
+from flask import render_template, Response, request
 from flask_gzip import Gzip
 
 from slickqaweb.app import app
@@ -30,6 +30,13 @@ mongo_hostname = app.config['MONGODB_HOSTNAME']
 mongo_dbname = app.config['MONGODB_DBNAME']
 logger.debug("Connecting to mongo database '%s' on host '%s'.", mongo_dbname, mongo_hostname)
 connect(host=mongo_hostname, db=mongo_dbname)
+
+request_logger = logging.getLogger("access")
+
+@app.after_request
+def write_access_log(response):
+    request_logger.debug("%s = %d", request.path, response.status_code)
+    return response
 
 # initialize with other apis
 @app.route('/', defaults={'path': ''})
