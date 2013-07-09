@@ -2,12 +2,14 @@ __author__ = 'jcorbett'
 
 from flask import render_template, Response, request
 from flask_gzip import Gzip
+from mongoengine import connect
 
 from slickqaweb.app import app
 from slickqaweb.slicklogging import initialize_logging
 from slickqaweb import compiledResources
 
 import os
+import sys
 import api
 import logging
 
@@ -20,16 +22,20 @@ logger = logging.getLogger("slickqaweb.main")
 logger.info("Slick Web App Server starting...")
 #Gzip(app)
 
-compiledResources.main_css.seek(0, os.SEEK_END)
-logger.debug("main.css is %d bytes in length.", compiledResources.main_css.tell())
-for module in api.modules:
-    logger.debug("Found module slickqaweb.api.%s", module)
+if app.debug:
+    compiledResources.main_css.seek(0, os.SEEK_END)
+    logger.debug("main.css is %d bytes in length.", compiledResources.main_css.tell())
+    for module in api.modules:
+        logger.debug("Found module slickqaweb.api.%s", module)
 
-from mongoengine import connect
 mongo_hostname = app.config['MONGODB_HOSTNAME']
 mongo_dbname = app.config['MONGODB_DBNAME']
 logger.debug("Connecting to mongo database '%s' on host '%s'.", mongo_dbname, mongo_hostname)
-connect(host=mongo_hostname, db=mongo_dbname)
+try:
+    connect(host=mongo_hostname, db=mongo_dbname)
+except:
+    logger.fatal("Error connecting to database: ", exc_info=sys.exc_info())
+    logger.fatal("Unable to connect to mongodb database '%s' on host '%s'.", )
 
 
 if app.debug:
@@ -43,7 +49,6 @@ if app.debug:
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
-    print("Default catch-all round called with path: {}".format(path))
     base = app.config['APPLICATION_ROOT']
     if base is None:
         base = "/"
