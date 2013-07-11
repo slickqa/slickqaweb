@@ -4,3 +4,4 @@ Flask-gzip
 CherryPy
 watchdog
 argcomplete
+nose
