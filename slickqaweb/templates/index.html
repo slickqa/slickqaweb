@@ -16,10 +16,20 @@
     <script src="static/components/underscore/underscore.js"></script>
     <link rel="stylesheet" href="static/components/animate.css/animate.css" />
 
+    {% if development %}
+      <script src="static/components/jasmine/lib/jasmine-core/jasmine.js"></script>
+      <script src="static/components/jasmine-jsreporter/jasmine-jsreporter.js"></script>
+      <script src="static/components/jasmine-underscore/jasmine-underscore.js"></script>
+      <script src="static/components/angular/angular-mocks.js"></script>
+    {% endif %}
+
     <!-- compiled files -->
     <link rel="stylesheet" href="style.css" />
     <script src="scripts.js"></script>
 
+    {% if development %}
+      <script src="jstests.js"></script>
+    {% endif %}
   </head>
   <body ng-app="slickPrototypeApp">
     <header ng-controller="HeaderCtrl">

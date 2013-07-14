@@ -96,3 +96,24 @@ def compiled_style():
     main_css.seek(0)
     return Response(main_css.read(), headers={'Etag': maincss_etag}, mimetype='text/css')
 
+
+if os.path.exists(os.path.join(os.path.dirname(__file__), '..', 'slickqawebtest')):
+    jstests_dir = os.path.join(os.path.dirname(__file__), '..', 'slickqawebtest', 'jstests')
+    jstestsjs = StringIO()
+    for script in get_catalog_files(jstests_dir, "*.js"):
+        if os.path.exists(os.path.join(jstests_dir, script)):
+            with open(os.path.join(jstests_dir, script), 'r') as script_file:
+                jstestsjs.write(script_file.read())
+
+    jstests_hash = hashlib.sha256()
+    jstestsjs.seek(0)
+    jstests_hash.update(jstestsjs.read())
+    jstests_etag = jstests_hash.hexdigest()
+
+    @app.route('/jstests.js')
+    def combined_jstestsjs():
+        if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == jstests_etag:
+            return Response(status=304)
+        jstestsjs.seek(0)
+        return Response(jstestsjs.read(), headers={'Etag': jstests_etag}, mimetype='application/javascript')
+
