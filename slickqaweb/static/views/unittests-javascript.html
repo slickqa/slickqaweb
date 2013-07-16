@@ -1,0 +1,10 @@
+<div class="slickview">
+    <h2>Slick Javascript Unit Test Results</h2>
+    <p>
+        Overall Status: {{ getOverallResult() }}<br />
+        PASSED: {{ jsresults.totalpassed }}<br />
+        FAILED: {{ jsresults.totalfailed }}<br />
+        TOTAL RUN: {{ jsresults.totalrun }}
+    </p>
+    <button ng-click="runTests()">Run Javascript Tests Again</button>
+</div>

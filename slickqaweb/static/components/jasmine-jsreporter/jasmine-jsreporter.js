@@ -152,7 +152,15 @@
             jasmine.getJSReportAsString = function () {
                 return JSON.stringify(jasmine.getJSReport());
             };
-        }
+
+            if(this.callbacks.length > 0) {
+                _.each(this.callbacks, function(callback) {
+                    callback.call(this, []);
+                });
+            }
+        },
+
+        callbacks: []
     };
 
     // export public
