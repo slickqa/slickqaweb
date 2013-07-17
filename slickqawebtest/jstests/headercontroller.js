@@ -49,7 +49,4 @@ describe('HeaderCtrl (from header.js)', function() {
         expect(navservice.toggleShow).toHaveBeenCalled();
     });
 
-    it('Will always fail', function() {
-        expect(false).toBe(true);
-    });
 });

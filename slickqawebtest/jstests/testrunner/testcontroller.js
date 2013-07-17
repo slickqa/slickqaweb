@@ -21,7 +21,7 @@ angular.module('slickPrototypeApp')
         nav.addLink('Slick Testing', 'Javascript Unit Tests', 'unittests/javascript');
     }])
     .controller('UnitTestsJavascriptCtrl', ['$scope', function ($scope) {
-        $scope.jsresults = {
+        $scope.results = {
             totalrun: 0,
             totalpassed: 0,
             totalfailed: 0,
@@ -31,7 +31,7 @@ angular.module('slickPrototypeApp')
         };
 
         $scope.summarize = function(suite, context) {
-            if(context == null) {
+            if(context === null) {
                 context = suite.description;
             } else {
                 context = context + " -> " + suite.description;
@@ -41,13 +41,13 @@ angular.module('slickPrototypeApp')
             });
 
             _.each(suite.specs, function(spec) {
-                $scope.jsresults.totalrun++;
+                $scope.results.totalrun++;
                 if(spec.passed) {
-                    $scope.jsresults.totalpassed++;
-                    $scope.jsresults.passed.push({path: context, name: spec.description})
+                    $scope.results.totalpassed++;
+                    $scope.results.passed.push({path: context, name: spec.description})
                 } else {
-                    $scope.jsresults.totalfailed++;
-                    $scope.jsresults.failed.push({path: context, name: spec.description})
+                    $scope.results.totalfailed++;
+                    $scope.results.failed.push({path: context, name: spec.description, message: spec.message})
                 }
             })
 
@@ -58,30 +58,51 @@ angular.module('slickPrototypeApp')
             var jsreporter = new jasmine.JSReporter();
             jsreporter.callbacks.push(function() {
                 $scope.$apply(function() {
-                    var results = jasmine.getJSReport();
-                    var context = null;
-                    _.each(results.suites, $scope.summarize);
-                    $scope.jsresults.state = "FINISHED";
+                    var jresults = jasmine.getJSReport();
+                    _.each(jresults.suites, function(suite) {
+                        $scope.summarize(suite, null);
+                    });
+                    $scope.results.state = "FINISHED";
                 });
             });
             env.addReporter(jsreporter);
-            $scope.jsresults.state = "RUNNING";
+            $scope.results.state = "RUNNING";
             env.execute();
             console.log("Running Tests")
         };
 
+        $scope.runTests();
+        window.gscope = $scope;
+    }])
+    .controller('UnittestResultCtrl', ['$scope', function ($scope) {
         $scope.getOverallResult = function() {
-            if($scope.jsresults.state != "FINISHED") {
-                return $scope.jsresults.state;
-            } else if($scope.jsresults.totalrun == 0) {
+            if($scope.results.state != "FINISHED") {
+                return $scope.results.state;
+            } else if($scope.results.totalrun == 0) {
                 return "NO RESULTS";
-            } else if($scope.jsresults.totalpassed == $scope.jsresults.totalrun) {
+            } else if($scope.results.totalpassed == $scope.results.totalrun) {
                 return "PASSED";
             } else {
                 return "FAILED";
             }
         };
+        $scope.showPassed = false;
+        $scope.showFailed = true;
 
-        $scope.runTests();
-        window.gscope = $scope;
+        $scope.toggleShow = function(name) {
+            if(name == "passed") {
+                if($scope.showPassed) {
+                    $scope.showPassed = false;
+                } else {
+                    $scope.showPassed = true;
+                }
+            } else if(name == "failed") {
+                if($scope.showFailed) {
+                    $scope.showFailed = false;
+                } else {
+                    $scope.showFailed = true;
+                }
+            }
+        }
+
     }]);

@@ -1,0 +1,34 @@
+<div class="unittest-results" ng-controller="UnittestResultCtrl">
+    <img src="static/images/unittest-results-{{ getOverallResult() }}.png" class="unittest-results-overall-image" />
+    <span class="unittest-results-overall-text unittest-results-{{ getOverallResult() }}">{{ getOverallResult() }}!</span>
+    <div class="unittest-results-details">
+        <div class="unittest-results-details-row">
+            <div class="unittest-results-details-name-column">Total Run</div>
+            <div class="unittest-results-details-number-column">{{ results.totalrun }}</div>
+        </div>
+        <div class="unittest-results-details-row">
+            <div ng-click="toggleShow('passed')" class="unittest-results-details-name-column unittest-results-PASSED clickable-text">Passed</div>
+            <div class="unittest-results-details-number-column">{{ results.totalpassed }}</div>
+        </div>
+        <div class="unittest-results-details-tests" ng-show="showPassed" ng-animate="{show: 'animated flipInX', hide: 'animated flipOutX'}">
+            <ul>
+                <li ng-repeat="result in results.passed">
+                    <span class="unittest-results-PASSED">{{ result.path }}: {{ result.name }}</span><br />
+                    <pre>{{ result.message }}</pre>
+                </li>
+            </ul>
+        </div>
+        <div class="unittest-results-details-row">
+            <div ng-click="toggleShow('failed')" class="unittest-results-details-name-column unittest-results-FAILED clickable-text">Failed</div>
+            <div class="unittest-results-details-number-column">{{ results.totalfailed }}</div>
+        </div>
+        <div class="unittest-results-details-tests" ng-show="showFailed" ng-animate="{show: 'animated flipInX', hide: 'animated flipOutX'}">
+            <ul>
+                <li ng-repeat="result in results.failed">
+                    <span class="unittest-results-FAILED">{{ result.path }}: {{ result.name }}</span><br />
+                    <pre class="unittest-results-details-tests-message">{{ result.message }}</pre>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

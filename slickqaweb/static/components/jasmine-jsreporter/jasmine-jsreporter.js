@@ -80,6 +80,10 @@
                 failedCount : specs[i].results().failedCount,
                 totalCount : specs[i].results().totalCount
             };
+            var specResultItems = specs[i].results().items_;
+            if((!suiteData.specs[i].passed) && _.has(specResultItems[specResultItems.length - 1], "message")) {
+                suiteData.specs[i].message = specResultItems[specResultItems.length - 1].message;
+            }
             suiteData.passed = !suiteData.specs[i].passed ? false : suiteData.passed;
             suiteData.durationSec += suiteData.specs[i].durationSec;
         }

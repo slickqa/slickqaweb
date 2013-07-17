@@ -26,6 +26,11 @@ img {
   -ms-box-shadow: #fff 0 0 .15in;
   box-shadow: #fff 0 0 .15in;
 }
+
+.glow-text {
+  text-shadow: #fff 0 0 .04in;
+}
+
 .no-padding {
   padding: 0;
 }
@@ -205,5 +210,21 @@ header h1 {
 }
 
 .sidenav-button-link:hover img {
-  .glow
+  .glow;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  .glow;
+}
+
+.clickable-text {
+  .clickable;
+}
+
+.clickable-text:hover {
+  .glow-text;
 }
