@@ -11,6 +11,7 @@ angular.module('slickServicesModule')
   .provider('NavigationService', function() {
       var _show = false;
       var _mode = "overlay";
+      var _title = "Slick";
       var _nav = [
           {name: "Bookmarks",
            show: false,
@@ -83,11 +84,11 @@ angular.module('slickServicesModule')
         if(getSection('Bookmarks').links.length > 0) {
             getSection('Bookmarks').show = true;
         }
-        window.nav = {
+        var nav = {
             NOICON: "NO ICON",
 
             show: function() {
-                return Boolean(cookieStore.get('nav-show'))
+                return Boolean(cookieStore.get('nav-show'));
             },
 
             mode: function() {
@@ -120,8 +121,14 @@ angular.module('slickServicesModule')
 
             getSection: getSection,
             addSection: addSection,
-            addLink: addLink
+            addLink: addLink,
+            getTitle: function() {
+                return _title;
+            },
+            setTitle: function(title) {
+                _title = title;
+            }
         };
-        return window.nav;
+        return nav;
       }];
     });

@@ -25,7 +25,8 @@ angular.module('slickPrototypeApp')
         nav.addLink('Slick Testing', 'Javascript Unit Tests', 'unittests/javascript');
         nav.addLink('Slick Testing', 'Python Unit Tests', 'unittests/python');
     }])
-    .controller('UnitTestsJavascriptCtrl', ['$scope', function ($scope) {
+    .controller('UnitTestsJavascriptCtrl', ['$scope', 'NavigationService', function ($scope, nav) {
+        nav.setTitle("Javascript Unit Tests for Slick");
         $scope.results = {
             totalrun: 0,
             totalpassed: 0,
@@ -79,7 +80,8 @@ angular.module('slickPrototypeApp')
         $scope.runTests();
         window.gscope = $scope;
     }])
-    .controller('UnitTestsPythonCtrl', ['$scope', '$resource', function($scope, $resource) {
+    .controller('UnitTestsPythonCtrl', ['$scope', '$resource', 'NavigationService', function($scope, $resource, nav) {
+        nav.setTitle("Python Unit Tests for Slick");
         var unittestresource = $resource('api/unittests');
         $scope.results = unittestresource.get();
     }])
