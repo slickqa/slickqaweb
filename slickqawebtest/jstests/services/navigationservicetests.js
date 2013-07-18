@@ -56,4 +56,26 @@ describe('NavigationService (from slick-navigation.js)', function() {
         expect(cookiestore.put).toHaveBeenCalledWith('nav-show', true);
     });
 
+    it('mode() should get it\'s value from cookieStore', function() {
+        spyOn(cookiestore, 'get').andReturn('pinned');
+        expect(navservice.mode()).toEqual('pinned');
+        expect(cookiestore.get).toHaveBeenCalled();
+    });
+
+    it('toggleMode should change the nav-mode cookie value from pinned to overlay.', function() {
+        spyOn(cookiestore, 'get').andReturn('pinned');
+        spyOn(cookiestore, 'put');
+        navservice.toggleMode();
+        expect(cookiestore.get).toHaveBeenCalled();
+        expect(cookiestore.put).toHaveBeenCalledWith('nav-mode', 'overlay');
+    });
+
+    it('toggleMode should change the nav-mode cookie value from overlay to pinned.', function() {
+        spyOn(cookiestore, 'get').andReturn('overlay');
+        spyOn(cookiestore, 'put');
+        navservice.toggleMode();
+        expect(cookiestore.get).toHaveBeenCalled();
+        expect(cookiestore.put).toHaveBeenCalledWith('nav-mode', 'pinned');
+    });
+
 });
