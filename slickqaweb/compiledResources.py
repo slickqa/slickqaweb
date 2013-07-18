@@ -41,7 +41,7 @@ def get_catalog_files(dir, pattern):
     missing = files_set - catalog_set
     if len(missing) > 0:
         with open(os.path.join(dir, 'catalog'), 'a') as catalog_file:
-            catalog_file.write("\n".join(missing))
+            catalog_file.write("\n".join(missing) + "\n")
         catalog.append(missing)
 
     # return the ordered catalog (not the set)
