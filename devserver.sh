@@ -8,4 +8,4 @@ SLICK_SETTINGS="$SLICK_SETTINGS/devserver.cfg"
 
 export SLICK_SETTINGS
 
-vpy/bin/watchmedo auto-restart -R -d slickqaweb -d slickqawebtest -i '*.swp;*.pyc;' ./server.py
+vpy/bin/watchmedo auto-restart -R -d slickqaweb -d slickqawebtest -i '*.swp;*.pyc;catalog' ./server.py
