@@ -16,9 +16,14 @@ angular.module('slickPrototypeApp')
             .when('/unittests/javascript', {
                 templateUrl: 'static/views/unittests-javascript.html',
                 controller: 'UnitTestsJavascriptCtrl'
+            })
+            .when('/unittests/python', {
+                templateUrl: 'static/views/unittests-python.html',
+                controller: 'UnitTestsPythonCtrl'
             });
         nav.addSection('Slick Testing', false, 'slick-testing.png');
         nav.addLink('Slick Testing', 'Javascript Unit Tests', 'unittests/javascript');
+        nav.addLink('Slick Testing', 'Python Unit Tests', 'unittests/python');
     }])
     .controller('UnitTestsJavascriptCtrl', ['$scope', function ($scope) {
         $scope.results = {
@@ -73,6 +78,10 @@ angular.module('slickPrototypeApp')
 
         $scope.runTests();
         window.gscope = $scope;
+    }])
+    .controller('UnitTestsPythonCtrl', ['$scope', '$resource', function($scope, $resource) {
+        var unittestresource = $resource('api/unittests');
+        $scope.results = unittestresource.get();
     }])
     .controller('UnittestResultCtrl', ['$scope', function ($scope) {
         $scope.getOverallResult = function() {
