@@ -21,6 +21,33 @@ beforeEach(function() {
             };
 
             return _.has(actual, expected);
+        },
+
+        toContainObjectWithProperty: function(propertyname, propertyvalue) {
+            var actual = this.actual;
+            var notText = this.isNot ? " not" : "";
+            var valueText = "";
+            if(propertyvalue !== undefined) {
+                valueText = " and value " + propertyvalue;
+            }
+
+            this.message = function() {
+                return "Expected " + actual + notText + " to have property with name " + propertyname + valueText + ".";
+            };
+            var found = false;
+            _.each(actual, function(actualItem) {
+                if(_.has(actualItem, propertyname)) {
+                    if(propertyvalue !== undefined) {
+                        if(actualItem[propertyname] == propertyvalue) {
+                            found = true;
+                        }
+                    } else {
+                        found = true;
+                    }
+                }
+            });
+            return found;
         }
+
     });
 });

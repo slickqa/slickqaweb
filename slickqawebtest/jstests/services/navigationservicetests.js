@@ -78,4 +78,18 @@ describe('NavigationService (from slick-navigation.js)', function() {
         expect(cookiestore.put).toHaveBeenCalledWith('nav-mode', 'pinned');
     });
 
+    it('Should have pre-defined sections.', function() {
+        var sections = navservice.sections();
+        expect(sections).toBeDefined();
+        expect(sections).toBeArray();
+        expect(sections.length).toBeGreaterThan(0);
+        expect(sections).toContainObjectWithProperty("name", "Bookmarks");
+        expect(sections).toContainObjectWithProperty("name", "Reports");
+        expect(sections).toContainObjectWithProperty("name", "Settings");
+        expect(sections).toContainObjectWithProperty("name", "Dashboards");
+        expect(sections).toContainObjectWithProperty("name", "Run Tests");
+        expect(sections).toContainObjectWithProperty("name", "Project Management");
+        expect(sections).toContainObjectWithProperty("name", "Test Management");
+    });
+
 });
