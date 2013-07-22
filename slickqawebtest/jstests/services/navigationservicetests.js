@@ -92,4 +92,39 @@ describe('NavigationService (from slick-navigation.js)', function() {
         expect(sections).toContainObjectWithProperty("name", "Test Management");
     });
 
+    it('Should allow you to get a section by name', function() {
+        var sectionName = "Bookmarks";
+        expect(navservice.getSection(sectionName)).has("name", sectionName);
+        sectionName = "Reports";
+        expect(navservice.getSection(sectionName)).has("name", sectionName);
+    });
+
+    it('Should allow you to add a section and then retrieve it.', function() {
+        var newSectionName = "New Section Name";
+        var iconUrl = "icons/new-section-name.png";
+        navservice.addSection(newSectionName, true, iconUrl);
+        expect(navservice.getSection(newSectionName)).has("name", "section");
+        expect(navservice.getSection(newSectionName)).has("icon", "section");
+    });
+
+    it('Should allow you to add a link to a section that exists', function() {
+        var linkName = "A Link";
+        var linkUrl = "a/link";
+        var expectedobj = {name: linkName, url: linkUrl};
+        expect(navservice.getSection("Bookmarks").links).not.toContain(expectedobj);
+        navservice.addLink("Bookmarks", linkName, linkUrl);
+        expect(navservice.getSection("Bookmarks").links).toContain(expectedobj);
+    });
+
+    it('Should allow you to add a link to a section that does not exist (it get\'s added).', function() {
+        var linkName = "A Link";
+        var linkUrl = "a/link";
+        var expectedobj = {name: linkName, url: linkUrl};
+        var sectionName = "New Section";
+        expect(navservice.getSection(sectionName)).toBeUndefined();
+        navservice.addLink(sectionName, linkName, linkUrl);
+        expect(navservice.getSection(sectionName)).toBeDefined();
+        expect(navservice.getSection(sectionName).links).toContain(expectedobj);
+    });
+
 });

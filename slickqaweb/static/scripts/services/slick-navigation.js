@@ -62,8 +62,8 @@ angular.module('slickServicesModule')
               iconUrl = null;
           }
 
-          if(showByDefault == null) {
-              showByDefault = false
+          if(showByDefault === undefined) {
+              showByDefault = false;
           }
           var lenofarray = _nav.push({name: name, show: showByDefault, icon: iconUrl, links: []});
           return _nav[lenofarray - 1];
