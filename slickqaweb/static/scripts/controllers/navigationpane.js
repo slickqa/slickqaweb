@@ -10,9 +10,6 @@ angular.module('slickPrototypeApp')
         $scope.nav = nav;
         $scope.slickHomeUrl = document.baseURI;
 
-        $scope.addProject = function() {
-            nav.addLink('Projects', 'Foo Project', 'projects/foo')
-        }
         $scope.toggleShow = function(group, $event) {
             if(group.show) {
                 group.show = false;
@@ -20,9 +17,11 @@ angular.module('slickPrototypeApp')
                 group.show = true;
             }
             $event.preventDefault();
-        }
+        };
+
         $scope.toggleMode = function($event) {
             nav.toggleMode();
             $event.preventDefault();
-        }
+        };
+
     }]);

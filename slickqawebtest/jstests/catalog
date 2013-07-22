@@ -1,4 +1,5 @@
 testrunner/testcontroller.js
-controllers/headercontroller.js
+controllers/headercontrollertests.js
 services/navigationservicetests.js
 testrunner/matchers.js
+controllers/navigationpanetests.js
