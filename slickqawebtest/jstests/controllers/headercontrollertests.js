@@ -27,7 +27,7 @@ describe('HeaderCtrl (from header.js)', function() {
         }
     };
 
-    beforeEach(angular.mock.module('slickPrototypeApp'));
+    beforeEach(angular.mock.module('slickTestModule'));
     beforeEach(angular.mock.inject(function($rootScope, $controller) {
         $scope = $rootScope.$new();
         headerctrl = $controller('HeaderCtrl', {

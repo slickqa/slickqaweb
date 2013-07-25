@@ -1,8 +1,6 @@
 'use strict';
 
-angular.module('slickServicesModule', ['ngResource', 'ngCookies']);
-
-angular.module('slickPrototypeApp', ['slickServicesModule'])
+angular.module('slickApp', ['ngResource', 'ngCookies'])
   .config(['$locationProvider', function ($locationProvider) {
     $locationProvider.html5Mode(true);
   }]);

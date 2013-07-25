@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('slickPrototypeApp')
+angular.module('slickApp')
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
       .when('/', {

@@ -5,17 +5,13 @@
  * Time: 2:00 PM
  */
 
-angular.module('slickPrototypeApp')
+angular.module('slickApp')
     .controller('NavCtrl', ['$scope', 'NavigationService', function ($scope, nav) {
         $scope.nav = nav;
         $scope.slickHomeUrl = document.baseURI;
 
         $scope.toggleShow = function(group, $event) {
-            if(group.show) {
-                group.show = false;
-            } else {
-                group.show = true;
-            }
+            group.show = !group.show;
             $event.preventDefault();
         };
 

@@ -1,3 +1,4 @@
+testrunner/unittestmodule.js
 testrunner/testcontroller.js
 controllers/headercontrollertests.js
 services/navigationservicetests.js

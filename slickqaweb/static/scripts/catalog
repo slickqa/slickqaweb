@@ -7,3 +7,4 @@ controllers/not-found.js
 controllers/navigationpane.js
 controllers/parent.js
 controllers/projects.js
+directives/slick-list.js

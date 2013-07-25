@@ -6,7 +6,7 @@
  * Time: 11:00 PM
  */
 
-angular.module('slickPrototypeApp')
+angular.module('slickApp')
     .controller('HeaderCtrl', ['$scope', 'NavigationService',function ($scope, nav) {
         $scope.title = 'Slick';
 

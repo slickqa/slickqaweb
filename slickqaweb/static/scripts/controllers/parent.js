@@ -6,7 +6,7 @@
 "use strict";
 
 
-angular.module('slickPrototypeApp')
+angular.module('slickApp')
     .controller('ParentCtrl', ['$scope', 'NavigationService', function ($scope, nav) {
         $scope.nav = nav;
     }]);

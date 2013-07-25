@@ -16,7 +16,7 @@ describe('NavigationService (from slick-navigation.js)', function() {
         }
     };
 
-    beforeEach(angular.mock.module('slickServicesModule', function($provide) {
+    beforeEach(angular.mock.module('slickTestModule', function($provide) {
         $provide.value('$cookieStore', cookiestore);
     }));
 

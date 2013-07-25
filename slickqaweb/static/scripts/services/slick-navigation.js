@@ -7,7 +7,7 @@
 
 // nav.group('Products').add('A Product', 'products/A+Product', 100)
 
-angular.module('slickServicesModule')
+angular.module('slickApp')
   .provider('NavigationService', function() {
       var _show = false;
       var _mode = "overlay";

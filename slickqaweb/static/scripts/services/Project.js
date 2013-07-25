@@ -5,7 +5,7 @@
  */
 "use strict";
 
-angular.module('slickServicesModule')
+angular.module('slickApp')
     .factory('Project', [ '$resource', function($resource) {
         return $resource('api/projects/:id');
     }]);

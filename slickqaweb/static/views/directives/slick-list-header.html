@@ -1,0 +1,13 @@
+<div class="slick-list-header-box">
+    <div class="slick-list-header-container">
+        <div class="slick-list-header-search-box" ng-show="search == 'on' || search == 'yes' || search == 'true'">
+            <label class="slick-list-header-search-label">Search:</label>
+            <input class="slick-list-header-search-input" type="text" ng-model="model.searchField.$" />
+        </div>
+        <div class="slick-list-header-pagination-box" ng-show="pagination == 'on' || pagination == 'yes' || pagination == 'true'">
+            <label>Items per page: </label><select ng-model="model.pageSize"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option></select>
+            <span class="clickable-text" ng-click="prevPage()">&lt;</span> Page {{ model.pagenum }} of {{ model.totalpages }} <span class="clickable-text" ng-click="nextPage()">&gt;</span>
+        </div>
+    </div>
+    <div ng-transclude></div>
+</div>

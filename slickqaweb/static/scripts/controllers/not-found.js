@@ -5,7 +5,7 @@
  * Time: 11:06 PM
  */
 
-angular.module('slickPrototypeApp')
+angular.module('slickApp')
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.otherwise({
             templateUrl: 'static/views/not-found.html',

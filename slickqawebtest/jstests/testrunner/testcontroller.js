@@ -10,7 +10,7 @@
 
 "use strict";
 
-angular.module('slickPrototypeApp')
+angular.module('slickApp')
     .config(['$routeProvider', 'NavigationServiceProvider', function ($routeProvider, nav) {
         $routeProvider
             .when('/unittests/javascript', {
