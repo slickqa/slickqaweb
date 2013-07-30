@@ -5,3 +5,4 @@ vpy
 *.swp
 *.log
 slickqaweb/static/components
+secret_key.txt
