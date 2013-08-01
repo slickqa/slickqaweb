@@ -6,3 +6,4 @@ vpy
 *.log
 slickqaweb/static/components
 secret_key.txt
+tmp
