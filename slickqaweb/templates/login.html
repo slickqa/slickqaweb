@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html" ng-app="slickLoginApp">
+<head>
+    <base href="{{base}}" />
+    <title>Slick: Login</title>
+    <script src="static/components/angular/angular.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="scripts.js"></script>
+</head>
+<body ng-controller="loginCtrl">
+<header>
+    <div class="inner-header">
+        <h1>Slick: Login</h1>
+    </div>
+</header>
+<div class="main login-main">
+{% if error %}<p class="error"><strong>Error:</strong> {{ error }}</p>{% endif %}
+<h2>Choose a provider to sign in with:</h2>
+<form action="login" method="post">
+    <div class="signin-button" ng-click="postForm($event)">
+        <img class="signin-image" src="http://www.google.com/favicon.ico">Sign In with Google
+        <input type="hidden" name="openid" value="https://www.google.com/accounts/o8/id">
+        <input type="hidden" name="next" value="{{ next }}">
+    </div>
+</form>
+<form action="login" method="post">
+    <div class="signin-button" ng-click="postForm($event)">
+        <img class="signin-image" src="http://www.yahoo.com/favicon.ico">Sign In with Yahoo
+        <input type="hidden" name="openid" value="yahoo.com">
+        <input type="hidden" name="next" value="{{ next }}">
+    </div>
+</form>
+</div>
+</body>
+</html>

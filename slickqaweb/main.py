@@ -3,6 +3,8 @@ __author__ = 'jcorbett'
 from flask import render_template, Response, request
 from flask_gzip import Gzip
 from mongoengine import connect
+from flask_openid import OpenID
+
 
 from slickqaweb.app import app
 from slickqaweb.slicklogging import initialize_logging
@@ -20,6 +22,10 @@ initialize_logging(app.config)
 
 logger = logging.getLogger("slickqaweb.main")
 logger.info("Slick Web App Server starting...")
+
+if 'SECRET_KEY_FILE' in app.config:
+    with open(app.config['SECRET_KEY_FILE'], 'r') as secret_key_file:
+        app.secret_key = secret_key_file.readline()
 #Gzip(app)
 
 if app.debug:
@@ -44,6 +50,8 @@ if app.debug:
     def write_access_log(response):
         request_logger.debug("%s = %d", request.path, response.status_code)
         return response
+
+
 
 # initialize with other apis
 @app.route('/', defaults={'path': ''})
