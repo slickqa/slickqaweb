@@ -7,3 +7,4 @@ vpy
 slickqaweb/static/components
 secret_key.txt
 tmp
+**/.DS_Store
