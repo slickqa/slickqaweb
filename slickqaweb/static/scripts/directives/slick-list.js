@@ -134,12 +134,9 @@ angular.module("slickApp")
     .filter('slickListFilter', ['filterFilter', 'orderByFilter', function(filter, orderBy) {
         return function(array, model) {
             if(!_.isArray(array)) { return array; }
-            var filteredArray = filter(array, model.searchField);
-            var orderedArray = [];
+            var orderedArray = filter(array, model.searchField);
             if(model.orderBy) {
-                orderedArray = orderBy(filteredArray, model.orderBy, model.reverseOrder);
-            } else {
-                orderedArray = filteredArray;
+                orderedArray = orderBy(orderedArray, model.orderBy, model.reverseOrder);
             }
 
             var finalArray = orderedArray;
