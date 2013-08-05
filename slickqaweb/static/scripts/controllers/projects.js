@@ -30,7 +30,8 @@ angular.module('slickApp')
         });
 
         $scope.save = function() {
-            $scope.project.put().then(function() {
+            $scope.project.put().then(function(project) {
+                $scope.project = project;
                 $scope.projectForm.$setPristine();
             });
         }
