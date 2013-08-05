@@ -4,6 +4,7 @@
     "angular" : "PatternConsulting/bower-angular",
     "underscore": "1.4.4",
     "animate.css": "git://github.com/daneden/animate.css.git",
-    "jasmine": "1.3.1"
+    "jasmine": "1.3.1",
+    "restangular": "1.0.10"
   }
 }
