@@ -3,6 +3,7 @@ from slickqaweb.model.project import Project
 from slickqaweb.model.serialize import deserialize_that
 from flask import Response, request
 from .standardResponses import JsonResponse
+import datetime
 
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/projects')
@@ -17,6 +18,7 @@ def get_project_by_name(project_name):
 @app.route('/api/projects', methods=["POST"])
 def add_project():
     new_project = deserialize_that(request.get_json(), Project())
+    new_project.lastUpdated = datetime.datetime.utcnow()
     new_project.save()
     return JsonResponse(new_project)
 
@@ -25,6 +27,7 @@ def add_project():
 def update_project(project_name):
     orig = Project.objects(name=project_name).first()
     deserialize_that(request.get_json(), orig)
+    orig.lastUpdated = datetime.datetime.utcnow()
     orig.save()
     return JsonResponse(orig)
 
