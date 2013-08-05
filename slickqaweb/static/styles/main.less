@@ -143,6 +143,8 @@ header div img {
 header h1 {
   text-align: center;
   font-size: .35in;
+  color: black;
+  text-shadow: #fff 0 0 .2in;
   .flex-grow-on;
   .no-margins;
   .no-padding;
@@ -244,4 +246,60 @@ header h1 {
 
 .clickable-text:hover {
   .glow-text;
+}
+
+.data-view-item {
+  .flex-container;
+}
+
+.data-view-property-name {
+  .flex-grow-off;
+  width: 20%;
+  text-align: right;
+  vertical-align: top;
+  margin-right: .1in;
+  padding-top: .05in;
+  padding-bottom: .05in;
+  font-weight: bolder;
+}
+
+.data-view-property-value {
+  .flex-grow-on;
+  border-left: 1px solid white;
+  padding-left: .1in;
+  padding-top: .05in;
+  padding-bottom: .05in;
+  vertical-align: top;
+}
+
+.data-view-save {
+  .flex-grow-on;
+  padding-left: .1in;
+  padding-top: .5in;
+  padding-bottom: .05in;
+  vertical-align: top;
+}
+
+.slickview a, .slickview a:visited {
+  text-decoration: none;
+  color: white;
+}
+
+.slickview a:hover {
+  .glow-text;
+}
+
+[contenteditable=true]:hover {
+  .glow;
+}
+
+.button {
+  padding: .05in .1in;
+  .rounded-corners(.1in);
+  .clickable;
+  .faded;
+}
+
+.button:hover {
+  .glow;
 }

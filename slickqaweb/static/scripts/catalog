@@ -10,3 +10,4 @@ controllers/projects.js
 directives/slick-list.js
 controllers/login.js
 services/current-user.js
+directives/contenteditable.js

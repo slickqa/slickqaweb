@@ -1,43 +1,30 @@
 from slickqaweb.app import app
 from slickqaweb.model.project import Project
+from slickqaweb.model.serialize import deserialize_that
 from flask import Response, request
-
+from .standardResponses import JsonResponse
 
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/projects')
 def get_projects():
-    return Response(Project.objects.to_json(), mimetype='application/json')
-
+    return JsonResponse(Project.objects)
 
 @app.route('/api/projects/<project_name>')
 def get_project_by_name(project_name):
-    return Response(Project.objects(name=project_name).first().to_json(), mimetype='application/json')
+    return JsonResponse(Project.objects(name=project_name).first())
 
 
 @app.route('/api/projects', methods=["POST"])
 def add_project():
-    new_project = Project(**request.get_json())
+    new_project = deserialize_that(request.get_json(), Project())
     new_project.save()
-    return Response(new_project.to_json(), mimetype='application/json')
+    return JsonResponse(new_project)
 
 
 @app.route('/api/projects/<project_name>', methods=["PUT"])
 def update_project(project_name):
-    requested_change = request.get_json()
-    formatted_change = update_dict_keys(requested_change)
-    Project.objects(name=project_name).update_one(**formatted_change)
-    if 'name' in requested_change:
-        project_name = requested_change['name']
-    return Response(Project.objects(name=project_name).first().to_json(), mimetype='application/json')
+    orig = Project.objects(name=project_name).first()
+    deserialize_that(request.get_json(), orig)
+    orig.save()
+    return JsonResponse(orig)
 
-
-def update_keys(keys, prefix='set__'):
-    return ['{}{}'.format(prefix, key) for key in keys]
-
-
-def update_dict_keys(dictionary, prefix='set__'):
-    assert isinstance(dictionary, dict)
-    keys = dictionary.keys()
-    values = dictionary.values()
-    keys = update_keys(keys, prefix)
-    return dict(zip(keys, values))

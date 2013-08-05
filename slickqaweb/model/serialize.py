@@ -24,23 +24,24 @@ def document_to_plain(doc):
         return int((doc - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
     if isinstance(doc, bson.ObjectId):
         return str(doc)
-    print "I don't know how to serialize %s" % doc.__class__.__name__
+    raise Exception("I don't know how to serialize %s" % doc.__class__.__name__)
 
 
 def plain_to_document(plain, doctype):
     if isinstance(plain, types.DictionaryType):
-        if isinstance(doctype, types.TypeType) and issubclass(doctype, mongoengine.Document):
-            retval = doctype()
+        if isinstance(doctype, (mongoengine.Document, mongoengine.EmbeddedDocument)):
+            retval = doctype
             for fieldname in retval._fields.keys():
                 if fieldname in plain:
-                    setattr(retval, fieldname, plain_to_document(plain[fieldname], retval._fields[fieldname]))
+                    if isinstance(retval._fields[fieldname], (mongoengine.EmbeddedDocumentField, mongoengine.ReferenceField)):
+                        if getattr(retval, fieldname) is None:
+                            setattr(retval, fieldname, retval._fields[fieldname].document_type())
+                        setattr(retval, fieldname, plain_to_document(plain[fieldname], getattr(retval, fieldname)))
+                    else:
+                        setattr(retval, fieldname, plain_to_document(plain[fieldname], retval._fields[fieldname]))
             return retval
-        if isinstance(doctype, (mongoengine.EmbeddedDocumentField, mongoengine.ReferenceField)):
-            retval = doctype.document_type()
-            for fieldname in retval._fields.keys():
-                if fieldname in plain:
-                    setattr(retval, fieldname, plain_to_document(plain[fieldname], retval._fields[fieldname]))
-            return retval
+        if isinstance(doctype, mongoengine.EmbeddedDocumentField):
+            return plain_to_document(plain, doctype.document_type())
         if isinstance(doctype, mongoengine.DictField):
             return plain
     if isinstance(plain, types.StringTypes):
@@ -64,10 +65,10 @@ def plain_to_document(plain, doctype):
             return plain
     if isinstance(plain, types.NoneType):
         return plain
-    print "I don't know what to do with %s" % repr(plain)
+    raise Exception("I don't know what to do with %s" % repr(plain))
 
 
 # Better names
 serialize_this = document_to_plain
-deserialize_this = plain_to_document
+deserialize_that = plain_to_document
 

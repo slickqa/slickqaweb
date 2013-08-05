@@ -11,6 +11,10 @@ angular.module('slickApp')
             .when('/projects', {
                 templateUrl: 'static/views/projects.html',
                 controller: 'ProjectsCtrl'
+            })
+            .when('/projects/:name', {
+                templateUrl: 'static/views/view-project.html',
+                controller: 'ViewAndUpdateProjectCtrl'
             });
         nav.addLink('Project Management', 'Projects', 'projects')
     }])
@@ -18,4 +22,16 @@ angular.module('slickApp')
         $scope.projects = Project.query();
         $scope.projectList = {}; // Model for the list header and filter
         window.projscope = $scope;
+    }])
+    .controller('ViewAndUpdateProjectCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$routeParams', function($scope, rest, nav, $routeParams) {
+        rest.one('projects', $routeParams.name).get().then(function(project) {
+            $scope.project = project;
+            nav.setTitle($scope.project.name);
+        });
+
+        $scope.save = function() {
+            $scope.project.put().then(function() {
+                $scope.projectForm.$setPristine();
+            });
+        }
     }]);

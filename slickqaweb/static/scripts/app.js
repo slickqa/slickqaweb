@@ -1,8 +1,9 @@
 'use strict';
 
-angular.module('slickApp', ['ngResource', 'ngCookies'])
-  .config(['$locationProvider', function ($locationProvider) {
+angular.module('slickApp', ['ngResource', 'ngCookies', 'restangular'])
+  .config(['$locationProvider', 'RestangularProvider', function ($locationProvider, RestangularProvider) {
     $locationProvider.html5Mode(true);
+    RestangularProvider.setBaseUrl("api/");
   }]);
 
 angular.module('slickLoginApp', []);

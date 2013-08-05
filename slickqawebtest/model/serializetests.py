@@ -37,7 +37,7 @@ simple_id = ObjectId()
 conversion = [
     [datetime.datetime(2012, 10, 24, 20, 20, 15, 426000), 1351110015426, mongoengine.DateTimeField()],
     [simple_id, str(simple_id), mongoengine.ObjectIdField()],
-    [EmbeddedType(embedded_id=simple_id, embedded_string="foo"), {'embedded_id': str(simple_id), 'embedded_string': "foo"}, mongoengine.EmbeddedDocumentField(EmbeddedType)],
+    [EmbeddedType(embedded_id=simple_id, embedded_string="foo"), {'embedded_id': str(simple_id), 'embedded_string': "foo"}, EmbeddedType()],
     [ComplicatedType(string_type="foo",
                      int_type=321,
                      float_type=123.123,
@@ -56,7 +56,7 @@ conversion = [
       "dict_type": {"foo": "bar"},
       "embedded_type": {"embedded_id": str(simple_id), "embedded_string": "one"},
       "list_of_embedded_type": [{"embedded_id": str(simple_id), "embedded_string": "two"},{"embedded_id": str(simple_id), "embedded_string": "three"}]
-     }, ComplicatedType]
+     }, ComplicatedType()]
 ]
 
 @istest
@@ -94,3 +94,17 @@ def check_proper_serialization(to_serialize, expected_result):
 
 def check_proper_deserialization(to_deserialize, type, expected_result):
     assert_equal(plain_to_document(to_deserialize, type), expected_result)
+
+
+@istest
+def test_deserialize_update_existing_type():
+    existing = ComplicatedType(string_type="foo", int_type=321, boolean_type=False, embedded_type=EmbeddedType(embedded_id=simple_id, embedded_string="one"))
+    update = {"boolean_type": True, "embedded_type": {"embedded_string": "two"}, "int_type": None}
+    assert_not_equal(existing.boolean_type, update["boolean_type"])
+    assert_not_equal(existing.int_type, update["int_type"])
+    assert_not_equal(existing.embedded_type.embedded_string, update["embedded_type"]["embedded_string"])
+    plain_to_document(update, existing)
+    assert_equal(existing.boolean_type, update["boolean_type"])
+    assert_equal(existing.int_type, update["int_type"])
+    assert_equal(existing.embedded_type.embedded_string, update["embedded_type"]["embedded_string"])
+    assert_equal(existing.embedded_type.embedded_id, simple_id)
