@@ -14,7 +14,7 @@
                 <div class="projects-list-lastUpdated-column">{{ project.lastUpdated |date:'MMM d, y h:mm:ss a' }}</div>
                 <div class="projects-list-defaultBuild-column"></div>
             </div>
-            <div class="projects-list-project-description" ng-bind="project.description">Project Description</div>
+            <div class="projects-list-project-description" ng-bind-html="project.description">Project Description</div>
         </div>
     </div>
 </div>
