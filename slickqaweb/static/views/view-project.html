@@ -11,7 +11,7 @@
             </div>
             <div class="data-view-item" ng-show="project.components.length > 0">
                 <div class="data-view-property-name">Components</div>
-                <div class="data-view-property-value"><div ng-repeat="component in project.components"><span ng-bind="component.name"></span> <span class="project-component-code" ng-show="component.code">({{ component.code }})</span></div> </div>
+                <div class="data-view-property-value"><div ng-repeat="component in project.components"><span ng-model="component.name" contenteditable="true"></span> <span class="project-component-code" ng-show="component.code">(<span ng-model="component.code" contenteditable="true"></span>)</span></div> </div>
             </div>
             <div class="data-view-item" ng-show="projectForm.$dirty" ng-animate="{show: 'animated bounceInLeft', hide: 'animated bounceOutLeft'}">
                 <div class="data-view-property-name">&nbsp;</div>
