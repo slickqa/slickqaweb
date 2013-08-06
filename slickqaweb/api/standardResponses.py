@@ -7,4 +7,6 @@ from json import dumps
 def JsonResponse(obj):
     if obj is None:
         return Response(status=404)
-    return Response(dumps(serialize_this(obj)), content_type='application/json')
+    return Response(dumps(serialize_this(obj)),
+                    content_type='application/json',
+                    headers={'Cache-Control': 'no-store'})
