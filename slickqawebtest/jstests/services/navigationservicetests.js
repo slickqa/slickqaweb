@@ -16,8 +16,15 @@ describe('NavigationService (from slick-navigation.js)', function() {
         }
     };
 
+    var window = {
+        document: {
+            title: "foo"
+        }
+    };
+
     beforeEach(angular.mock.module('slickTestModule', function($provide) {
         $provide.value('$cookieStore', cookiestore);
+        $provide.value('$window', window);
     }));
 
     beforeEach(angular.mock.inject(function(NavigationService) {
@@ -32,6 +39,13 @@ describe('NavigationService (from slick-navigation.js)', function() {
         expect(navservice.getTitle()).not.toBe("A New Title");
         navservice.setTitle("A New Title");
         expect(navservice.getTitle()).toBe("A New Title");
+    });
+
+    it('Should set the title of the document when a title is set.', function() {
+        window.document.title = "foo";
+        expect(window.document.title).toBe('foo');
+        navservice.setTitle("Bar");
+        expect(window.document.title).toBe("Bar");
     });
 
     it('show() should get it\'s value from cookieStore', function() {

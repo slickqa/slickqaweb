@@ -1,0 +1,10 @@
+<div>
+    <div ng-show="show" ng-animate="{show: 'animated fadeIn', hide: 'animated fadeOut'}"><div class="slick-dialog-shade"></div></div>
+    <div class="slick-dialog slick-dialog-{{ size }}" ng-show="show" ng-animate="{show: 'animated fadeInDownBig', hide: 'animated fadeOutUpBig'}">
+        <div class="slick-dialog-title"><h2 ng-bind="title"></h2></div>
+        <div class="slick-dialog-body" ng-transclude></div>
+        <div class="slick-dialog-button-row">
+            <div ng-repeat="buttonName in buttonNames" class="slick-dialog-button" ng-click="buttonCallback(buttonName)" ng-bind="buttonName"></div>
+        </div>
+    </div>
+</div>

@@ -14,10 +14,14 @@ img {
   border: 0;
 }
 
+.fade(@c-top, @c-bottom, @c-text) {
+  background: -webkit-linear-gradient(@c-top, @c-bottom);
+  background: linear-gradient(@c-top, @c-bottom);
+  color: @c-text;
+}
+
 .faded {
-  background: -webkit-linear-gradient(@c-header-top, @c-header-bottom);
-  background: linear-gradient(@c-header-top, @c-header-bottom);
-  color: @c-header-text;
+  .fade(@c-header-top, @c-header-bottom, @c-header-text);
 }
 
 .glow {
@@ -25,6 +29,13 @@ img {
   -moz-box-shadow: #fff 0 0 .15in;
   -ms-box-shadow: #fff 0 0 .15in;
   box-shadow: #fff 0 0 .15in;
+}
+
+.glow-big {
+  -webkit-box-shadow: #fff 0 0 .25in;
+  -moz-box-shadow: #fff 0 0 .25in;
+  -ms-box-shadow: #fff 0 0 .25in;
+  box-shadow: #fff 0 0 .25in;
 }
 
 .glow-text {
@@ -53,7 +64,19 @@ img {
   -webkit-flex-flow: row nowrap;
   -moz-flex-flow: row nowrap;
   -ms-flex-direction: row nowrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
   flex-flow: row nowrap;
+}
+
+.flex-layout-row-reverse-nowrap {
+  -webkit-flex-flow: row-reverse nowrap;
+  -moz-flex-flow: row-reverse nowrap;
+  -ms-flex-direction: row-reverse;
+  -ms-flex-wrap: none;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  flex-flow: row-reverse nowrap;
 }
 
 .flex-grow-on {
@@ -83,6 +106,32 @@ img {
   border-radius: @radius;
 }
 
+.rounded-top-corners(@radius: 5px) {
+  -webkit-border-top-left-radius: @radius;
+  -webkit-border-top-right-radius: @radius;
+  -moz-border-radius-topleft: @radius;
+  -moz-border-radius-topright: @radius;
+  -ms-border-top-left-radius: @radius;
+  -ms-border-top-right-radius: @radius;
+  -o-border-top-left: @radius;
+  -o-border-top-right-radius: @radius;
+  border-top-left-radius: @radius;
+  border-top-left-radius: @radius;
+}
+
+.rounded-bottom-corners(@radius: 5px) {
+  -webkit-border-bottom-left-radius: @radius;
+  -webkit-border-bottom-right-radius: @radius;
+  -moz-border-radius-bottomleft: @radius;
+  -moz-border-radius-bottomright: @radius;
+  -ms-border-bottom-left-radius: @radius;
+  -ms-border-bottom-right-radius: @radius;
+  -o-border-bottom-left: @radius;
+  -o-border-bottom-right-radius: @radius;
+  border-bottom-left-radius: @radius;
+  border-bottom-left-radius: @radius;
+}
+
 body {
   background: @c-background;
   color: @c-text;
@@ -97,7 +146,7 @@ header {
   padding: 0;
   height: .5in;
   position: fixed;
-  z-index: 1000;
+  z-index: 900;
   top: 0;
   width: 100%;
 }

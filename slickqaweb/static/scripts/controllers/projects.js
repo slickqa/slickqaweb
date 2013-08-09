@@ -18,12 +18,24 @@ angular.module('slickApp')
             });
         nav.addLink('Project Management', 'Projects', 'projects')
     }])
-    .controller('ProjectsCtrl', ['$scope', 'Project', function ($scope, Project) {
-        $scope.projects = Project.query();
+    .controller('ProjectsCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', function ($scope, rest, nav) {
+        rest.all('projects').getList().then(function(projects) {
+            $scope.projects = projects;
+            nav.setTitle("Slick Projects (" + projects.length + ")");
+        });
         $scope.projectList = {}; // Model for the list header and filter
-        window.projscope = $scope;
     }])
     .controller('ViewAndUpdateProjectCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$routeParams', function($scope, rest, nav, $routeParams) {
+        $scope.showDialog = false;
+
+        $scope.toggleShowDialog = function() {
+            $scope.showDialog = !$scope.showDialog;
+        };
+
+        $scope.buttonClicked = function() {
+            $scope.toggleShowDialog();
+        };
+
         rest.one('projects', $routeParams.name).get().then(function(project) {
             $scope.project = project;
             nav.setTitle($scope.project.name);

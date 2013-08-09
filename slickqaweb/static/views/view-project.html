@@ -1,4 +1,9 @@
 <div class="slickview">
+    <slick-dialog title="Add Component" size="small" show="showDialog" buttons="Ok" button-callback="buttonClicked()">
+        Welcome to the test dialog.<br />
+        Press Ok to close the dialog.
+    </slick-dialog>
+    <span class="button" ng-click="toggleShowDialog()">Show Dialog</span>
     <form name="projectForm">
         <div class="data-view">
             <div class="data-view-item">

@@ -1,0 +1,105 @@
+
+@dialog-rounded-corners:.05in;
+.slick-dialog {
+  position: fixed;
+  z-index: 1001;
+  .rounded-corners(@dialog-rounded-corners);
+  .glow-big;
+  background: black;
+  opacity: .95;
+}
+
+.slick-dialog-shade {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background: white;
+  opacity: .2;
+}
+
+.slick-dialog-small {
+  top: 20%;
+  left: 30%;
+  width: 40%;
+  bottom: 40%;
+}
+
+.slick-dialog-medium {
+  top: 20%;
+  left: 20%;
+  width: 60%;
+  bottom: 20%;
+}
+
+.slick-dialog-large {
+  top: 10%;
+  left: 5%;
+  width: 90%;
+  bottom: 10%;
+}
+
+.slick-dialog-title {
+  height: .5in;
+  .faded;
+  text-align: center;
+  .rounded-top-corners(@dialog-rounded-corners);
+}
+
+.slick-dialog-title h2 {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: .35in;
+}
+
+.slick-dialog-body {
+  padding: .05in;
+}
+
+.slick-dialog-button-row {
+  .fade(#aaaaaa, #666666, #000088);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: .5in;
+  font-size: .35in;
+  text-align: center;
+  .rounded-bottom-corners(@dialog-rounded-corners);
+  .flex-container;
+  .flex-layout-row-reverse-nowrap;
+}
+
+.slick-dialog-button {
+  color: #000088;
+  // .rounded-bottom-corners(@dialog-rounded-corners);
+  padding-left: .1in;
+  padding-right: .1in;
+  width: 33%;
+  .clickable;
+  border-left: 1px solid black;
+  -ms-flex: 1 1 33%;
+}
+
+.slick-dialog-button:first-child {
+  -webkit-border-bottom-right-radius: @dialog-rounded-corners;
+  -moz-border-radius-bottomright: @dialog-rounded-corners;
+  -ms-border-bottom-right-radius: @dialog-rounded-corners;
+  -o-border-bottom-right-radius: @dialog-rounded-corners;
+  border-bottom-right-radius: @dialog-rounded-corners;
+}
+
+.slick-dialog-button:nth-child(1n+3):last-child {
+  border-left: none;
+  -webkit-border-bottom-left-radius: @dialog-rounded-corners;
+  -moz-border-radius-bottomleft: @dialog-rounded-corners;
+  -ms-border-bottom-left-radius: @dialog-rounded-corners;
+  -o-border-bottom-left-radius: @dialog-rounded-corners;
+  border-bottom-left-radius: @dialog-rounded-corners;
+}
+
+.slick-dialog-button:hover {
+  color: #ffffff;
+  .faded;
+}

@@ -80,7 +80,7 @@ angular.module('slickApp')
       };
       this.addLink = addLink;
 
-      this.$get = ['$cookieStore', function(cookieStore) {
+      this.$get = ['$cookieStore', '$window', function(cookieStore, $window) {
         if(getSection('Bookmarks').links.length > 0) {
             getSection('Bookmarks').show = true;
         }
@@ -127,6 +127,7 @@ angular.module('slickApp')
             },
             setTitle: function(title) {
                 _title = title;
+                $window.document.title = title;
             }
         };
         return nav;
