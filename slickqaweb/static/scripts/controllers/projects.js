@@ -19,6 +19,27 @@ angular.module('slickApp')
         nav.addLink('Project Management', 'Projects', 'projects')
     }])
     .controller('ProjectsCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', function ($scope, rest, nav) {
+        $scope.project = {
+            name: "",
+            description: ""
+        };
+
+        $scope.showAddProject = false;
+        $scope.addProject = function() {
+            $scope.showAddProject = !$scope.showAddProject;
+        };
+
+        $scope.addProjectDialogButtonClicked = function(buttonName) {
+            rest.all('projects').post($scope.project).then(function() {
+                $scope.project.name = "";
+                $scope.project.description = "";
+                rest.all('projects').getList().then(function(projects) {
+                    $scope.projects = projects;
+                });
+            });
+            $scope.addProject();
+        };
+
         rest.all('projects').getList().then(function(projects) {
             $scope.projects = projects;
             nav.setTitle("Slick Projects (" + projects.length + ")");

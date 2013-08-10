@@ -1,5 +1,17 @@
 <div class="slickview">
-    Welcome to the projects page
+    <slick-dialog size="small" show="showAddProject" title="Add Project" buttons="Add|Cancel" button-callback="addProjectDialogButtonClicked(buttonName)">
+        <div class="data-view">
+            <div class="data-view-item">
+                <div class="data-view-property-name">Name</div>
+                <div class="data-view-property-value"><input type="text" ng-model="project.name" /></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">Description</div>
+                <div class="data-view-property-value"><textarea ng-model="project.description"></textarea></div>
+            </div>
+        </div>
+    </slick-dialog>
+    <span class="button" ng-click="addProject()">Add Project</span>
     <slick-list-header model="projectList" search="on" pagination="on" default-sort="name">
         <slick-list-columns class="projects-list-column-container">
             <slick-list-column class="projects-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>

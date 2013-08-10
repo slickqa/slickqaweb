@@ -11,7 +11,7 @@
             </div>
         </div>
     </slick-dialog>
-    <span class="button" ng-click="addComponent()">Add Component</span>
+
     <form name="projectForm">
         <div class="data-view">
             <div class="data-view-item">
@@ -22,9 +22,9 @@
                 <div class="data-view-property-name">Last Updated</div>
                 <div class="data-view-property-value" ng-bind="project.lastUpdated | date:'MMM d, y h:mm:ss a'"></div>
             </div>
-            <div class="data-view-item" ng-show="project.components.length > 0">
+            <div class="data-view-item">
                 <div class="data-view-property-name">Components</div>
-                <div class="data-view-property-value"><div ng-repeat="component in project.components"><span ng-model="component.name" contenteditable="true"></span> <span class="project-component-code" ng-show="component.code">(<span ng-model="component.code" contenteditable="true"></span>)</span></div> </div>
+                <div class="data-view-property-value"><div ng-repeat="component in project.components"><span ng-model="component.name" contenteditable="true"></span> <span class="project-component-code" ng-show="component.code">(<span ng-model="component.code" contenteditable="true"></span>)</span></div><span class="button" ng-click="addComponent()">Add</span> </div>
             </div>
             <div class="data-view-item" ng-show="projectForm.$dirty" ng-animate="{show: 'animated bounceInLeft', hide: 'animated bounceOutLeft'}">
                 <div class="data-view-property-name">&nbsp;</div>
