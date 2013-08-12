@@ -30,13 +30,15 @@ angular.module('slickApp')
         };
 
         $scope.addProjectDialogButtonClicked = function(buttonName) {
-            rest.all('projects').post($scope.project).then(function() {
-                $scope.project.name = "";
-                $scope.project.description = "";
-                rest.all('projects').getList().then(function(projects) {
-                    $scope.projects = projects;
+            if(buttonName != 'Cancel') {
+                rest.all('projects').post($scope.project).then(function() {
+                    $scope.project.name = "";
+                    $scope.project.description = "";
+                    rest.all('projects').getList().then(function(projects) {
+                        $scope.projects = projects;
+                    });
                 });
-            });
+            }
             $scope.addProject();
         };
 
