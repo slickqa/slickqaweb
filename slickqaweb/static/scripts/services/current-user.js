@@ -11,10 +11,18 @@ angular.module('slickApp')
         var userservice = {
             currentUser: {},
             getCurrentUser: function() {
+                var emptyUser = function() {
+                    _.each(userservice.currentUser, function(value, key) {
+                        delete userservice.currentUser[key];
+                    });
+                };
                 rest.one('users', 'current').get().then(function(user) {
-                    userservice.currentUser = user;
+                    emptyUser();
+                    _.each(user, function(value, key) {
+                        userservice.currentUser[key] = value;
+                    });
                 }, function() {
-                    userservice.currentUser = {};
+                    emptyUser();
                 });
             },
             refresh: function() {
