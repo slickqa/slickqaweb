@@ -42,7 +42,13 @@
           <a href="#" class="sidenav-button-link" ng-click="showNav($event)"><img src="static/images/icon-menu.svg"/></a>
         </div>
         <h1 ng-bind="getTitle()">Title of Page</h1>
-        <div class="loginbox"><a href="login" target="_self" ng-show="!user.email">Login</a><span ng-show="user.email">Welcome {{ '{{' }} getAccountName() {{ '}}' }}<br /><a href="logout" target="_self">(Logout)</a></span></div>
+        <div class="loginbox">
+            <a href="login" target="_self" ng-show="!user.email">Login</a>
+            <span ng-show="user.email">
+                Welcome {{ '{{' }} getAccountName() {{ '}}' }}<br />
+                <a href="logout" target="_self">(Logout)</a>
+            </span>
+        </div>
       </div>
     </header>
   <!--[if IE]>
