@@ -8,7 +8,18 @@
 
 angular.module('slickApp')
     .service('UserService', [ 'Restangular', function(rest) {
-        return {
-
+        var userservice = {
+            currentUser: {},
+            getCurrentUser: function() {
+                rest.one('users', 'current').get().then(function(user) {
+                    userservice.currentUser = user;
+                }, function() {
+                    userservice.currentUser = {};
+                });
+            },
+            refresh: function() {
+                userservice.getCurrentUser();
+            }
         };
+        return userservice;
     }]);
