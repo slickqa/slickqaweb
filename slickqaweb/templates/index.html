@@ -10,13 +10,15 @@
 
     <!-- static files -->
     <script src="static/components/angular/angular.js"></script>
+    <script src="static/components/angular/angular-route.js"></script>
     <script src="static/components/angular/angular-resource.js"></script>
+    <script src="static/components/angular/angular-animate.js"></script>
     <script src="static/components/angular/angular-cookies.js"></script>
     <script src="static/components/angular/angular-sanitize.js"></script>
     <script src="static/components/underscore/underscore.js"></script>
     <script src="static/components/restangular/dist/restangular.js"></script>
     <script src="static/components/objectid/Objectid.js"></script>
-    <link rel="stylesheet" href="static/components/animate.css/animate.css" />
+    <!-- <link rel="stylesheet" href="static/components/animate.css/animate.css" /> -->
 
     {% if development %}
       <script src="static/components/jasmine/lib/jasmine-core/jasmine.js"></script>
@@ -70,8 +72,10 @@
   <![endif]-->
 
     <div class="flex-layout-row-nowrap flex-container main" ng-controller="ParentCtrl">
-        <section ng-controller="NavCtrl" class="flex-grow-off sidenav sidenav-{{ '{{' }} nav.mode() {{ '}}' }}" ng-show="nav.show()" ng-include src="'static/views/nav.html'" ng-animate="{show: 'animated bounceInLeft', hide: 'animated bounceOutLeft'}"></section>
-        <section class="flex-grow-on container main-view" ng-view ng-animate="{enter: 'animated fadeIn', leave: 'animated fadeOut'}"></section>
+        <section ng-controller="NavCtrl" class="sidenav sidenav-{{ '{{' }} nav.mode() {{ '}}' }}" ng-show="nav.show()" ng-include src="'static/views/nav.html'"></section>
+        <section class="main-container">
+            <div class="main-view" ng-view></div>
+        </section>
     </div>
 
   </body>

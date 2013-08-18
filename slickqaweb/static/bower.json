@@ -1,10 +1,12 @@
 {
   "name": "slickqaweb",
-  "dependencies" : {
-    "angular" : "PatternConsulting/bower-angular",
+  "dependencies": {
+    "angular": "git://github.com/PatternConsulting/bower-angular.git#v1.2.0rc1",
     "underscore": "1.4.4",
-    "animate.css": "git://github.com/daneden/animate.css.git",
     "jasmine": "1.3.1",
     "restangular": "1.0.10"
+  },
+  "resolutions": {
+    "angular": "v1.2.0rc1"
   }
 }
