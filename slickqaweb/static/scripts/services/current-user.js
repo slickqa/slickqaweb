@@ -27,6 +27,14 @@ angular.module('slickApp')
             },
             refresh: function() {
                 userservice.getCurrentUser();
+            },
+            getPreference: function(name) {
+                if(userservice.currentUser.preferences) {
+                    if(_.has(userservice.currentUser.preferences, name)) {
+                        return userservice.currentUser.preferences[name];
+                    }
+                }
+                return undefined;
             }
         };
         return userservice;
