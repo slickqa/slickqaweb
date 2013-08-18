@@ -7,21 +7,13 @@
  */
 
 angular.module('slickApp')
-    .controller('HeaderCtrl', ['$scope', 'NavigationService', 'User', 'Restangular', '$http', function ($scope, nav, user, rest, $http) {
+    .controller('HeaderCtrl', ['$scope', 'NavigationService', 'UserService', '$http', function ($scope, nav, user, $http) {
         $scope.title = 'Slick';
-
-        function getCurrentUser() {
-            rest.one('users', 'current').get().then(function(user) {
-                $scope.user = user;
-            }, function() {
-                $scope.user = {};
-            });
-        }
 
         $scope.showLogin = false;
 
-        $scope.user = {};
-        getCurrentUser();
+        user.refresh();
+        $scope.user = user.currentUser;
 
         $scope.getAccountName = function() {
             if ($scope.user.short_name) {
@@ -36,7 +28,7 @@ angular.module('slickApp')
         $scope.logout = function($event) {
             $event.preventDefault();
             $http({method: 'GET', url: 'logout'}).success(function() {
-                getCurrentUser();
+                user.refresh();
             })
         };
 
