@@ -10,7 +10,7 @@
             <div ng-click="toggleShow('passed')" class="unittest-results-details-name-column unittest-results-PASSED clickable-text">Passed</div>
             <div class="unittest-results-details-number-column">{{ results.totalpassed }}</div>
         </div>
-        <div class="unittest-results-details-tests" ng-show="showPassed" ng-animate="{show: 'animated fadeInDown', hide: 'animated fadeOutUp'}">
+        <div class="unittest-results-details-tests" ng-show="showPassed">
             <ul>
                 <li ng-repeat="result in results.passed">
                     <span class="unittest-results-PASSED">{{ result.path }}: {{ result.name }}</span><br />
@@ -22,7 +22,7 @@
             <div ng-click="toggleShow('failed')" class="unittest-results-details-name-column unittest-results-FAILED clickable-text">Failed</div>
             <div class="unittest-results-details-number-column">{{ results.totalfailed }}</div>
         </div>
-        <div class="unittest-results-details-tests" ng-show="showFailed" ng-animate="{show: 'animated fadeInDown', hide: 'animated fadeOutUp'}">
+        <div class="unittest-results-details-tests" ng-show="showFailed">
             <ul>
                 <li ng-repeat="result in results.failed">
                     <span class="unittest-results-FAILED">{{ result.path }}: {{ result.name }}</span><br />
