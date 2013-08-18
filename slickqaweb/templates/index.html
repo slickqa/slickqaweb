@@ -46,7 +46,7 @@
             <a href="login" target="_self" ng-show="!user.email">Login</a>
             <span ng-show="user.email">
                 Welcome {{ '{{' }} getAccountName() {{ '}}' }}<br />
-                <a href="logout" target="_self">(Logout)</a>
+                <a href="logout" ng-click="logout($event)">(Logout)</a>
             </span>
         </div>
       </div>

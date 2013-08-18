@@ -7,16 +7,22 @@
  */
 
 angular.module('slickApp')
-    .controller('HeaderCtrl', ['$scope', 'NavigationService', 'User', function ($scope, nav, user) {
+    .controller('HeaderCtrl', ['$scope', 'NavigationService', 'User', 'Restangular', '$http', function ($scope, nav, user, rest, $http) {
         $scope.title = 'Slick';
 
-        $scope.showLogin = false;
-        $scope.modalOpts = {
-            backdropFade: true,
-            dialogFade:true
-        };
+        function getCurrentUser() {
+            rest.one('users', 'current').get().then(function(user) {
+                $scope.user = user;
+            }, function() {
+                $scope.user = {};
+            });
+        }
 
-        $scope.user = user.getCurrentUser();
+        $scope.showLogin = false;
+
+        $scope.user = {};
+        getCurrentUser();
+
         $scope.getAccountName = function() {
             if ($scope.user.short_name) {
                 return $scope.user.short_name;
@@ -27,9 +33,11 @@ angular.module('slickApp')
             return $scope.user.email;
         };
 
-        $scope.login = function($event) {
+        $scope.logout = function($event) {
             $event.preventDefault();
-            $scope.showLogin = true;
+            $http({method: 'GET', url: 'logout'}).success(function() {
+                getCurrentUser();
+            })
         };
 
         $scope.getTitle = function() {

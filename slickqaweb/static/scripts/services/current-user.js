@@ -7,6 +7,8 @@
 "use strict";
 
 angular.module('slickApp')
-    .factory('User', [ '$resource', function($resource) {
-        return $resource('api/users/:email', {}, {'getCurrentUser': {'method': 'GET', 'params': {'email': 'current'}}});
+    .service('UserService', [ 'Restangular', function(rest) {
+        return {
+
+        };
     }]);
