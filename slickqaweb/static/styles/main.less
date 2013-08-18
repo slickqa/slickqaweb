@@ -60,6 +60,17 @@ img {
   width: 100%;
 }
 
+.flex-container-important {
+  display: -webkit-box!important;
+  display: -webkit-flex!important;
+  display: -moz-flex!important;
+  display: -moz-box!important;
+  display: -ms-flexbox!important;
+  display: box!important;
+  display: flex!important;
+  width: 100%;
+}
+
 .flex-layout-row-nowrap {
   -webkit-flex-flow: row nowrap;
   -moz-flex-flow: row nowrap;
@@ -338,6 +349,17 @@ header h1 {
 
 .data-view-item {
   .flex-container;
+}
+
+.data-view-item-save-button-row.ng-hide-add {
+  .animated;
+  .animated.bounceOutLeft;
+}
+
+.data-view-item-save-button-row.ng-hide-remove {
+  .flex-container-important;
+  .animated;
+  .animated.bounceInLeft;
 }
 
 .data-view-property-name {
