@@ -8,7 +8,10 @@
 'use strict';
 
 describe('UserService (from current-user.js)', function() {
-    var Restangular = {};
+    var Restangular = {
+        one: function(name0, name1) {
+        }
+    };
     var user = {};
 
     beforeEach(angular.mock.module('slickTestModule', function($provide) {
@@ -21,6 +24,17 @@ describe('UserService (from current-user.js)', function() {
 
     it("Should provide an empty currentUser", function() {
         expect(user.currentUser).toBeDefined();
-    })
+    });
+
+    it("Should call getCurrentUser when refresh is called.", function() {
+        spyOn(user, 'getCurrentUser');
+        user.refresh();
+        expect(user.getCurrentUser).toHaveBeenCalled();
+    });
+
+    it("Should make a rest call to api/users/current when getCurrentUser is called.", function() {
+
+    });
+
 });
 
