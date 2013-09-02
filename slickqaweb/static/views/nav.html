@@ -1,10 +1,10 @@
 <div class="sidenav-inner">
 <div class="sidenav-pin-box">
-    <a href="#" ng-click="toggleMode($event)"><img class="sidenav-mode-image" src="static/images/sidenav-{{ nav.mode() }}.png"/></a>
+    <a href="#" ng-click="toggleMode($event)"><img class="sidenav-mode-image" ng-src="static/images/sidenav-{{ nav.mode() }}.png"/></a>
 </div>
 <a href="{{slickHomeUrl}}"><img src="static/images/home.png" class="nav-image"/>Home</a><br />
 <div ng-repeat="group in nav.sections()">
-    <a href="#" class="nav-group-link" ng-click="toggleShow(group, $event)"><img src="static/images/{{group.icon}}" class="nav-image"/>{{group.name}}</a>
+    <a href="#" class="nav-group-link" ng-click="toggleShow(group, $event)"><img ng-src="static/images/{{group.icon}}" class="nav-image"/>{{group.name}}</a>
     <div class="nav-group-box" ng-show="group.show">
         <span ng-repeat="link in group.links"><a class="nav-link" href="{{link.url}}">{{link.name}}</a><br /></span>
     </div>
