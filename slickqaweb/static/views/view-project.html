@@ -24,7 +24,15 @@
             </div>
             <div class="data-view-item">
                 <div class="data-view-property-name">Components</div>
-                <div class="data-view-property-value"><div ng-repeat="component in project.components"><span ng-model="component.name" contenteditable="true"></span> <span class="project-component-code" ng-show="component.code">(<span ng-model="component.code" contenteditable="true"></span>)</span></div><span class="button" ng-click="addComponent()">Add</span> </div>
+                <div class="data-view-property-value">
+                    <div ng-repeat="component in project.components">
+                        <span ng-model="component.name" contenteditable="true"></span>
+                        <span class="project-component-code" ng-show="component.code">
+                            (<span ng-model="component.code" contenteditable="true"></span>)
+                        </span>
+                    </div>
+                    <span class="button" ng-click="addComponent()">Add</span>
+                </div>
             </div>
             <div class="data-view-item">
                 <div class="data-view-property-name">Active Releases</div>
