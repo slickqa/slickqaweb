@@ -50,3 +50,43 @@
 .project-component-code {
   font-size: .8em;
 }
+
+.project-release-container {
+  .flex-grow-off;
+  width: 35%;
+}
+
+.project-build-container {
+  .flex-grow-off;
+  width: 35%;
+  margin-left: .1in;
+  position: relative;
+}
+
+.project-build-list {
+  position: absolute;
+  width: 100%;
+  .rounded-corners();
+  border: 1px solid white;
+  padding: .05in;
+}
+
+.project-build-list.ng-hide-remove {
+  display: block !important;
+  .animated;
+  .animated.fadeInDownBig;
+}
+
+.project-build-list.ng-hide-add {
+  .animated;
+  .animated.fadeOutDownBig;
+}
+
+.project-release-selected {
+  .fade(@c-header-top, @c-header-bottom, #ffffff);
+}
+
+.project-build-header {
+  .fade(@c-structural-top, @c-structural-bottom, @c-text);
+  padding: .05in;
+}

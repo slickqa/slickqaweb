@@ -64,7 +64,6 @@ angular.module('slickApp')
         });
 
         $scope.dialogButtonClicked = function(buttonName) {
-            console.log("Button Name: " + buttonName);
             if(buttonName == "Add") {
                 if(! $scope.project.components) {
                     $scope.project.components = [];
@@ -82,7 +81,22 @@ angular.module('slickApp')
         rest.one('projects', $routeParams.name).get().then(function(project) {
             $scope.project = project;
             nav.setTitle($scope.project.name);
+            if(project.releases && project.releases.length > 0) {
+                $scope.selectedRelease = project.releases[0].id;
+            }
         });
+
+        $scope.isSelectedRelease = function(releaseId) {
+            if(releaseId == $scope.selectedRelease) {
+                return "project-release-selected";
+            } else {
+                return "";
+            }
+        };
+
+        $scope.selectRelease = function(releaseId) {
+            $scope.selectedRelease = releaseId;
+        };
 
         $scope.save = function() {
             $scope.project.put().then(function(project) {
