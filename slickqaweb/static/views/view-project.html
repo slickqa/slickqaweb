@@ -35,7 +35,8 @@
                     <div class="project-build-container">
                         <div class="project-build-list" ng-repeat="release in project.releases" ng-show="release.id == selectedRelease">
                             <div class="project-build-header">Builds for Release {{ release.name }}</div>
-                            <div ng-repeat="build in release.builds" ng-bind="build.name"></div>
+                            <div ng-repeat="build in release.builds |orderBy:'-built' |limitTo:10" ng-bind="build.name"></div>
+                            <div ng-show="release.builds.length > 10">...</div>
                         </div>
                     </div>
                 </div>
