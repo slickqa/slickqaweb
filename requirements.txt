@@ -1,6 +1,7 @@
 Flask
 flask-mongoengine
 Flask-gzip
+flask_openid
 CherryPy
 watchdog
 argcomplete
