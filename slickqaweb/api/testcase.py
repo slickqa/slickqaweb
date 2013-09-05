@@ -13,7 +13,7 @@ def get_testcases():
     return JsonResponse(Testcase.objects)
 
 @app.route('/api/testcases/<testcase_id>')
-def get_project_by_name(testcase_id):
+def get_testcase_by_id(testcase_id):
     return JsonResponse(Testcase.objects(id=testcase_id).first())
 
 
