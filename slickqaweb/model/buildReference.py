@@ -1,7 +1,6 @@
 from mongoengine import *
 
 
-class ConfigurationReference(EmbeddedDocument):
-    configId = ObjectIdField()
+class BuildReference(EmbeddedDocument):
+    buildId = ObjectIdField()
     name = StringField()
-    filename = StringField()

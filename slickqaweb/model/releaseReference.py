@@ -1,6 +1,6 @@
 from mongoengine import *
 
 
-class BuildReference(EmbeddedDocument):
-    buildId = ObjectIdField()
+class ReleaseReference(EmbeddedDocument):
+    releaseId = ObjectIdField()
     name = StringField()

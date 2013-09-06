@@ -1,29 +1,26 @@
-__author__ = 'jcorbett'
+__author__ = 'lhigginson'
 
 from mongoengine import *
+from .configurationReference import ConfigurationReference
 from .componentReference import ComponentReference
 from .projectReference import ProjectReference
+from .releaseReference import ReleaseReference
+from .buildReference import BuildReference
 from .step import Step
 
 
-class Testcase(Document):
-    meta = {'collection': 'testcases'}
+class Testrun(Document):
+    testplanId = ObjectId
     name = StringField()
-    purpose = StringField()
-    requirements = StringField()
-    author = StringField()
-    steps = ListField(EmbeddedDocumentField(Step))
-    attributes = MapField(StringField())
-    automated = BooleanField()
-    automationPriority = IntField()
-    automationTool = StringField()
-    automationId = StringField()
-    automationKey = StringField()
-    automationConfiguration = StringField()
-    stabilityRating = IntField()
-    tags = ListField(StringField())
-    projectReference = EmbeddedDocumentField(ProjectReference)
-    componentReference = EmbeddedDocumentField(ComponentReference)
-    deleted = BooleanField()
+    config = EmbeddedDocumentField(ConfigurationReference)
+    runtimeOptions = EmbeddedDocumentField(ConfigurationReference)
+    project = EmbeddedDocumentField(ProjectReference)
+    dateCreated = DateTimeField()
+    runStarted = DateTimeField()
+    runFinished = DateTimeField()
+    release = EmbeddedDocumentField(ReleaseReference)
+    build = EmbeddedDocumentField(BuildReference)
+    # TODO need to add: summary = EmbeddedDocumentField(TestRunSummary)
+    # TODO decide how to represent RunStatus enum: state = RunStatus
 
 

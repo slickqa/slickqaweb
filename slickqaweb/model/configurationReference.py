@@ -1,7 +1,7 @@
 from mongoengine import *
 
 
-class ComponentReference(EmbeddedDocument):
-    id = ObjectIdField()
-    code = StringField()
+class ConfigurationReference(EmbeddedDocument):
+    configId = ObjectIdField()
     name = StringField()
+    filename = StringField()
