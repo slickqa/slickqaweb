@@ -4,7 +4,6 @@ vpy
 *.pyc
 *.swp
 *.log
-slickqaweb/static/components
 secret_key.txt
 tmp
 **/.DS_Store
