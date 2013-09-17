@@ -78,7 +78,9 @@
   <![endif]-->
 
     <div class="flex-layout-row-nowrap flex-container main" ng-controller="ParentCtrl">
-        <section ng-controller="NavCtrl" class="sidenav sidenav-{{ '{{' }} nav.mode() {{ '}}' }}" ng-show="nav.show()" ng-include src="'static/views/nav.html'"></section>
+        <section class="sidenav sidenav-{{ '{{' }} nav.mode() {{ '}}' }}" ng-show="nav.show()">
+            <div ng-include src="'static/views/nav.html'"></div>
+        </section>
         <section class="main-container">
             <div class="main-view" ng-view></div>
         </section>
