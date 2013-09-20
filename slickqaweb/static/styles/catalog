@@ -5,3 +5,5 @@ slick-list.less
 projects.less
 login.less
 slick-dialog.less
+multi-product-dashboard.less
+statusbar.less

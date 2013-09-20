@@ -1,0 +1,268 @@
+
+@-webkit-keyframes flipX {
+  0% {
+    -webkit-transform: perspective(400px) rotateX(0deg);
+  }
+
+  10% {
+    -webkit-transform: perspective(400px) rotateX(72deg);
+  }
+
+  20% {
+    -webkit-transform: perspective(400px) rotateX(144deg);
+  }
+
+  30% {
+    -webkit-transform: perspective(400px) rotateX(216deg);
+  }
+
+  40% {
+    -webkit-transform: perspective(400px) rotateX(288deg);
+  }
+
+  50% {
+    -webkit-transform: perspective(400px) rotateX(360deg);
+  }
+
+  60% {
+    -webkit-transform: perspective(400px) rotateX(432deg);
+  }
+
+  70% {
+    -webkit-transform: perspective(400px) rotateX(504deg);
+  }
+
+  80% {
+    -webkit-transform: perspective(400px) rotateX(576deg);
+  }
+
+  90% {
+    -webkit-transform: perspective(400px) rotateX(648deg);
+  }
+
+  100% {
+    -webkit-transform: perspective(400px) rotateX(720deg);
+  }
+}
+@-moz-keyframes flipX {
+  0% {
+    -moz-transform: perspective(400px) rotateX(0deg);
+  }
+
+  10% {
+    -moz-transform: perspective(400px) rotateX(72deg);
+  }
+
+  20% {
+    -moz-transform: perspective(400px) rotateX(144deg);
+  }
+
+  30% {
+    -moz-transform: perspective(400px) rotateX(216deg);
+  }
+
+  40% {
+    -moz-transform: perspective(400px) rotateX(288deg);
+  }
+
+  50% {
+    -moz-transform: perspective(400px) rotateX(360deg);
+  }
+
+  60% {
+    -moz-transform: perspective(400px) rotateX(432deg);
+  }
+
+  70% {
+    -moz-transform: perspective(400px) rotateX(504deg);
+  }
+
+  80% {
+    -moz-transform: perspective(400px) rotateX(576deg);
+  }
+
+  90% {
+    -moz-transform: perspective(400px) rotateX(648deg);
+  }
+
+  100% {
+    -moz-transform: perspective(400px) rotateX(720deg);
+  }
+}
+@-o-keyframes flipX {
+  0% {
+    -o-transform: perspective(400px) rotateX(0deg);
+  }
+
+  10% {
+    -o-transform: perspective(400px) rotateX(72deg);
+  }
+
+  20% {
+    -o-transform: perspective(400px) rotateX(144deg);
+  }
+
+  30% {
+    -o-transform: perspective(400px) rotateX(216deg);
+  }
+
+  40% {
+    -o-transform: perspective(400px) rotateX(288deg);
+  }
+
+  50% {
+    -o-transform: perspective(400px) rotateX(360deg);
+  }
+
+  60% {
+    -o-transform: perspective(400px) rotateX(432deg);
+  }
+
+  70% {
+    -o-transform: perspective(400px) rotateX(504deg);
+  }
+
+  80% {
+    -o-transform: perspective(400px) rotateX(576deg);
+  }
+
+  90% {
+    -o-transform: perspective(400px) rotateX(648deg);
+  }
+
+  100% {
+    -o-transform: perspective(400px) rotateX(720deg);
+  }
+}
+@keyframes flipX {
+  0% {
+    transform: perspective(400px) rotateX(0deg);
+  }
+
+  10% {
+    transform: perspective(400px) rotateX(72deg);
+  }
+
+  20% {
+    transform: perspective(400px) rotateX(144deg);
+  }
+
+  30% {
+    transform: perspective(400px) rotateX(216deg);
+  }
+
+  40% {
+    transform: perspective(400px) rotateX(288deg);
+  }
+
+  50% {
+    transform: perspective(400px) rotateX(360deg);
+  }
+
+  60% {
+    transform: perspective(400px) rotateX(432deg);
+  }
+
+  70% {
+    transform: perspective(400px) rotateX(504deg);
+  }
+
+  80% {
+    transform: perspective(400px) rotateX(576deg);
+  }
+
+  90% {
+    transform: perspective(400px) rotateX(648deg);
+  }
+
+  100% {
+    transform: perspective(400px) rotateX(720deg);
+  }
+}
+
+.animated.flipX {
+  -webkit-backface-visibility: visible !important;
+  -webkit-animation-name: flipX;
+  -moz-backface-visibility: visible !important;
+  -moz-animation-name: flipX;
+  -o-backface-visibility: visible !important;
+  -o-animation-name: flipX;
+  backface-visibility: visible !important;
+  animation-name: flipX;
+}
+
+
+
+
+.multi-project-dashboard-table {
+  border-collapse: collapse;
+  border: 1px solid white;
+  margin-top: .1in;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.multi-project-dashboard-table-row {
+  border: 1px solid white;
+}
+
+.multi-project-dashboard-table-row:nth-child(even) {
+  background-color: #222222;
+}
+
+.multi-project-dashboard-table-row td {
+  padding-top: .125in;
+  padding-bottom: .125in;
+}
+.multi-project-dashboard-project-name {
+  .rotate(270deg);
+  border-right: 1px solid white;
+  width: .4in;
+  max-width: .4in;
+  word-wrap: none;
+  font-size: 1.2em;
+  vertical-align: middle;
+  font-weight: bold;
+  color: white;
+  padding-right: .1in;
+}
+
+.multi-project-dashboard-version-name {
+  .rotate(270deg);
+  border-right: 1px solid white;
+  width: .25in;
+  vertical-align: middle;
+}
+
+.multi-project-dashboard-testrun-label {
+  padding-left: .1in;
+  width: 2in;
+}
+
+.multi-project-dashboard-stats-cell {
+  width: 2in;
+  text-align: right;
+  padding-right: .2in;
+}
+
+.multi-project-dashboard-stats-cell.animate-change-add,
+.multi-project-dashboard-stats-cell.animate-change-remove {
+  .animated;
+  .animated.flipX;
+}
+
+.multi-project-dashboard-date-cell {
+  width: 2in;
+}
+
+.multi-project-dashboard-build-cell {
+  width: 1in;
+}
+
+.multi-project-dashboard-statusbar-cell {
+  width: 2in;
+}
+
+div.multi-project-dashboard-statusbar {
+  width: 1.8in;
+}
