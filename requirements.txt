@@ -7,3 +7,4 @@ watchdog
 argcomplete
 nose
 python-dateutil
+pyparsing

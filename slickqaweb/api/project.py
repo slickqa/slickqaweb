@@ -3,12 +3,13 @@ from slickqaweb.model.project import Project
 from slickqaweb.model.serialize import deserialize_that
 from flask import Response, request
 from .standardResponses import JsonResponse
+from slickqaweb.model.query import buildQueryFromRequest
 import datetime
 
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/projects')
 def get_projects():
-    return JsonResponse(Project.objects)
+    return JsonResponse(Project.objects(buildQueryFromRequest()))
 
 @app.route('/api/projects/<project_name>')
 def get_project_by_name(project_name):
