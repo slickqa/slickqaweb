@@ -1,6 +1,13 @@
 __author__ = 'jcorbett'
 
 
+#################################################################################
+# I know this file is a mess, it's an example of experiment driven coding.
+# over time I will start putting in unit tests and cleaning this up and making
+# it more orderly
+#################################################################################
+
+
 import pyparsing
 
 from mongoengine import Q
