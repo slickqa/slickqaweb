@@ -25,12 +25,9 @@ def add_testcase():
     new_tc.save()
     return JsonResponse(new_tc)
 
-#
-#
-# @app.route('/api/projects/<project_name>', methods=["PUT"])
-# def update_project(project_name):
-#     orig = Project.objects(name=project_name).first()
-#     deserialize_that(request.get_json(), orig)
-#     orig.lastUpdated = datetime.datetime.utcnow()
-#     orig.save()
-#     return JsonResponse(orig)
+@app.route('/api/testcases/<testcase_id>', methods=["PUT"])
+def update_testcase(testcase_id):
+    orig = Testcase.objects(id=testcase_id).first()
+    deserialize_that(request.get_json(), orig)
+    orig.save()
+    return JsonResponse(orig)
