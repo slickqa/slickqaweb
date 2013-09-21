@@ -4,7 +4,7 @@ from slickqaweb.app import app
 from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import buildQueryFromRequest
-from flask import Response, request
+from flask import request, g
 from .standardResponses import JsonResponse
 
 # TODO: add error handling. Not sure how to handle that yet.
@@ -20,6 +20,8 @@ def get_testcase_by_id(testcase_id):
 @app.route('/api/testcases', methods=["POST"])
 def add_testcase():
     new_tc = deserialize_that(request.get_json(), Testcase())
+    if (new_tc.author is None or new_tc.author == "") and g.user is not None:
+        new_tc.author = g.user.full_name
     new_tc.save()
     return JsonResponse(new_tc)
 
