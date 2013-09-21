@@ -3,26 +3,26 @@ __author__ = 'slambson'
 from slickqaweb.app import app
 from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.serialize import deserialize_that
+from slickqaweb.model.query import buildQueryFromRequest
 from flask import Response, request
 from .standardResponses import JsonResponse
-import datetime
 
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/testcases')
 def get_testcases():
-    return JsonResponse(Testcase.objects)
+    return JsonResponse(Testcase.objects(buildQueryFromRequest()))
 
 @app.route('/api/testcases/<testcase_id>')
 def get_testcase_by_id(testcase_id):
     return JsonResponse(Testcase.objects(id=testcase_id).first())
 
 
-# @app.route('/api/projects', methods=["POST"])
-# def add_project():
-#     new_project = deserialize_that(request.get_json(), Project())
-#     new_project.lastUpdated = datetime.datetime.utcnow()
-#     new_project.save()
-#     return JsonResponse(new_project)
+@app.route('/api/testcases', methods=["POST"])
+def add_testcase():
+    new_tc = deserialize_that(request.get_json(), Testcase())
+    new_tc.save()
+    return JsonResponse(new_tc)
+
 #
 #
 # @app.route('/api/projects/<project_name>', methods=["PUT"])
