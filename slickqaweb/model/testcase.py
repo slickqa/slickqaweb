@@ -22,8 +22,8 @@ class Testcase(Document):
     automationConfiguration = StringField()
     stabilityRating = IntField()
     tags = ListField(StringField())
-    projectReference = EmbeddedDocumentField(ProjectReference)
-    componentReference = EmbeddedDocumentField(ComponentReference)
+    project = EmbeddedDocumentField(ProjectReference)
+    component = EmbeddedDocumentField(ComponentReference)
     deleted = BooleanField()
 
 
