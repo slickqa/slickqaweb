@@ -48,7 +48,7 @@ angular.module('slickApp')
         });
         $scope.projectList = {}; // Model for the list header and filter
     }])
-    .controller('ViewAndUpdateProjectCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$routeParams', function($scope, rest, nav, $routeParams) {
+    .controller('ViewAndUpdateProjectCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$routeParams', '$cookieStore', function($scope, rest, nav, $routeParams, $cookieStore) {
         $scope.showAddComponent = false;
         $scope.component = {
             name: "",
@@ -79,6 +79,7 @@ angular.module('slickApp')
         };
 
         rest.one('projects', $routeParams.name).get().then(function(project) {
+            $cookieStore.put('slick-last-project-used', project.name);
             $scope.project = project;
             nav.setTitle($scope.project.name);
             if(project.releases && project.releases.length > 0) {
