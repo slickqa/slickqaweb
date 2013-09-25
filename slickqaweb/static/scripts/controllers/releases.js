@@ -12,15 +12,17 @@ angular.module('slickApp')
             .when('/releases', {
                 templateUrl: 'static/views/releases.html',
                 controller: 'ReleasesCtrl'
-            })
+            });
 
         // add links in the left side navigation menu
-        nav.addLink('Project Management', 'Releases', 'releases')
+        nav.addLink('Project Management', 'Releases', 'releases');
+        nav.addLink('Project Management', 'Add Release', 'releases?add=true');
     }])
-    .controller('ReleasesCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$cookieStore', function ($scope, rest, nav, $cookie) {
-        $scope.projects = [];
+    .controller('ReleasesCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$cookieStore', '$routeParams', function ($scope, rest, nav, $cookie, $routeParams) {
+        $scope.model = {};
+        $scope.model.projects = [];
 
-        $scope.project = {};
+        $scope.model.project = {};
 
         $scope.newRelease = {
             name: '',
@@ -28,6 +30,9 @@ angular.module('slickApp')
         };
 
         $scope.showAddRelease = false;
+        if($routeParams.add) {
+            $scope.showAddRelease = true;
+        }
 
         $scope.toggleAddRelease = function() {
             $scope.showAddRelease = ! $scope.showAddRelease;
@@ -35,7 +40,7 @@ angular.module('slickApp')
 
         $scope.addReleaseDialogButtonClicked = function(buttonName) {
             if(buttonName == 'Add') {
-                $scope.project.releases.push({id: (new ObjectId()).toString(),
+                $scope.model.project.releases.push({id: (new ObjectId()).toString(),
                                               name: $scope.newRelease.name,
                                               target: $scope.newRelease.target,
                                               status: 'active'});
@@ -53,7 +58,7 @@ angular.module('slickApp')
         $scope.getProjects = function() {
             // lookup a list of all projects, and update the scope variables
             rest.all('projects').getList().then(function(projects) {
-                $scope.projects = projects;
+                $scope.model.projects = projects;
 
                 // grab the last project used from the cookie
                 $scope.lastProjectUsed = $cookie.get('slick-last-project-used');
@@ -62,7 +67,7 @@ angular.module('slickApp')
                 // in the ui.  It does this by setting $scope.project to that value.
                 _.each(projects, function(proj) {
                     if(proj.name == $scope.lastProjectUsed) {
-                        $scope.project = proj;
+                        $scope.model.project = proj;
                     }
                 });
             });
@@ -72,17 +77,17 @@ angular.module('slickApp')
 
         // when they select a different project (placing the new value in $scope.project) then set the cookie
         // to the latest value
-        $scope.$watch('project', function(newValue, oldValue) {
+        $scope.$watch('model.project', function(newValue, oldValue) {
             if(newValue.name) {
                 $cookie.put('slick-last-project-used', newValue.name);
             }
         });
 
         $scope.save = function() {
-            $scope.project.put().then(function(project) {
+            $scope.model.project.put().then(function(project) {
                 $scope.getProjects();
                 $scope.releasesForm.$setPristine();
             });
         }
 
-    }])
+    }]);

@@ -16,15 +16,19 @@ angular.module('slickApp')
                 templateUrl: 'static/views/view-project.html',
                 controller: 'ViewAndUpdateProjectCtrl'
             });
-        nav.addLink('Project Management', 'Projects', 'projects')
+        nav.addLink('Project Management', 'Add Project', 'projects?add=true');
+        nav.addLink('Project Management', 'Projects', 'projects');
     }])
-    .controller('ProjectsCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', function ($scope, rest, nav) {
+    .controller('ProjectsCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$routeParams', function ($scope, rest, nav, $routeParams) {
         $scope.project = {
             name: "",
             description: ""
         };
 
         $scope.showAddProject = false;
+        if($routeParams.add) {
+            $scope.showAddProject = true;
+        }
         $scope.addProject = function() {
             $scope.showAddProject = !$scope.showAddProject;
         };

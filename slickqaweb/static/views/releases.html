@@ -3,6 +3,10 @@
     <slick-dialog size="small" show="showAddRelease" title="Add Release" buttons="Add|Cancel" button-callback="addReleaseDialogButtonClicked(buttonName)">
         <div class="data-view">
             <div class="data-view-item">
+                <div class="data-view-property-name">Project</div>
+                <div class="data-view-property-value"><select ng-model="model.project" ng-options="p as p.name for p in model.projects" required></select></div>
+            </div>
+            <div class="data-view-item">
                 <div class="data-view-property-name">Name</div>
                 <div class="data-view-property-value"><input type="text" ng-model="newRelease.name" /></div>
             </div>
@@ -14,7 +18,7 @@
     </slick-dialog>
 
     <div class="releases-list-container">
-        <select ng-model="project" ng-options="p as p.name for p in projects" required></select>
+        <select ng-model="model.project" ng-options="p as p.name for p in model.projects" required></select>
         <span class="button" ng-click="toggleAddRelease()">Add Release</span>
         <slick-list-header model="releaseList" default-sort="-target" search="on" pagination="on">
             <slick-list-columns class="releases-list-column-container">
@@ -26,11 +30,11 @@
         </slick-list-header>
         <form name="releasesForm">
             <div class="releases-list-row-container">
-                <div ng-repeat="release in project.releases | slickListFilter:releaseList" class="releases-list-row">
+                <div ng-repeat="release in model.project.releases | slickListFilter:releaseList" class="releases-list-row">
                     <div class="releases-list-column-container">
                         <div class="releases-list-name-column" ng-model="release.name" contenteditable="true">No Name</div>
                         <slick-date-picker class="releases-list-target-column" form="releasesForm" ng-model="release.target">{{ release.target |date:'MMM d, y' }}</slick-date-picker>
-                        <div class="releases-list-default-column"><div ng-show="release.status=='active'"><input type="radio" ng-model="project.defaultRelease" value="{{ release.id }}" /> </div></div>
+                        <div class="releases-list-default-column"><div ng-show="release.status=='active'"><input type="radio" ng-model="model.project.defaultRelease" value="{{ release.id }}" /> </div></div>
                         <div class="releases-list-active-column"><input type="checkbox" ng-model="release.status" ng-true-value="active" ng-false-value="inactive" /></div>
                     </div>
                 </div>
