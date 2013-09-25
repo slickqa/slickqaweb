@@ -1,5 +1,5 @@
 <html>
-  <head>
+<head>
     <base href="{{base}}" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=IE9">
@@ -18,13 +18,15 @@
     <script src="static/components/underscore/underscore.js"></script>
     <script src="static/components/restangular/dist/restangular.js"></script>
     <script src="static/components/objectid/Objectid.js"></script>
+    <script src="static/components/kalendae/kalendae.standalone.js"></script>
+    <link rel="stylesheet" href="static/components/kalendae/kalendae.css" />
     <!-- <link rel="stylesheet" href="static/components/animate.css/animate.css" /> -->
 
     {% if development %}
-      <script src="static/components/jasmine/lib/jasmine-core/jasmine.js"></script>
-      <script src="static/components/jasmine-jsreporter/jasmine-jsreporter.js"></script>
-      <script src="static/components/jasmine-underscore/jasmine-underscore.js"></script>
-      <script src="static/components/angular-mocks/angular-mocks.js"></script>
+    <script src="static/components/jasmine/lib/jasmine-core/jasmine.js"></script>
+    <script src="static/components/jasmine-jsreporter/jasmine-jsreporter.js"></script>
+    <script src="static/components/jasmine-underscore/jasmine-underscore.js"></script>
+    <script src="static/components/angular-mocks/angular-mocks.js"></script>
     {% endif %}
 
     <!-- compiled files -->
@@ -32,14 +34,14 @@
     <script src="scripts.js"></script>
 
     {% if development %}
-      <script src="jstests.js"></script>
+    <script src="jstests.js"></script>
     {% endif %}
-  </head>
-  <body ng-app="slickApp">
-    <header ng-controller="HeaderCtrl">
-      <div class="inner-header">
+</head>
+<body ng-app="slickApp">
+<header ng-controller="HeaderCtrl">
+    <div class="inner-header">
         <div>
-          <a href="#" class="sidenav-button-link" ng-click="showNav($event)"><img src="static/images/icon-menu.svg"/></a>
+            <a href="#" class="sidenav-button-link" ng-click="showNav($event)"><img src="static/images/icon-menu.svg"/></a>
         </div>
         <h1 ng-bind="getTitle()">Title of Page</h1>
         <div class="loginbox">
@@ -49,43 +51,43 @@
                 <a href="logout" ng-click="logout($event)">(Logout)</a>
             </span>
         </div>
-      </div>
-    </header>
-  <!--[if IE]>
-    <script type="text/javascript"
-            src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+    </div>
+</header>
+<!--[if IE]>
+<script type="text/javascript"
+        src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
 
-    <style>
-      .chromeFrameInstallDefaultStyle {
+<style>
+    .chromeFrameInstallDefaultStyle {
         width: 100%; /* default is 800px */
         border: 5px solid blue;
-      }
-     </style>
+    }
+</style>
 
-    <div id="prompt">
-    </div>
+<div id="prompt">
+</div>
 
-    <script>
-      // The conditional ensures that this code will only execute in IE,
-      // Therefore we can use the IE-specific attachEvent without worry
-      window.attachEvent("onload", function() {
-          CFInstall.check({
-              mode: "inline", // the default
-              node: "prompt"
-          });
-      });
-    </script>
-  <![endif]-->
+<script>
+    // The conditional ensures that this code will only execute in IE,
+    // Therefore we can use the IE-specific attachEvent without worry
+    window.attachEvent("onload", function() {
+        CFInstall.check({
+            mode: "inline", // the default
+            node: "prompt"
+        });
+    });
+</script>
+<![endif]-->
 
-    <div class="flex-layout-row-nowrap flex-container main" ng-controller="ParentCtrl">
-        <section class="sidenav sidenav-{{ '{{' }} nav.mode() {{ '}}' }}" ng-show="nav.show()">
-            <div ng-include src="'static/views/nav.html'"></div>
-        </section>
-        <section class="main-container">
-            <div class="main-view" ng-view></div>
-        </section>
-    </div>
+<div class="flex-layout-row-nowrap flex-container main" ng-controller="ParentCtrl">
+    <section class="sidenav sidenav-{{ '{{' }} nav.mode() {{ '}}' }}" ng-show="nav.show()">
+        <div ng-include src="'static/views/nav.html'"></div>
+    </section>
+    <section class="main-container">
+        <div class="main-view" ng-view></div>
+    </section>
+</div>
 
-  </body>
+</body>
 </html>
 

@@ -12,3 +12,5 @@ controllers/login.js
 services/current-user.js
 directives/contenteditable.js
 directives/slick-dialog.js
+controllers/releases.js
+directives/date-picker.js
