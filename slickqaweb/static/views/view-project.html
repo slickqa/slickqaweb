@@ -38,7 +38,7 @@
                 <div class="data-view-property-name">Active Releases</div>
                 <div class="data-view-property-value flex-container">
                     <div class="project-release-container">
-                        <div ng-repeat="release in project.releases" class="clickable" ng-class="isSelectedRelease(release.id)" ng-bind="release.name" ng-click="selectRelease(release.id)"></div>
+                        <div ng-repeat="release in project.releases |filter:{status:'!inactive'} |orderBy:'-target'" class="clickable" ng-class="isSelectedRelease(release.id)" ng-bind="release.name" ng-click="selectRelease(release.id)"></div>
                     </div>
                     <div class="project-build-container">
                         <div class="project-build-list" ng-repeat="release in project.releases" ng-show="release.id == selectedRelease">
