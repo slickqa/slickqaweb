@@ -25,6 +25,7 @@ angular.module('slickApp')
             description: ""
         };
 
+
         $scope.showAddProject = false;
         if($routeParams.add) {
             $scope.showAddProject = true;
@@ -53,10 +54,25 @@ angular.module('slickApp')
         $scope.projectList = {}; // Model for the list header and filter
     }])
     .controller('ViewAndUpdateProjectCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$routeParams', '$cookieStore', function($scope, rest, nav, $routeParams, $cookieStore) {
+        $scope.releaseList = {};
+        $scope.buildLists = {};
+
         $scope.showAddComponent = false;
         $scope.component = {
             name: "",
             code: ""
+        };
+
+        $scope.showAddRelease = false;
+        $scope.newRelease = {
+            name: '',
+            target: (new Date()).valueOf()
+        };
+
+        $scope.showAddBuild = false;
+        $scope.newBuild = {
+            name: '',
+            built: (new Date()).valueOf()
         };
 
         $scope.addComponent = function() {
@@ -66,6 +82,14 @@ angular.module('slickApp')
         $scope.$watch('component.name', function() {
             $scope.component.code = $scope.component.name.toLowerCase().replace(/ /g, "-");
         });
+
+        $scope.toggleAddRelease = function() {
+            $scope.showAddRelease = ! $scope.showAddRelease;
+        };
+
+        $scope.toggleAddBuild = function() {
+            $scope.showAddBuild = ! $scope.showAddBuild;
+        }
 
         $scope.dialogButtonClicked = function(buttonName) {
             if(buttonName == "Add") {
@@ -82,6 +106,37 @@ angular.module('slickApp')
             $scope.addComponent();
         };
 
+        $scope.addReleaseDialogButtonClicked = function(buttonName) {
+            if(buttonName == 'Add') {
+                $scope.project.releases.push({id: (new ObjectId()).toString(),
+                    name: $scope.newRelease.name,
+                    target: $scope.newRelease.target,
+                    status: 'active'});
+                $scope.projectForm.$setDirty();
+                $scope.newRelease.name = '';
+                $scope.newRelease.target = (new Date()).valueOf();
+            }
+            $scope.toggleAddRelease();
+        };
+
+        $scope.addBuildDialogButtonClicked = function(buttonName) {
+            if(buttonName == 'Add') {
+                var selRelease = {};
+                _.each($scope.project.releases, function(release) {
+                    if(release.id == $scope.selectedRelease) {
+                        selRelease = release;
+                    }
+                });
+                selRelease.builds.push({id: (new ObjectId()).toString(),
+                                        name: $scope.newBuild.name,
+                                        built: $scope.newBuild.built});
+                $scope.projectForm.$setDirty();
+                $scope.newBuild.name = '';
+                $scope.newBuild.built = (new Date()).valueOf();
+            }
+            $scope.toggleAddBuild();
+        };
+
         rest.one('projects', $routeParams.name).get().then(function(project) {
             $cookieStore.put('slick-last-project-used', project.name);
             $scope.project = project;
@@ -89,6 +144,10 @@ angular.module('slickApp')
             if(project.releases && project.releases.length > 0) {
                 $scope.selectedRelease = project.releases[0].id;
             }
+            $scope.buildLists = {};
+            _.each(project.releases, function(release) {
+                $scope.buildLists[release.id] = {};
+            });
         });
 
         $scope.isSelectedRelease = function(releaseId) {
@@ -108,5 +167,26 @@ angular.module('slickApp')
                 $scope.project = project;
                 $scope.projectForm.$setPristine();
             });
-        }
+        };
+
+        $scope.revert = function() {
+            $scope.project.get().then(function(project) {
+                $scope.project = project;
+                $scope.projectForm.$setPristine();
+            });
+        };
+
+        $scope.setDefaultRelease = function(releaseid) {
+            $scope.project.defaultRelease = releaseid;
+            $scope.projectForm.$setDirty();
+        };
+
+        $scope.changeReleaseStatus = function(release) {
+            if(release.status == 'active') {
+                release.status = 'inactive';
+            } else {
+                release.status = 'active';
+            }
+            $scope.projectForm.$setDirty();
+        };
     }]);

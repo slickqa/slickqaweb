@@ -53,12 +53,12 @@
 
 .project-release-container {
   .flex-grow-off;
-  width: 35%;
+  width: 4in;
 }
 
 .project-build-container {
   .flex-grow-off;
-  width: 35%;
+  width: 4.25in;
   margin-left: .1in;
   position: relative;
 }
@@ -68,7 +68,7 @@
   width: 100%;
   .rounded-corners();
   border: 1px solid white;
-  padding: .05in;
+  //padding: .05in;
 }
 
 .project-build-list.ng-hide-remove {
@@ -86,7 +86,51 @@
   .fade(@c-header-top, @c-header-bottom, #ffffff);
 }
 
-.project-build-header {
-  .fade(@c-structural-top, @c-structural-bottom, @c-text);
-  padding: .05in;
+.build-list-header {
+  padding-left: .1in;
+  padding-bottom: .1in;
+  position: absolute;
+  margin-top: -.25in;
+}
+
+.releases-list-column-container {
+  .flex-container;
+}
+
+.releases-list-name-column {
+  .flex-grow-on;
+  padding-left: .1in;
+}
+
+.releases-list-target-column {
+  .flex-grow-off;
+  width: 1.5in;
+  padding-left: .1in;
+}
+
+.releases-list-select-column {
+  width: .2in;
+}
+
+.project-view-release-second-row {
+  margin-left: .3in;
+}
+
+.build-list-column-container {
+  .flex-container;
+}
+
+.build-list-name-column {
+  .flex-grow-on;
+  padding-left: .1in;
+}
+
+.build-list-built-column {
+  padding-left: .1in;
+  width: 1.5in;
+}
+
+.build-list-default-column {
+  padding-left: .1in;
+  width: 1in;
 }

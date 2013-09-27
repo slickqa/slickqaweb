@@ -14,3 +14,5 @@ directives/contenteditable.js
 directives/slick-dialog.js
 controllers/releases.js
 directives/date-picker.js
+project-management.js
+controllers/builds.js

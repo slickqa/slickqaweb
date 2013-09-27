@@ -12,6 +12,33 @@
         </div>
     </slick-dialog>
 
+    <slick-dialog size="small" show="showAddRelease" title="Add Release" buttons="Add|Cancel" button-callback="addReleaseDialogButtonClicked(buttonName)">
+        <div class="data-view">
+            <div class="data-view-item">
+                <div class="data-view-property-name">Name</div>
+                <div class="data-view-property-value"><input type="text" ng-model="newRelease.name" /></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">Target</div>
+                <div class="data-view-property-value"><slick-date-picker ng-model="newRelease.target">{{ newRelease.target |date:'MMM d, y' }}</slick-date-picker></div>
+            </div>
+        </div>
+    </slick-dialog>
+
+    <slick-dialog size="small" show="showAddBuild" title="Add Build" buttons="Add|Cancel" button-callback="addBuildDialogButtonClicked(buttonName)">
+        <div class="data-view">
+            <div class="data-view-item">
+                <div class="data-view-property-name">Name</div>
+                <div class="data-view-property-value"><input type="text" ng-model="newBuild.name" /></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">Built</div>
+                <div class="data-view-property-value"><slick-date-picker ng-model="newBuild.built">{{ newBuild.built |date:'MMM d, y' }}</slick-date-picker></div>
+            </div>
+        </div>
+    </slick-dialog>
+
+
     <form name="projectForm">
         <div class="data-view">
             <div class="data-view-item">
@@ -23,7 +50,7 @@
                 <div class="data-view-property-value" ng-bind="project.lastUpdated | date:'MMM d, y h:mm:ss a'"></div>
             </div>
             <div class="data-view-item">
-                <div class="data-view-property-name">Components</div>
+                <div class="data-view-property-name">Components<br /><span class="button" ng-click="addComponent()">Add</span></div>
                 <div class="data-view-property-value">
                     <div ng-repeat="component in project.components">
                         <span ng-model="component.name" contenteditable="true"></span>
@@ -31,27 +58,61 @@
                             (<span ng-model="component.code" contenteditable="true"></span>)
                         </span>
                     </div>
-                    <span class="button" ng-click="addComponent()">Add</span>
+
                 </div>
             </div>
             <div class="data-view-item">
-                <div class="data-view-property-name">Active Releases</div>
+                <div class="data-view-property-name">Releases<br /><span class="button" ng-click="toggleAddRelease()">Add</span></div>
                 <div class="data-view-property-value flex-container">
                     <div class="project-release-container">
-                        <div ng-repeat="release in project.releases |filter:{status:'!inactive'} |orderBy:'-target'" class="clickable" ng-class="isSelectedRelease(release.id)" ng-bind="release.name" ng-click="selectRelease(release.id)"></div>
+                        <slick-list-header model="releaseList" search="off" pagination="off">
+                            <slick-list-columns class="releases-list-column-container">
+                                <slick-list-column class="releases-list-select-column" sort-property-name="" sortable="false"> </slick-list-column>
+                                <slick-list-column class="releases-list-name-column" sort-property-name="name" sortable="false">Name</slick-list-column>
+                                <slick-list-column class="releases-list-target-column" sort-property-name="lastUpdated" sortable="false">Target</slick-list-column>
+                            </slick-list-columns>
+                        </slick-list-header>
+                        <div ng-repeat="release in project.releases |orderBy:'-target'" class="project-view-releases-row" ng-class="isSelectedRelease(release.id)">
+                            <div class="flex-container">
+                                <div class="releases-list-select-column clickable-text" ng-click="selectRelease(release.id)">-&gt;</div>
+                                <div class="releases-list-name-column clickable" ng-model="release.name" contenteditable></div>
+                                <slick-date-picker class="releases-list-target-column" form="projectForm" ng-model="release.target">{{ release.target |date:'MMM d, y' }}</slick-date-picker>
+                            </div>
+                            <div class="flex-container">
+                                <div class="releases-list-select-column"></div>
+                                <div class="releases-list-name-column clickable-text" ng-show="release.status=='active'" ng-click="setDefaultRelease(release.id)">
+                                    <input type="radio" ng-model="project.defaultRelease" value="{{ release.id }}" />
+                                    default release
+                                </div>
+                                <div class="releases-list-target-column">
+                                    <input type="checkbox" ng-model="release.status" ng-true-value="active" ng-false-value="inactive" />
+                                    <span class="clickable-text" ng-bind="release.status" ng-click="changeReleaseStatus(release)"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="project-build-container">
                         <div class="project-build-list" ng-repeat="release in project.releases" ng-show="release.id == selectedRelease">
-                            <div class="project-build-header">Builds for Release {{ release.name }}</div>
-                            <div ng-repeat="build in release.builds |orderBy:'-built' |limitTo:10" ng-bind="build.name"></div>
-                            <div ng-show="release.builds.length > 10">...</div>
+                            <slick-list-header model="buildLists[release.id]" search="off" pagination="on">
+                                <div class="build-list-header"><span class="button" ng-click="toggleAddBuild()">Add Build</span></div>
+                                <slick-list-columns class="build-list-column-container">
+                                    <slick-list-column class="build-list-name-column" sort-property-name="name" sortable="false">Name</slick-list-column>
+                                    <slick-list-column class="build-list-built-column" sort-property-name="lastUpdated" sortable="false">Built</slick-list-column>
+                                    <slick-list-column class="build-list-default-column" sort-property-name="" sortable="false">Default</slick-list-column>
+                                </slick-list-columns>
+                            </slick-list-header>
+                            <div class="build-list-column-container" ng-repeat="build in release.builds |orderBy:'-built' |slickListFilter:buildLists[release.id]">
+                                <div class="build-list-name-column clickable" ng-model="build.name" contenteditable></div>
+                                <slick-date-picker class="build-list-built-column" form="projectForm" ng-model="build.built">{{ build.built |date:'MMM d, y' }}</slick-date-picker>
+                                <div class="build-list-default-column"><input type="radio" ng-model="release.defaultBuild" value="{{ build.id }}" /></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="data-view-item data-view-item-save-button-row" ng-show="projectForm.$dirty">
                 <div class="data-view-property-name">&nbsp;</div>
-                <div class="data-view-save"><span class="button" ng-click="save()">Save</span></div>
+                <div class="data-view-save"><span class="button" ng-click="save()">Save</span> <span class="button" ng-click="revert()">Revert</span></div>
             </div>
         </div>
     </form>
