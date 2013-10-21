@@ -1,1 +1,60 @@
+.testcase-list-column-container {
+  .flex-container;
+}
 
+.testcase-list-name-column {
+  .flex-grow-off;
+  width: 50%;
+  padding-left: .1in;
+}
+
+.testcase-list-component-column {
+  .flex-grow-off;
+  width: 25%;
+  padding-left: .1in;
+}
+
+.testcase-list-tags-column {
+  width: 25%;
+  padding-left: .1in;
+}
+
+.testcase-list-row {
+  padding-top: .05in;
+  // border-bottom: 1px solid #FFFFFF;
+  padding-bottom: .05in;
+}
+
+.testcase-list-row.ng-enter {
+  .animated;
+  .animated.fadeInRightBig;
+}
+
+.testcase-list-row.ng-leave {
+  .animated;
+  .animated.fadeOutRightBig;
+}
+
+.testcase-list-row:nth-child(even) {
+  background: #222222;
+}
+
+.testcase-list-row:last-child {
+  border-bottom: none;
+}
+
+.testcase-list-testcase-purpose {
+  padding-left: .1in;
+}
+
+.testcase-query-box-row {
+  .flex-container;
+}
+
+.testcase-query-label {
+  width: 10%;
+}
+
+.testcase-query-form-element {
+  width: 40%;
+}

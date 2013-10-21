@@ -1,6 +1,35 @@
-<form name="SimpleForm">
-    <slick-tag-list model="model.tags" editable="yes"></slick-tag-list>
-    <br />
-    <span class="button" ng-show="SimpleForm.$dirty">Save</span>
-</form>
+<div class="slickview">
+    <div class="testcase-query-box">
+        <form name="testcaseQuery">
+            <div class="testcase-query-box-row">
+                <div class="testcase-query-label">Project: </div>
+                <div class="testcase-query-form-element"><select ng-model="project" ng-options="p.name for p in projects"></select></div>
+                <div class="testcase-query-label">Component: </div>
+                <div class="testcase-query-form-element"><select ng-model="component" ng-options="c.name for c in project.components"></select></div>
+            </div>
+            <div class="testcase-query-box-row">
+            </div>
+            <div class="testcase-query-box-row">
+            </div>
+        </form>
+    </div>
 
+    <slick-list-header model="testcaseList" search="on" pagination="on" default-sort="name">
+        <slick-list-columns class="testcase-list-column-container">
+            <slick-list-column class="testcase-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
+            <slick-list-column class="testcase-list-component-column" sort-property-name="lastUpdated" sortable="true">Component</slick-list-column>
+            <slick-list-column class="testcase-list-tags-column" sortable="false">Tags</slick-list-column>
+        </slick-list-columns>
+    </slick-list-header>
+
+    <div class="testcase-list-row-container">
+        <div ng-repeat="testcase in queryResult | slickListFilter:testcaseList" class="testcase-list-row">
+            <div class="testcase-list-column-container">
+                <div class="testcase-list-name-column"><a href="testcases/{{ testcase.id }}" ng-bind="testcase.name"></a></div>
+                <div class="testcase-list-column-column" ng-bind="testcase.component.name"></div>
+                <div class="testcase-list-tags-column"><slick-tag-list editable="false" model="testcase.tags"></slick-tag-list></div>
+            </div>
+            <div class="testcase-list-testcase-purpose" ng-bind-html="testcase.purpose">Test Purpose</div>
+        </div>
+    </div>
+</div>
