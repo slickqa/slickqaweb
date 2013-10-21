@@ -50,6 +50,10 @@
                 <div class="data-view-property-value" ng-bind="project.lastUpdated | date:'MMM d, y h:mm:ss a'"></div>
             </div>
             <div class="data-view-item">
+                <div class="data-view-property-name">Tags</div>
+                <div class="data-view-property-value"><slick-tag-list model="project.tags" editable="yes"></slick-tag-list></div>
+            </div>
+            <div class="data-view-item">
                 <div class="data-view-property-name">Components<br /><span class="button" ng-click="addComponent()">Add</span></div>
                 <div class="data-view-property-value">
                     <div ng-repeat="component in project.components">

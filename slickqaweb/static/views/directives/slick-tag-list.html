@@ -1,0 +1,9 @@
+<div class="slick-tag-list">
+    <div class="slick-tag-add-button" ng-show="editable" ng-click="addTag()">+</div>
+    <div ng-repeat="tagName in model" class="slick-tag">
+        <div class="slick-tag-left-arrow"></div>
+        <div class="slick-tag-body" ng-show="editable" ng-model="model[$index]" contenteditable></div>
+        <div class="slick-tag-body" ng-hide="editable" ng-bind="tagName"></div>
+        <div class="slick-tag-rounded"><span class="clickable" ng-show="editable" ng-click="removeTag(tagName)">x</span></div>
+    </div>
+</div>

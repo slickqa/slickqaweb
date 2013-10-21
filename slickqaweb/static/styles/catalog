@@ -10,3 +10,5 @@ statusbar.less
 releases.less
 date-picker.less
 builds.less
+find-testcases.less
+slick-tag-list.less

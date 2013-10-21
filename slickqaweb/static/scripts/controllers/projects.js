@@ -140,6 +140,7 @@ angular.module('slickApp')
         rest.one('projects', $routeParams.name).get().then(function(project) {
             $cookieStore.put('slick-last-project-used', project.name);
             $scope.project = project;
+            window.project = project;
             nav.setTitle($scope.project.name);
             if(project.releases && project.releases.length > 0) {
                 $scope.selectedRelease = project.releases[0].id;

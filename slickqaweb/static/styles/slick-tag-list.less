@@ -1,0 +1,62 @@
+
+.slick-tag {
+  height: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  color: white;
+  font-size: 12px;
+  margin-right: .1in;
+}
+
+.slick-tag.ng-leave {
+  .animated.short;
+  .animated.fadeOut;
+}
+
+.slick-tag-left-arrow {
+  width:0;
+  height:0;
+  border-right: 20px solid @c-header-top;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+.slick-tag-body {
+  padding-top: 2px;
+  background-color: @c-header-top;
+  padding-right: 6px;
+}
+
+.slick-tag-rounded {
+  height:18px;
+  padding-right: 6px;
+  .rounded-right-corners(20px);
+  background-color: @c-header-top;
+  .clickable-text;
+  padding-top: 2px;
+  min-width: 7px
+}
+
+.slick-tag-list {
+  .flex-container;
+}
+
+.slick-tag-add-button {
+  background-color: @c-header-top;
+  .clickable-text;
+  .rounded-corners(20px);
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  margin-right: .1in;
+  color: white;
+}
+
+.slick-tag-add-button:hover {
+  .glow;
+}

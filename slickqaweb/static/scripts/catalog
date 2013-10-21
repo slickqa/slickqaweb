@@ -16,3 +16,5 @@ controllers/releases.js
 directives/date-picker.js
 project-management.js
 controllers/builds.js
+controllers/find-testcases.js
+directives/slick-tag-list.js
