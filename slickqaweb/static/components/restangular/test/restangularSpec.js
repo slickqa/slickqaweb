@@ -18,11 +18,10 @@ describe("Restangular", function() {
     return _.omit(item, "route", "parentResource", "getList", "get", "post", "put", "remove", "head", "trace", "options", "patch",
       "$then", "$resolved", "restangularCollection", "customOperation", "customGET", "customPOST",
       "customPUT", "customDELETE", "customGETLIST", "$getList", "$resolved", "restangularCollection", "one", "all","doGET", "doPOST",
-      "doPUT", "doDELETE", "doGETLIST", "addRestangularMethod", "getRestangularUrl");
+      "doPUT", "doDELETE", "doGETLIST", "addRestangularMethod", "getRestangularUrl", "several");
   };
 
   // Load required modules
-  beforeEach(angular.mock.module("ngResource"));
   beforeEach(angular.mock.module("restangular"));
 
   // Init HTTP mock backend and Restangular resources
@@ -45,10 +44,11 @@ describe("Restangular", function() {
     $httpBackend.when("OPTIONS", "/accounts").respond();
 
     $httpBackend.whenGET("/accounts").respond(accountsModel);
+    $httpBackend.whenGET("/accounts/0,1").respond(accountsModel);
     $httpBackend.whenGET("/accounts/messages").respond(messages);
     $httpBackend.whenGET("/accounts/1/message").respond(messages[0]);
     $httpBackend.whenGET("/accounts/1/messages").respond(messages);
-    $httpBackend.whenGET("/accounts/0").respond(accountsModel[1]);
+    $httpBackend.whenGET("/accounts/0").respond(accountsModel[0]);
     $httpBackend.whenGET("/accounts/1").respond(accountsModel[1]);
     $httpBackend.whenGET("/accounts/1/transactions").respond(accountsModel[1].transactions);
     $httpBackend.whenGET("/accounts/1/transactions/1").respond(accountsModel[1].transactions[1]);
@@ -91,6 +91,23 @@ describe("Restangular", function() {
     it("getList() should return an array of items", function() {
       restangularAccounts.getList().then(function(accounts) {
         expect(sanitizeRestangularAll(accounts)).toEqual(sanitizeRestangularAll(accountsModel));
+      });
+
+      $httpBackend.flush();
+    });
+
+    it("several getList() should return an array of items", function() {
+      $httpBackend.expectGET('/accounts/0,1');
+      Restangular.several("accounts", 0, 1).getList().then(function(accounts) {
+        expect(sanitizeRestangularAll(accounts)).toEqual(sanitizeRestangularAll(accountsModel));
+      });
+
+      $httpBackend.flush();
+    });
+
+    it("get(id) should return the item with given id", function() {
+      restangularAccounts.get(0).then(function(account) {
+        expect(sanitizeRestangularOne(account)).toEqual(sanitizeRestangularOne(accountsModel[0]));
       });
 
       $httpBackend.flush();
@@ -388,6 +405,40 @@ describe("Restangular", function() {
       Restangular.setDefaultHeaders(defaultHeaders);
       
       expect(Restangular.defaultHeaders).toEqual(defaultHeaders);
+    });
+  });
+  
+  describe("defaultRequestParams", function() {
+    it("should return defaultRequestParams", function() {
+      var defaultRequestParams = {param:'value'};
+      
+      Restangular.setDefaultRequestParams(defaultRequestParams);
+      
+      expect(Restangular.requestParams.common).toEqual(defaultRequestParams);
+    });
+    
+    it("should be able to set default params for get, post, put.. methods separately", function() {
+      var postParams = {post:'value'},
+          putParams = {put:'value'};
+      
+      Restangular.setDefaultRequestParams('post', postParams);
+      expect(Restangular.requestParams.post).toEqual(postParams);
+      
+      Restangular.setDefaultRequestParams('put', putParams);
+      expect(Restangular.requestParams.put).toEqual(putParams);
+      
+      expect(Restangular.requestParams.common).not.toEqual(putParams);
+    });
+    
+    it("should be able to set default params for multiple methods with array", function() {
+      var defaultParams = {param:'value'};
+      
+      Restangular.setDefaultRequestParams(['post', 'put'], defaultParams);
+      
+      expect(Restangular.requestParams.post).toEqual(defaultParams);
+      expect(Restangular.requestParams.put).toEqual(defaultParams);
+      
+      expect(Restangular.requestParams.common).not.toEqual(defaultParams);
     });
   });
 });
