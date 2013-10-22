@@ -21,6 +21,6 @@ class Testrun(Document):
     release = EmbeddedDocumentField(ReleaseReference)
     build = EmbeddedDocumentField(BuildReference)
     # TODO need to add: summary = EmbeddedDocumentField(TestRunSummary)
-    # TODO decide how to represent RunStatus enum: state = RunStatus
+    state = StringField()
 
 
