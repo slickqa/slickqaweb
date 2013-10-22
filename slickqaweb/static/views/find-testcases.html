@@ -1,20 +1,42 @@
-<div class="slickview">
-    <div class="testcase-query-box">
-        <form name="testcaseQuery">
-            <div class="testcase-query-box-row">
-                <div class="testcase-query-label">Project: </div>
-                <div class="testcase-query-form-element"><select ng-model="project" ng-options="p.name for p in projects"></select></div>
-                <div class="testcase-query-label">Component: </div>
-                <div class="testcase-query-form-element"><select ng-model="component" ng-options="c.name for c in project.components"></select></div>
+<div class="slickview" xmlns="http://www.w3.org/1999/html">
+    <form name="testcaseQuery">
+            <div class="testcase-query-box">
+                <div class="testcase-query-box-row">
+                    <div class="testcase-query-form-select">
+                        <input type="radio" ng-model="mode" value="form">
+                    </div>
+                    <div class="testcase-query-form-body">
+                        <div class="testcase-query-box-row">
+                            <div class="testcase-query-label">Project: </div>
+                            <div class="testcase-query-form-element"><select ng-disabled="mode!='form'" ng-model="project" ng-options="p.name for p in projects"></select></div>
+                            <div class="testcase-query-label">Component: </div>
+                            <div class="testcase-query-form-element"><select ng-disabled="mode!='form'" ng-model="component" ng-options="c.name for c in project.components"></select></div>
+                        </div>
+                        <div class="testcase-query-box-row">
+                            <div class="testcase-query-label">Name: </div>
+                            <div class="testcase-query-form-element"><input ng-disabled="mode!='form'" type="text" ng-model="queryForm.name"></div>
+                        </div>
+                        <div class="testcase-query-box-row">
+                        </div>
+                    </div>
+                </div>
+                <div class="testcase-query-box-row">
+                    <div class="testcase-query-form-select">
+                        <input type="radio" ng-model="mode" value="query">
+                    </div>
+                    <div class=testcase-query-form-body>
+                        <div class="testcase-query-box-row">
+                            <div class="testcase-query-label">Query: </div>
+                            <div class="testcase-query-box-query" ng-show="mode=='form'" ng-bind="query"></div>
+                            <div class="testcase-query-box-query clickable" ng-hide="mode=='form'" ng-model="query" contenteditable></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="testcase-query-box-row">
-            </div>
-            <div class="testcase-query-box-row">
-            </div>
-        </form>
-    </div>
+    </form>
+    <div class="testcase-query-execute" ng-show="testcaseQuery.$dirty"><span class="button" ng-click="executeQuery()">Execute Query</span></div>
 
-    <slick-list-header model="testcaseList" search="on" pagination="on" default-sort="name">
+    <slick-list-header model="testcaseList" search="off" pagination="on" default-sort="name">
         <slick-list-columns class="testcase-list-column-container">
             <slick-list-column class="testcase-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
             <slick-list-column class="testcase-list-component-column" sort-property-name="lastUpdated" sortable="true">Component</slick-list-column>

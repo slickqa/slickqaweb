@@ -15,7 +15,8 @@ angular.module('slickApp')
             })
         nav.addLink('Test Management', 'Find Testcases', 'find-testcases');
     }])
-    .controller('FindTestcasesCtrl', ['$scope', 'NameBasedRestangular', 'Restangular', 'NavigationService', '$routeParams', function ($scope, projrest, rest, nav, $routeParams) {
+    .controller('FindTestcasesCtrl', ['$scope', 'NameBasedRestangular', 'Restangular', 'NavigationService', '$routeParams', '$location', function ($scope, projrest, rest, nav, $routeParams, $location) {
+        nav.setTitle("Find Testcases");
         // --------------------  required variables initialization ----------------------
         $scope.testcaseList = {};
 
@@ -91,6 +92,9 @@ angular.module('slickApp')
             if ($scope.queryForm.component) {
                 parts.push("eq(component.id,\"" + $scope.queryForm.component + "\")");
             }
+            if ($scope.queryForm.name) {
+                parts.push("icontains(name,\"" + $scope.queryForm.name + "\")");
+            }
             if(parts.length == 1) {
                 $scope.query = parts[0];
             } else if(parts.length > 1) {
@@ -105,6 +109,54 @@ angular.module('slickApp')
                 $scope.queryResult = testcases;
             });
         }
+
+        $scope.executeQuery = function() {
+            if($scope.mode == "form") {
+                $location.search('mode', $scope.mode);
+                _.each(["project", "component", "name"], function(part) {
+                    if($scope.queryForm[part]) {
+                        $location.search(part, $scope.queryForm[part]);
+                    } else {
+                        $location.search(part, null);
+                    }
+                });
+            } else {
+                $location.search('mode', $scope.mode);
+                // wipe out current search parameters
+                _.each(["project", "component", "name"], function(part) {
+                    $location.search(part, null);
+                });
+                $location.search('query', $scope.query);
+            }
+        };
+
+        // ------------------- watches ------------------------
+        $scope.$watch('project', function() {
+            if($scope.project.id) {
+                $scope.queryForm.project = $scope.project.id;
+            }
+            $scope.generateQuery();
+        });
+
+        $scope.$watch('component', function() {
+            if($scope.component.id) {
+                $scope.queryForm.component = $scope.component.id;
+            }
+            $scope.generateQuery();
+        });
+
+        $scope.$watch('queryForm.name', function() {
+            $scope.generateQuery();
+        });
+
+        $scope.$watch('queryForm.tags', function() {
+            $scope.generateQuery();
+        });
+
+        $scope.$watch('queryForm.purpose', function() {
+            $scope.generateQuery();
+        });
+
 
     }]);
 
