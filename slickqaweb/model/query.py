@@ -60,11 +60,18 @@ boolean_value = pyparsing.oneOf(['True', 'False', 'true', 'false']).addParseActi
 
 simple_value = (quoted_string | float_value | integer_value | boolean_value)
 
-list_value = open_paren + simple_value + pyparsing.ZeroOrMore(pyparsing.Suppress(',') + simple_value) + close_paren
+def parseList(s,l,t):
+    print repr(t[0][:])
+    return t[0][:]
+list_value = pyparsing.Group(open_paren + simple_value + pyparsing.ZeroOrMore(pyparsing.Suppress(',') + simple_value) + close_paren).setParseAction(parseList)
+
+
 
 def simpleQuery(s,l,t):
     if t[0][0] == 'eq':
         return Q(**{t[0][1]: t[0][2]})
+    elif t[0][0] == 'in' or t[0][0] == 'nin' or t[0][0] == 'all':
+        return Q(**{t[0][1] + '__' + t[0][0] : t[0][2:]})
     else:
         return Q(**{t[0][1] + '__' + t[0][0] : t[0][2]})
 
