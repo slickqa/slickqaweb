@@ -95,6 +95,13 @@ angular.module('slickApp')
             if ($scope.queryForm.name) {
                 parts.push("icontains(name,\"" + $scope.queryForm.name + "\")");
             }
+            if ($scope.queryForm.tags) {
+                var taglist = [];
+                _.each($scope.queryForm.tags.splig(","), function(tag) {
+                    taglist.push(tag.trim())
+                });
+                parts.push("in(tags,(\"" + taglist.join("\",\"") + "\"))");
+            }
             if(parts.length == 1) {
                 $scope.query = parts[0];
             } else if(parts.length > 1) {
@@ -113,7 +120,7 @@ angular.module('slickApp')
         $scope.executeQuery = function() {
             if($scope.mode == "form") {
                 $location.search('mode', $scope.mode);
-                _.each(["project", "component", "name"], function(part) {
+                _.each(["project", "component", "name", "tags"], function(part) {
                     if($scope.queryForm[part]) {
                         $location.search(part, $scope.queryForm[part]);
                     } else {
@@ -123,7 +130,7 @@ angular.module('slickApp')
             } else {
                 $location.search('mode', $scope.mode);
                 // wipe out current search parameters
-                _.each(["project", "component", "name"], function(part) {
+                _.each(["project", "component", "name", "tags"], function(part) {
                     $location.search(part, null);
                 });
                 $location.search('query', $scope.query);

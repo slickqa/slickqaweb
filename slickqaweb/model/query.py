@@ -61,7 +61,6 @@ boolean_value = pyparsing.oneOf(['True', 'False', 'true', 'false']).addParseActi
 simple_value = (quoted_string | float_value | integer_value | boolean_value)
 
 def parseList(s,l,t):
-    print repr(t[0][:])
     return t[0][:]
 list_value = pyparsing.Group(open_paren + simple_value + pyparsing.ZeroOrMore(pyparsing.Suppress(',') + simple_value) + close_paren).setParseAction(parseList)
 

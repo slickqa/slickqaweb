@@ -15,6 +15,8 @@
                         <div class="testcase-query-box-row">
                             <div class="testcase-query-label">Name: </div>
                             <div class="testcase-query-form-element"><input ng-disabled="mode!='form'" type="text" ng-model="queryForm.name"></div>
+                            <div class="testcase-query-label">Tags: </div>
+                            <div class="testcase-query-form-element"><input ng-disabled="mode!='form'" type="text" ng-model="queryForm.tags"></div>
                         </div>
                         <div class="testcase-query-box-row">
                         </div>
@@ -48,7 +50,7 @@
         <div ng-repeat="testcase in queryResult | slickListFilter:testcaseList" class="testcase-list-row">
             <div class="testcase-list-column-container">
                 <div class="testcase-list-name-column"><a href="testcases/{{ testcase.id }}" ng-bind="testcase.name"></a></div>
-                <div class="testcase-list-column-column" ng-bind="testcase.component.name"></div>
+                <div class="testcase-list-component-column" ng-bind="testcase.component.name"></div>
                 <div class="testcase-list-tags-column"><slick-tag-list editable="false" model="testcase.tags"></slick-tag-list></div>
             </div>
             <div class="testcase-list-testcase-purpose" ng-bind-html="testcase.purpose">Test Purpose</div>
