@@ -22,8 +22,8 @@ def add_testplan():
     new_tp = deserialize_that(request.get_json(), TestPlan())
     if (new_tp.createdBy is None or new_tp.createdBy == "") and g.user is not None:
         new_tp.createdBy = g.user.full_name
-    new_tc.save()
-    return JsonResponse(new_tc)
+    new_tp.save()
+    return JsonResponse(new_tp)
 
 @app.route('/api/testplans/<testplan_id>', methods=["PUT"])
 def update_testplan(testplan_id):
