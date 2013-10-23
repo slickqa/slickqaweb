@@ -1,7 +1,7 @@
 __author__ = 'Jared Jorgensen'
 
 from slickqaweb.app import app
-from slickqaweb.model.TestrunGroup import TestrunGroup
+from slickqaweb.model.testrunGroup import TestrunGroup
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import buildQueryFromRequest
 from flask import request, g

@@ -7,5 +7,5 @@ class TestrunGroup(Document):
 
     name = StringField()
     created = DateTimeField()
-    testruns = ListField(EmbeddedDocumentField(Testrun))
+    testruns = ListField(ReferenceField(Testrun))
   

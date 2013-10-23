@@ -10,7 +10,7 @@ from .step import Step
 
 
 class Testrun(Document):
-    testplanId = ObjectId
+    testplanId = ObjectIdField()
     name = StringField()
     config = EmbeddedDocumentField(ConfigurationReference)
     runtimeOptions = EmbeddedDocumentField(ConfigurationReference)
