@@ -10,7 +10,7 @@ angular.module("slickApp")
             restrict: 'E',
             transclude: true,
             replace: true,
-            templateUrl: "static/views/directives/slick-dialog.html",
+            templateUrl: "static/resources/shared/slick-dialog/slick-dialog.html",
             scope: {
                 show: "=",
                 title: "@",

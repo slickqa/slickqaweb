@@ -12,7 +12,7 @@ angular.module("slickApp")
             require: ['^?form'],
             transclude: false,
             replace: true,
-            templateUrl: "static/views/directives/slick-tag-list.html",
+            templateUrl: "static/resources/shared/slit-tag-list/slick-tag-list.html",
             scope: {
                 model: "="
             },

@@ -10,7 +10,7 @@ angular.module('slickApp')
     .config(['$routeProvider', 'NavigationServiceProvider', function ($routeProvider, nav) {
         $routeProvider
             .when('/find-testcases', {
-                templateUrl: 'static/views/find-testcases.html',
+                templateUrl: 'static/resources/pages/find-testcases/find-testcases.html',
                 controller: 'FindTestcasesCtrl'
             })
         nav.addLink('Test Management', 'Find Testcases', 'find-testcases');

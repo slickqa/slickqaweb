@@ -14,11 +14,11 @@ angular.module('slickApp')
     .config(['$routeProvider', 'NavigationServiceProvider', function ($routeProvider, nav) {
         $routeProvider
             .when('/unittests/javascript', {
-                templateUrl: 'static/views/unittests-javascript.html',
+                templateUrl: 'static/resources/pages/unittest/unittests-javascript.html',
                 controller: 'UnitTestsJavascriptCtrl'
             })
             .when('/unittests/python', {
-                templateUrl: 'static/views/unittests-python.html',
+                templateUrl: 'static/resources/pages/unittest/unittests-python.html',
                 controller: 'UnitTestsPythonCtrl'
             });
         nav.addSection('Slick Testing', false, 'slick-testing.png');

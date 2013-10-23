@@ -10,7 +10,7 @@ angular.module("slickApp")
             restrict: 'E',
             transclude: true,
             replace: true,
-            templateUrl: "static/views/directives/slick-list-header.html",
+            templateUrl: "static/resources/shared/slick-list/slick-list-header.html",
             scope: {
                 model: "=",
                 search: "@",

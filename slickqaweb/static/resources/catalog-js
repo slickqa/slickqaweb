@@ -1,0 +1,17 @@
+shared/app.js
+shared/services/slick-navigation.js
+shared/services/project.js
+shared/services/current-user.js
+shared/slick-list/slick-list.js
+shared/contenteditable/contenteditable.js
+shared/slick-dialog/slick-dialog.js
+shared/date-picker/date-picker.js
+shared/slick-tag-list/slick-tag-list.js
+shared/main/header.js
+shared/main/main.js
+shared/main/navigationpane.js
+shared/main/parent.js
+shared/main/login.js
+pages/not-found/not-found.js
+pages/project/projects.js
+pages/find-testcases/find-testcases.js
