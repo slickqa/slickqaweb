@@ -22,5 +22,6 @@ class Testrun(Document):
     build = EmbeddedDocumentField(BuildReference)
     # TODO need to add: summary = EmbeddedDocumentField(TestRunSummary)
     state = StringField()
+    meta = {'collection': 'testruns'}
 
 

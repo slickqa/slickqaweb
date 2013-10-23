@@ -10,3 +10,4 @@ class TestPlan(Document):
     sharedWith = ListField(StringField())
     isprivate = BooleanField()
     #queries = ListField()
+    meta = {'collection': 'testplans'}

@@ -8,4 +8,4 @@ class TestrunGroup(Document):
     name = StringField()
     created = DateTimeField()
     testruns = ListField(ReferenceField(Testrun))
-  
+    meta = {'collection': 'testrungroups'}
