@@ -83,7 +83,7 @@ def get_releases_for_project(project_id):
     return JsonResponse(project.releases)
 
 @app.route('/api/projects/<project_id>/releases', methods=["POST"])
-def get_releases_for_project(project_id):
+def add_release_for_project(project_id):
     project = get_project(project_id)
     return JsonResponse(project.releases)
 
