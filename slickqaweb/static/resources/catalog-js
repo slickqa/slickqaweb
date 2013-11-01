@@ -15,3 +15,4 @@ shared/main/login.js
 pages/not-found/not-found.js
 pages/project/projects.js
 pages/find-testcases/find-testcases.js
+pages/testcase/testcases.js
