@@ -85,6 +85,12 @@ def get_releases_for_project(project_id):
 @app.route('/api/projects/<project_id>/releases', methods=["POST"])
 def add_release_for_project(project_id):
     project = get_project(project_id)
+    assert isinstance(project, Project)
+    rel = deserialize_that(request.get_json(), Release())
+    if not hasattr(rel, 'id') or rel.id is None:
+        rel.id = ObjectId()
+    project.releases.append(rel)
+    project.save()
     return JsonResponse(project.releases)
 
 @app.route('/api/projects/<project_id>/releases/default')
