@@ -2,14 +2,36 @@
   padding-left: 15;
 }
 
-.step-row {
-  background: @c-nav-background;
+.testcase-step-label {
+  font-weight: bolder;
 }
 
-.step-label {
-  font-weight: bolder;
+.testcase-step-row .testcase-step-label {
+  color: white;
 }
 
 .add-step-input-box {
   width: 90%;
+}
+
+.testcase-step {
+  margin-bottom: .15in;
+  .flex-container;
+}
+
+.testcase-step:last-child {
+  margin-bottom: 0;
+}
+
+.testcase-step-number {
+  color: white;
+  font-size: .5in;
+  font-weight: bolder;
+  vertical-align: top;
+  padding-right: .1in;
+}
+
+.testcase-step-content {
+  .flex-grow-on;
+  padding-top: .15in;
 }
