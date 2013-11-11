@@ -6,4 +6,4 @@ class ResultReference(EmbeddedDocument):
     resultId = ObjectIdField()
     status = StringField()
     recorded = DateTimeField()
-    build = EmbeddedDocumentField(BuildReference())
+    build = EmbeddedDocumentField(BuildReference)
