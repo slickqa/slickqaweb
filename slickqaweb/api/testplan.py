@@ -8,9 +8,15 @@ from flask import request, g
 from .standardResponses import JsonResponse
 
 # TODO: add error handling. Not sure how to handle that yet.
-@app.route('/api/testplan')
+@app.route('/api/testplans')
 def get_testplans():
-    return JsonResponse(TestPlan.objects(buildQueryFromRequest()))
+    # for backwards compatibility
+    args = request.args
+    if args.has_key('projectid'):
+        args = dict(args)
+        args['project.id'] = request.args['projectid']
+        del args['projectid']
+    return JsonResponse(TestPlan.objects(buildQueryFromRequest(args)))
 
 @app.route('/api/testplans/<testplan_id>')
 def get_testplan_by_id(testplan_id):

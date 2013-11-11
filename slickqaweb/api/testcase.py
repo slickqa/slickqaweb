@@ -10,7 +10,12 @@ from .standardResponses import JsonResponse
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/testcases')
 def get_testcases():
-    return JsonResponse(Testcase.objects(buildQueryFromRequest()))
+    args = request.args
+    if args.has_key('projectid'):
+        args = dict(args)
+        args['project.id'] = request.args['projectid']
+        del args['projectid']
+    return JsonResponse(Testcase.objects(buildQueryFromRequest(args)))
 
 @app.route('/api/testcases/<testcase_id>')
 def get_testcase_by_id(testcase_id):
