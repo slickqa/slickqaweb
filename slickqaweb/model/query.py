@@ -120,12 +120,14 @@ query = operation
 def getMongoengineQueryFromString(query_string):
     return query.parseString(query_string)[0]
 
-def buildQueryFromRequest():
-    if request.args.has_key('q'):
-        return getMongoengineQueryFromString(request.args.get('q'))
+def buildQueryFromRequest(args=None):
+    if args is None:
+        args = request.args
+    if args.has_key('q'):
+        return getMongoengineQueryFromString(args.get('q'))
     else:
         query = None
-        for key,value in request.args.iteritems():
+        for key,value in args.iteritems():
             param = key.replace('.', '__')
             if query is not None:
                 query = query & Q(**{param: value})
