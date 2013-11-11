@@ -6,3 +6,4 @@ class Configuration(Document):
     configurationType = StringField()
     filename = StringField()
     name = StringField()
+    meta = {'collection': 'configurations'}
