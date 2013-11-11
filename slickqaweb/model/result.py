@@ -34,3 +34,4 @@ class Result(Document):
     runlength = IntField()
     history = ListField(EmbeddedDocumentField(ResultReference))
     hostname = StringField()
+    meta = {'collection': 'results'}
