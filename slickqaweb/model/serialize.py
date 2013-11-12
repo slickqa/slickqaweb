@@ -18,7 +18,7 @@ def document_to_plain(doc):
         return retval
     if isinstance(doc, types.ListType):
         return [document_to_plain(item) for item in doc]
-    if isinstance(doc, (types.StringTypes, types.IntType, types.FloatType, types.FloatType, types.DictionaryType, types.NoneType)):
+    if isinstance(doc, (types.StringTypes, types.IntType, types.LongType, types.FloatType, types.FloatType, types.DictionaryType, types.NoneType)):
         return doc
     if isinstance(doc, datetime.datetime):
         return int((doc - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)

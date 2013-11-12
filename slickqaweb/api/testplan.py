@@ -13,7 +13,7 @@ def get_testplans():
     # for backwards compatibility
     args = request.args
     if args.has_key('projectid'):
-        args = dict(args)
+        args = args.to_dict()
         args['project.id'] = request.args['projectid']
         del args['projectid']
     return JsonResponse(TestPlan.objects(buildQueryFromRequest(args)))

@@ -26,4 +26,3 @@ class Testcase(Document):
     component = EmbeddedDocumentField(ComponentReference)
     deleted = BooleanField()
 
-
