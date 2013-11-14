@@ -4,6 +4,8 @@ from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
 from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.testcaseReference import TestcaseReference
+from slickqaweb.model.component import Component
+from slickqaweb.model.componentReference import ComponentReference
 
 def create_project_reference(proj):
     """Create a Project Reference from the project instance
@@ -39,4 +41,24 @@ def create_testcase_reference(testcase):
         retval.automationKey = testcase.automationKey
     if hasattr(testcase, 'automationTool') and testcase.automationTool is not None and testcase.automationTool != '':
         retval.automationTool = testcase.automationTool
+    return retval
+
+def create_component_reference(component):
+    """Create a Component Reference from a Component
+
+    This method is mostly for forwards compatibility since a component and it's reference are
+    identical except the component has a description field that is almost never filled in.
+
+    :param component: an instance of slickqaweb.model.component.Component
+    :return: an instance of slickqaweb.model.componentReference.ComponentReference
+    """
+    if component is None:
+        return None
+    assert isinstance(component, Component)
+    retval = ComponentReference()
+    retval.id = component.id
+    retval.name = component.name
+    if hasattr(component, 'code') and component.code is not None and component.code != '':
+        retval.code = component.code
+
     return retval

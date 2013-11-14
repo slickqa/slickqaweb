@@ -4,6 +4,9 @@ from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.testcaseReference import TestcaseReference
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
+from slickqaweb.model.componentReference import ComponentReference
+from slickqaweb.model.testrun import Testrun
+from slickqaweb.model.testrunReference import TestrunReference
 
 def find_testcase_by_reference(ref):
     """Find a testcase by using the data in the testcase reference
@@ -43,7 +46,7 @@ def find_project_by_reference(ref):
     Find a project either by id or name (found in reference)
 
     :param ref: A slickqaweb.model.projectReference.ProjectReference instance
-    :return: An instance of Project from the database if found, None otherwise
+    :return: An instance of Project from mongo if found, None otherwise
     """
     assert isinstance(ref, ProjectReference)
     project = None
@@ -52,3 +55,39 @@ def find_project_by_reference(ref):
     if project is None and hasattr(ref, 'name') and ref.name is not None and ref.name != '':
         project = Project.objects(name=ref.name)
     return project
+
+def find_testrun_by_reference(ref):
+    """Find a testrun using a testrun reference instance.
+
+    A testrun reference contains the name and the id, and those will be used to find
+    the testrun.
+
+    :param ref: a slickqaweb.model.testrunReference.TestrunReference instance
+    :return: An instance of Testrun from mongo if found, None otherwise
+    """
+    if ref is None:
+        return None
+    assert isinstance(ref, TestrunReference)
+    retval = None
+    if ref.testrunId is not None:
+        retval = Testrun.objects(id=ref.testrunId).first()
+    if retval is None and ref.name is not None and ref.name != '':
+        retval = Testrun.objects(name=ref.name).first()
+    return retval
+
+def find_component_by_reference(project, ref):
+    """Find a component in a project using a component reference.
+
+    :param project: An instance of slickqaweb.model.project.Project to search in for the component
+    :param ref: An instance of slickqaweb.model.componentReference.ComponentReference
+    :return: the component from the project on success, None on failure
+    """
+    if project is None or ref is None:
+        return None
+    assert isinstance(project, Project)
+    assert isinstance(ref, ComponentReference)
+    for component in project.components:
+        if ref.id == component.id or ref.name == component.name or ref.code == component.code:
+            return component
+    else:
+        return None
