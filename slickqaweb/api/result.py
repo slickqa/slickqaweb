@@ -129,7 +129,7 @@ def add_result():
     # and we do have a testrun, see if we can get it from there.  If we do have a name of a
     # project and we still haven't found the project, create it!
     if is_provided(new_result, 'project'):
-        project = find_project_by_reference(project)
+        project = find_project_by_reference(new_result.project)
         if project is None and testrun is not None and is_provided(testrun, 'project'):
             project = find_project_by_reference(testrun.project)
         if project is None and is_provided(new_result.project, 'name'):
@@ -205,7 +205,7 @@ def add_result():
     if release is not None:
         new_result.release = create_release_reference(release)
         if is_provided(new_result, 'build'):
-            build = find_build_by_reference(release, new_result.release)
+            build = find_build_by_reference(release, new_result.build)
         if build is None and testrun is not None and is_provided(testrun, 'build'):
             build = find_build_by_reference(release, testrun.build)
         if build is None and project is not None and is_provided(new_result, 'build') and is_provided(new_result.build, 'name'):
@@ -253,7 +253,7 @@ def add_result():
         testrun.save()
 
     if testrun is not None:
-        new_result.testrun = create_testcase_reference(testrun)
+        new_result.testrun = create_testrun_reference(testrun)
 
     new_result.save()
 

@@ -56,9 +56,9 @@ def find_project_by_reference(ref):
     assert isinstance(ref, ProjectReference)
     project = None
     if hasattr(ref, 'id') and ref.id is not None:
-        project = Project.objects(id=ref.id)
+        project = Project.objects(id=ref.id).first()
     if project is None and hasattr(ref, 'name') and ref.name is not None and ref.name != '':
-        project = Project.objects(name=ref.name)
+        project = Project.objects(name=ref.name).first()
     return project
 
 def find_testrun_by_reference(ref):
@@ -143,10 +143,10 @@ def find_configuration_by_reference(ref):
     assert isinstance(ref, ConfigurationReference)
     config = None
     if hasattr(ref, 'id') and ref.id is not None:
-        config = Configuration.objects(id=ref.id)
+        config = Configuration.objects(id=ref.id).first()
     if config is None and hasattr(ref, 'filename') and ref.filename is not None and ref.filename != '':
-        config = Configuration.objects(filename=ref.filename)
+        config = Configuration.objects(filename=ref.filename).first()
     if config is None and hasattr(ref, 'name') and ref.name is not None and ref.name != '':
-        config = Configuration.objects(name=ref.name)
+        config = Configuration.objects(name=ref.name).first()
     return config
 
