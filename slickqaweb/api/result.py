@@ -7,14 +7,16 @@ from slickqaweb.model.result import Result
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.resultReference import ResultReference
 from slickqaweb.model.logEntry import LogEntry
-from slickqaweb.model.dereference import find_testcase_by_reference, find_project_by_reference, find_testrun_by_reference, find_component_by_reference
-from slickqaweb.model.reference import create_project_reference, create_testcase_reference, create_component_reference
+from slickqaweb.model.dereference import find_testcase_by_reference, find_project_by_reference, find_testrun_by_reference, find_component_by_reference, find_release_by_reference, find_build_by_reference
+from slickqaweb.model.reference import create_project_reference, create_testcase_reference, create_component_reference, create_release_reference, create_build_reference
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
 from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.component import Component
+from slickqaweb.model.release import Release
+from slickqaweb.model.build import Build
 
-
+from bson import ObjectId
 import types
 import datetime
 from mongoengine import Q
@@ -152,6 +154,7 @@ def add_result():
             component = find_component_by_reference(project, new_result.component)
             if component is None:
                 component = Component()
+                component.id = ObjectId()
                 component.name = new_result.component.name
                 if is_provided(new_result.component, 'code'):
                     component.code = new_result.component.code
@@ -185,8 +188,33 @@ def add_result():
     new_result.testcase = create_testcase_reference(testcase)
 
     # dereference release and build if possible
+    if is_provided(new_result, 'release') and project is not None:
+        release = find_release_by_reference(project, new_result.release)
+    if release is None and testrun is not None and is_provided(testrun, 'release'):
+        release = find_release_by_reference(testrun.release, new_result.release)
+    if release is None and project is not None and is_provided(new_result, 'release') and is_provided(new_result.release, 'name'):
+        release = Release()
+        release.id = ObjectId()
+        release.name = new_result.release.name
+        project.releases.append(release)
+        project.save()
+    if release is not None:
+        new_result.release = create_release_reference(release)
+        if is_provided(new_result, 'build'):
+            build = find_build_by_reference(release, new_result.release)
+        if build is None and testrun is not None and is_provided(testrun, 'build'):
+            build = find_build_by_reference(release, testrun.build)
+        if build is None and project is not None and is_provided(new_result, 'build') and is_provided(new_result.build, 'name'):
+            build = Build()
+            build.id = ObjectId()
+            build.name = new_result.build.name
+            build.built = datetime.datetime.now()
+            release.builds.append(build)
+            project.save()
+        if build is not None:
+            new_result.build = create_build_reference(build)
 
-
+    # dereference configuration
 
 
 

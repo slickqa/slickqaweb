@@ -6,6 +6,10 @@ from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.testcaseReference import TestcaseReference
 from slickqaweb.model.component import Component
 from slickqaweb.model.componentReference import ComponentReference
+from slickqaweb.model.release import Release
+from slickqaweb.model.releaseReference import ReleaseReference
+from slickqaweb.model.build import Build
+from slickqaweb.model.buildReference import BuildReference
 
 def create_project_reference(proj):
     """Create a Project Reference from the project instance
@@ -62,3 +66,32 @@ def create_component_reference(component):
         retval.code = component.code
 
     return retval
+
+def create_release_reference(release):
+    """Create a ReleaseReference instance populated from the provided release
+
+    :param release: An instance of slickqaweb.model.release.Release
+    :return: an instance of slickqaweb.model.releaseReference.ReleaseReference
+    """
+    if release is None:
+        return None
+    assert isinstance(release, Release)
+    retval = ReleaseReference()
+    retval.releaseId = release.id
+    retval.name = release.name
+    return retval
+
+def create_build_reference(build):
+    """Create a BuildReference instance populated from the provided build
+
+    :param build: An instance of slickqaweb.model.release.Build
+    :return: an instance of slickqaweb.model.buildReference.BuildReference
+    """
+    if build is None:
+        return None
+    assert isinstance(build, Build)
+    retval = BuildReference()
+    retval.buildId = build.id
+    retval.name = build.name
+    return retval
+
