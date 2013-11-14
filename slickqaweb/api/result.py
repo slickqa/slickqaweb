@@ -179,7 +179,7 @@ def add_result():
         testcase.tags = ['created-from-result',]
         testcase.save()
 
-    # no matter what testcase should not be None at this point
+    # no matter what testcase should not be None at this point, but just in case I made a mistake
     if testcase is None:
         return Response('Somehow I was unable to find or create a testcase for this result.\n', status=400, mimetype="text/plain")
     new_result.testcase = create_testcase_reference(testcase)

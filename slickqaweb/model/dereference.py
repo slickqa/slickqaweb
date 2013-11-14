@@ -5,6 +5,7 @@ from slickqaweb.model.testcaseReference import TestcaseReference
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
 from slickqaweb.model.componentReference import ComponentReference
+from slickqaweb.model.releaseReference import ReleaseReference
 from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.testrunReference import TestrunReference
 
@@ -89,5 +90,23 @@ def find_component_by_reference(project, ref):
     for component in project.components:
         if ref.id == component.id or ref.name == component.name or ref.code == component.code:
             return component
+    else:
+        return None
+
+#
+def find_release_by_reference(project, ref):
+    """Find a release in a project using a release reference
+
+    :param project: An instance of slickqaweb.model.project.Project to search in for the release
+    :param ref: An instance of slickqaweb.model.releaseReference.ReleaseReference
+    :return: the release from the project on success, None on failure
+    """
+    if project is None or ref is None:
+        return None
+    assert isinstance(project, Project)
+    assert isinstance(ref, ReleaseReference)
+    for release in project.releases:
+        if ref.releaseId == release.id or ref.name == release.name:
+            return release
     else:
         return None
