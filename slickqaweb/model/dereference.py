@@ -10,6 +10,8 @@ from slickqaweb.model.buildReference import BuildReference
 from slickqaweb.model.release import Release
 from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.testrunReference import TestrunReference
+from slickqaweb.model.configuration import Configuration
+from slickqaweb.model.configurationReference import ConfigurationReference
 
 def find_testcase_by_reference(ref):
     """Find a testcase by using the data in the testcase reference
@@ -129,3 +131,22 @@ def find_build_by_reference(release, ref):
             return build
     else:
         return None
+
+def find_configuration_by_reference(ref):
+    """Find a configuration object by the information provided in the reference
+
+    Find a configuration either by id, filename,  or name (found in reference)
+
+    :param ref: A slickqaweb.model.configurationReference.ConfigurationReference instance
+    :return: An instance of Configuration from mongo if found, None otherwise
+    """
+    assert isinstance(ref, ConfigurationReference)
+    config = None
+    if hasattr(ref, 'id') and ref.id is not None:
+        config = Configuration.objects(id=ref.id)
+    if config is None and hasattr(ref, 'filename') and ref.filename is not None and ref.filename != '':
+        config = Configuration.objects(filename=ref.filename)
+    if config is None and hasattr(ref, 'name') and ref.name is not None and ref.name != '':
+        config = Configuration.objects(name=ref.name)
+    return config
+

@@ -7,14 +7,17 @@ from slickqaweb.model.result import Result
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.resultReference import ResultReference
 from slickqaweb.model.logEntry import LogEntry
-from slickqaweb.model.dereference import find_testcase_by_reference, find_project_by_reference, find_testrun_by_reference, find_component_by_reference, find_release_by_reference, find_build_by_reference
-from slickqaweb.model.reference import create_project_reference, create_testcase_reference, create_component_reference, create_release_reference, create_build_reference
+from slickqaweb.model.dereference import find_testcase_by_reference, find_project_by_reference, find_testrun_by_reference, find_component_by_reference, find_release_by_reference, find_build_by_reference, find_configuration_by_reference
+from slickqaweb.model.reference import create_project_reference, create_testcase_reference, create_component_reference, create_release_reference, create_build_reference, create_configuration_reference, create_testrun_reference
+from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
 from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.component import Component
 from slickqaweb.model.release import Release
 from slickqaweb.model.build import Build
+from slickqaweb.model.configuration import Configuration
+from slickqaweb.model.configurationReference import ConfigurationReference
 
 from bson import ObjectId
 import types
@@ -106,6 +109,7 @@ def add_result():
     release = None
     build = None
     component = None
+    configuration = None
 
     # the order in this section is important.  We try to find information any way we can,
     # so if it's not provided in the result, we look at the testrun, if it's not in the testrun,
@@ -215,11 +219,45 @@ def add_result():
             new_result.build = create_build_reference(build)
 
     # dereference configuration
+    if is_provided(new_result, 'config'):
+        configuration = find_configuration_by_reference(new_result.config)
+    if configuration is None and testrun is not None and is_provided(testrun, 'config'):
+        configuration = find_configuration_by_reference(testrun.config)
+    if configuration is None and is_provided(new_result, 'config') and is_provided(new_result.config, 'name'):
+        configuration = Configuration()
+        configuration.name = new_result.config.name
+        if is_provided(new_result.config, 'filename'):
+            configuration.filename = new_result.config.filename
+        configuration.save()
+    if configuration is not None:
+        new_result.config = create_configuration_reference(configuration)
 
+    # if there is no testrun, create one with the information provided
+    if testrun is None:
+        testrun = Testrun()
+        if is_provided(new_result, 'testrun') and is_provided(new_result.testrun, 'name'):
+            testrun.name = new_result.testrun.name
+        else:
+            testrun.name = 'Testrun starting %s' % str(datetime.datetime.now())
+        if project is not None:
+            testrun.project = create_project_reference(project)
+        if configuration is not None:
+            testrun.config = create_configuration_reference(configuration)
+        if release is not None:
+            testrun.release = create_release_reference(release)
+        if build is not None:
+            testrun.build = create_build_reference(build)
+        testrun.dateCreated = datetime.datetime.now()
+        testrun.runStarted = datetime.datetime.now()
+        testrun.state = 'RUNNING'
+        testrun.save()
 
-
+    if testrun is not None:
+        new_result.testrun = create_testcase_reference(testrun)
 
     new_result.save()
+
+
     return JsonResponse(new_result)
 
 @app.route('/api/results/<result_id>', methods=["PUT"])

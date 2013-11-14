@@ -10,6 +10,10 @@ from slickqaweb.model.release import Release
 from slickqaweb.model.releaseReference import ReleaseReference
 from slickqaweb.model.build import Build
 from slickqaweb.model.buildReference import BuildReference
+from slickqaweb.model.configuration import Configuration
+from slickqaweb.model.configurationReference import ConfigurationReference
+from slickqaweb.model.testrun import Testrun
+from slickqaweb.model.testrunReference import TestrunReference
 
 def create_project_reference(proj):
     """Create a Project Reference from the project instance
@@ -93,5 +97,38 @@ def create_build_reference(build):
     retval = BuildReference()
     retval.buildId = build.id
     retval.name = build.name
+    return retval
+
+def create_configuration_reference(config):
+    """Create a Configuration Reference from the Configuration instance
+
+    :param configuration: an instance of slickqaweb.model.configuration.Configuration
+    :return: an instance of slickqaweb.model.configurationReference.ConfigurationReference or None on error
+    """
+    if config is None:
+        return None
+    if not hasattr(config, 'id') or config.id is None:
+        return None
+    assert isinstance(config, Configuration)
+    retval = ConfigurationReference()
+    retval.configId = config.id
+    if hasattr(config, 'name') and config.name is not None and config.name != '':
+        retval.name = config.name
+    if hasattr(config, 'filename') and config.filename is not None and config.filename != '':
+        retval.filename = config.filename
+    return retval
+
+def create_testrun_reference(testrun):
+    """Create a TestrunReference instance populated from the provided testrun
+
+    :param testrun: An instance of slickqaweb.model.testrun.Testrun
+    :return: an instance of slickqaweb.model.testrunReference.TestrunReference
+    """
+    if testrun is None:
+        return None
+    assert isinstance(testrun, Testrun)
+    retval = TestrunReference()
+    retval.testrunId = testrun.id
+    retval.name = testrun.name
     return retval
 
