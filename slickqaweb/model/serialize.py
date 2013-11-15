@@ -4,7 +4,11 @@ import mongoengine
 import bson
 import datetime
 import types
+import inspect
 
+def serializable(func):
+    func.__serialize__ = True
+    return func
 
 def document_to_plain(doc):
     if isinstance(doc, mongoengine.QuerySet):
@@ -15,6 +19,9 @@ def document_to_plain(doc):
             value = getattr(doc, fieldname)
             if value is not None:
                 retval[fieldname] = document_to_plain(value)
+        for name, method in inspect.getmembers(doc, inspect.ismethod):
+                if hasattr(method, '__serialize__') and method.__serialize__:
+                    retval[name] = document_to_plain(getattr(doc, name)())
         return retval
     if isinstance(doc, types.ListType):
         return [document_to_plain(item) for item in doc]
