@@ -1,6 +1,7 @@
 __author__ = 'jcorbett'
 
 from mongoengine import *
+from .serialize import serializable
 
 class ResultsByStatus(EmbeddedDocument):
     PASS = IntField(default=0)
@@ -14,3 +15,19 @@ class ResultsByStatus(EmbeddedDocument):
 class TestrunSummary(EmbeddedDocument):
     totalTime = IntField(default=0)
     resultsByStatus = EmbeddedDocumentField(ResultsByStatus, default=ResultsByStatus())
+
+    @serializable
+    def statusListOrdered(self):
+        retval = []
+        for status in ["PASS", "FAIL", "BROKEN_TEST", "NOT_TESTED", "SKIPPED", "NO_RESULT"]:
+            if hasattr(self.resultsByStatus, status) and getattr(self.resultsByStatus, status) > 0:
+                retval.append(status)
+        return retval
+
+    @serializable
+    def Total(self):
+        retval = 0
+        for status in ["PASS", "FAIL", "BROKEN_TEST", "NOT_TESTED", "SKIPPED", "NO_RESULT"]:
+            if hasattr(self.resultsByStatus, status) and getattr(self.resultsByStatus, status) > 0:
+                retval += getattr(self.resultsByStatus, status)
+        return retval
