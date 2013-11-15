@@ -255,6 +255,9 @@ def add_result():
     if testrun is not None:
         new_result.testrun = create_testrun_reference(testrun)
 
+        status_name = "inc__summary__resultsByStatus__" + new_result.status
+        Testrun.objects(id=testrun.id).update_one(**{status_name: 1})
+
     new_result.save()
 
 
