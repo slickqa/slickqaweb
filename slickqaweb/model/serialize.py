@@ -51,7 +51,9 @@ def plain_to_document(plain, doctype):
             return plain_to_document(plain, doctype.document_type())
         if isinstance(doctype, mongoengine.DictField):
             return plain
-    if isinstance(plain, types.StringTypes):
+        if isinstance(doctype, mongoengine.ReferenceField):
+            return plain_to_document(plain, doctype.document_type())
+    if isinstance(plain, types.StringTypes) or isinstance(plain, types.UnicodeType):
         if isinstance(doctype, mongoengine.StringField):
             return plain
         if isinstance(doctype, mongoengine.ObjectIdField):
@@ -72,7 +74,7 @@ def plain_to_document(plain, doctype):
             return plain
     if isinstance(plain, types.NoneType):
         return plain
-    raise Exception("I don't know what to do with %s" % repr(plain))
+    raise Exception("I don't know what to do with %s and doctype %s" % (repr(plain), repr(doctype)))
 
 
 # Better names

@@ -266,7 +266,14 @@ def add_result():
 @app.route('/api/results/<result_id>', methods=["PUT"])
 def update_result(result_id):
     orig = Result.objects(id=result_id).first()
-    deserialize_that(request.get_json(), orig)
+    update = request.get_json()
+    if  'status' in update and update['status'] != orig.status:
+        atomic_update = {
+            'dec__summary__resultsByStatus__' + orig.status: 1,
+            'inc__summary__resultsByStatus__' + update['status']: 1
+        }
+        Testrun.objects(id=orig.testrun.testrunId).update_one(**atomic_update)
+    deserialize_that(update, orig)
     orig.save()
     return JsonResponse(orig)
 

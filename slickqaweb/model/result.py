@@ -25,7 +25,7 @@ class Result(Document):
     runstatus = StringField()
     reason = StringField()
     attributes = MapField(StringField())
-    files = ListField(ReferenceField(StoredFile))
+    files = ListField(ReferenceField(StoredFile, dbref=True))
     log = ListField(EmbeddedDocumentField(LogEntry))
     project = EmbeddedDocumentField(ProjectReference)
     component = EmbeddedDocumentField(ComponentReference)

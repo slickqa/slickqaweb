@@ -9,5 +9,5 @@ class LogEntry(EmbeddedDocument):
     message = StringField()
     exceptionClassName = StringField()
     exceptionMessage = StringField()
-    exceptionStackTrace = ListField()
+    exceptionStackTrace = ListField(StringField())
 
