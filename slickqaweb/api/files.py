@@ -1,7 +1,7 @@
 __author__ = 'jcorbett'
 
 from slickqaweb.app import app
-from flask import request
+from flask import request, Response
 from bson import ObjectId
 from slickqaweb.model.storedFile import StoredFile
 from slickqaweb.model.fileChunk import FileChunk
@@ -27,7 +27,7 @@ def create_stored_file():
     new_stored_file.save()
     return JsonResponse(new_stored_file)
 
-@app.route("/api/files/<file_id>/content")
+@app.route("/api/files/<file_id>/content", methods=["POST"])
 def set_file_content(file_id):
     stored_file = StoredFile.objects(id=ObjectId(file_id)).first()
     data = request.data
@@ -57,5 +57,16 @@ def add_chunk_to_file(file_id):
     stored_file.length += len(request.data)
     stored_file.save()
     return JsonResponse(stored_file)
+
+@app.route("/api/files/<file_id>/content/<filename>")
+def get_file_content(file_id, filename):
+    stored_file = StoredFile.objects(id=ObjectId(file_id)).first()
+    if stored_file is None:
+        return Response("File with id '{}' not found.", mimetype="text/plain", status=404)
+    def write_chunks():
+        for chunk in FileChunk.objects(files_id=stored_file.id).order_by('+n'):
+            yield chunk.data
+    return Response(write_chunks(), mimetype=stored_file.mimetype)
+
 
 
