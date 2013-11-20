@@ -1,6 +1,7 @@
 __author__ = 'jcorbett'
 
 from .standardResponses import JsonResponse
+from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.query import buildQueryFromRequest
 from slickqaweb.app import app
 from slickqaweb.model.result import Result
@@ -59,20 +60,6 @@ def get_result_by_id(result_id):
     return JsonResponse(Result.objects(id=result_id).first())
 
 
-def is_not_provided(obj, attr_name):
-    if not hasattr(obj, attr_name):
-        return True
-    if getattr(obj, attr_name) is None:
-        return True
-    if isinstance(getattr(obj, attr_name), types.StringTypes) and getattr(obj, attr_name) == '':
-        return True
-    return False
-
-
-def is_provided(obj, attr_name):
-    return not is_not_provided(obj, attr_name)
-
-
 @app.route('/api/results', methods=["POST"])
 def add_result():
     new_result = deserialize_that(request.get_json(), Result())
@@ -100,7 +87,7 @@ def add_result():
         else:
             new_result.runstatus = "FINISHED"
     if is_not_provided(new_result, 'recorded'):
-        new_result.recorded = datetime.datetime.now()
+        new_result.recorded = datetime.datetime.utcnow()
 
     # resolve references -----------------------------------------------------
     testrun = None
@@ -212,7 +199,7 @@ def add_result():
             build = Build()
             build.id = ObjectId()
             build.name = new_result.build.name
-            build.built = datetime.datetime.now()
+            build.built = datetime.datetime.utcnow()
             release.builds.append(build)
             project.save()
         if build is not None:
@@ -238,7 +225,7 @@ def add_result():
         if is_provided(new_result, 'testrun') and is_provided(new_result.testrun, 'name'):
             testrun.name = new_result.testrun.name
         else:
-            testrun.name = 'Testrun starting %s' % str(datetime.datetime.now())
+            testrun.name = 'Testrun starting %s' % str(datetime.datetime.utcnow())
         if project is not None:
             testrun.project = create_project_reference(project)
         if configuration is not None:
@@ -247,8 +234,8 @@ def add_result():
             testrun.release = create_release_reference(release)
         if build is not None:
             testrun.build = create_build_reference(build)
-        testrun.dateCreated = datetime.datetime.now()
-        testrun.runStarted = datetime.datetime.now()
+        testrun.dateCreated = datetime.datetime.utcnow()
+        testrun.runStarted = datetime.datetime.utcnow()
         testrun.state = 'RUNNING'
         testrun.save()
 
