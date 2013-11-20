@@ -9,7 +9,7 @@ from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.resultReference import ResultReference
 from slickqaweb.model.logEntry import LogEntry
 from slickqaweb.model.dereference import find_testcase_by_reference, find_project_by_reference, find_testrun_by_reference, find_component_by_reference, find_release_by_reference, find_build_by_reference, find_configuration_by_reference
-from slickqaweb.model.reference import create_project_reference, create_testcase_reference, create_component_reference, create_release_reference, create_build_reference, create_configuration_reference, create_testrun_reference
+from slickqaweb.model.reference import create_project_reference, create_testcase_reference, create_component_reference, create_release_reference, create_build_reference, create_configuration_reference, create_testrun_reference, create_result_reference
 from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
@@ -25,6 +25,72 @@ import types
 import datetime
 from mongoengine import Q
 from flask import request, Response
+
+def find_history(result):
+    assert isinstance(result, Result)
+    history = []
+    results_found = []
+
+    # other results with the same Test, Environment, Release
+    # other results with the same Test and Environment (different release)
+    # other results with the same Test and Release, but different Environment
+    # other results with the same Test, in order of when they were recorded
+    try:
+        for hresult in Result.objects(testcase__testcaseId=result.testcase.testcaseId,
+                                      config__configId=result.config.configId,
+                                      release__releaseId=result.release.releaseId,
+                                      recorded__lt=result.recorded).order_by('-recorded'):
+            if len(history) < 10:
+                history.append(create_result_reference(hresult))
+                results_found.append(hresult.id)
+            else:
+                break
+    except:
+        pass
+    if len(history) >= 10:
+        return history
+    try:
+        for hresult in Result.objects(testcase__testcaseId=result.testcase.testcaseId,
+                                      config__configId=result.config.configId,
+                                      id__nin=results_found,
+                                      recorded__lt=result.recorded).order_by('-recorded'):
+            if len(history) < 10:
+                history.append(create_result_reference(hresult))
+                results_found.append(hresult.id)
+            else:
+                break
+    except:
+        pass
+    if len(history) >= 10:
+        return history
+    try:
+        for hresult in Result.objects(testcase__testcaseId=result.testcase.testcaseId,
+                                      id__nin=results_found,
+                                      release__releaseId=result.release.releaseId,
+                                      recorded__lt=result.recorded).order_by('-recorded'):
+            if len(history) < 10:
+                history.append(create_result_reference(hresult))
+                results_found.append(hresult.id)
+            else:
+                break
+    except:
+        pass
+    if len(history) >= 10:
+        return history
+    try:
+        for hresult in Result.objects(testcase__testcaseId=result.testcase.testcaseId,
+                                      id__nin=results_found,
+                                      recorded__lt=result.recorded).order_by('-recorded'):
+            if len(history) < 10:
+                history.append(create_result_reference(hresult))
+            else:
+                break
+    except:
+        pass
+    return history
+
+
+
 
 
 @app.route('/api/results')
@@ -245,6 +311,7 @@ def add_result():
         status_name = "inc__summary__resultsByStatus__" + new_result.status
         Testrun.objects(id=testrun.id).update_one(**{status_name: 1})
 
+    new_result.history = find_history(new_result)
     new_result.save()
 
 

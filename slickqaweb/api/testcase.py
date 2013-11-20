@@ -12,7 +12,7 @@ from .standardResponses import JsonResponse
 def get_testcases():
     args = request.args
     if args.has_key('projectid'):
-        args = dict(args)
+        args = args.to_dict()
         args['project.id'] = request.args['projectid']
         del args['projectid']
     return JsonResponse(Testcase.objects(buildQueryFromRequest(args)))

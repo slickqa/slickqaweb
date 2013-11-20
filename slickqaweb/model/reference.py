@@ -14,6 +14,10 @@ from slickqaweb.model.configuration import Configuration
 from slickqaweb.model.configurationReference import ConfigurationReference
 from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.testrunReference import TestrunReference
+from slickqaweb.model.result import Result
+from slickqaweb.model.resultReference import ResultReference
+
+from slickqaweb.utils import is_provided
 
 def create_project_reference(proj):
     """Create a Project Reference from the project instance
@@ -132,3 +136,20 @@ def create_testrun_reference(testrun):
     retval.name = testrun.name
     return retval
 
+def create_result_reference(result):
+    """Create a ResultReference instance populated from the provided result
+
+    :param result: An instance of slickqaweb.model.result.Result
+    :return: an instance of slickqaweb.model.resultReference.ResultReference
+    """
+    if result is None:
+        return None
+    assert isinstance(result, Result)
+    retval = ResultReference()
+    retval.resultId = result.id
+    retval.status = result.status
+    if is_provided(result, 'recorded'):
+        retval.recorded = result.recorded
+    if is_provided(result, 'build'):
+        retval.build = result.build
+    return retval
