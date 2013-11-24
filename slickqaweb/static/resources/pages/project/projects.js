@@ -49,7 +49,7 @@ angular.module('slickApp')
 
         rest.all('projects').getList().then(function(projects) {
             $scope.projects = projects;
-            nav.setTitle("Slick Projects (" + projects.length + ")");
+            nav.setTitle("Slick Projects");
         });
         $scope.projectList = {}; // Model for the list header and filter
     }])

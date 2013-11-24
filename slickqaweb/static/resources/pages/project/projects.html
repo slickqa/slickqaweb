@@ -11,7 +11,9 @@
             </div>
         </div>
     </slick-dialog>
-    <span class="button" ng-click="addProject()">Add Project</span>
+    <div class="projects-add-button-container">
+        <span class="button" ng-click="addProject()">Add Project</span>
+    </div>
     <slick-list-header model="projectList" search="on" pagination="on" default-sort="name">
         <slick-list-columns class="projects-list-column-container">
             <slick-list-column class="projects-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
