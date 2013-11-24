@@ -103,7 +103,7 @@ Restangular.one('users').getList()	// GET: /users
 
 // Later in the code...
 
-// Retangular objects are self-aware and know how to make their own restful requests
+// Restangular objects are self-aware and know how to make their own restful requests
 $scope.user.getList('cars');	// GET: /users/123/cars
 
 // You can also use your own custom methods on Restangular objects
@@ -365,6 +365,7 @@ It must return an object with the following properties:
 * **headers**: The headers to send
 * **params**: The request parameters to send
 * **element**: The element to send
+* **httpConfig**: The httpConfig to call with
 
 #### setErrorInterceptor
 The errorInterceptor is called whenever there's an error. It's a function that receives the response as a parameter.
@@ -431,6 +432,14 @@ You can set this to either `true` or `false`. By default it's false. If set to t
 #### setEncodeIds
 
 You can set here if you want to URL Encode IDs or not. By default, it's true.
+
+### Accessing configuration
+
+You can also access the configuration via `RestangularProvider` and `Restangular` via the `configuration` property if you don't want to use the setters. Check it out:
+
+````js
+Restangular.configuration.requestSuffix = '/';
+````
 
 ### How to configure them globally
 
@@ -537,6 +546,7 @@ These are the methods that can be called on the Restangular object.
 * **restangularizeElement(parent, element, route)**: Restangularizes a new element
 * **restangularizeCollection(parent, element, route)**: Restangularizes a new collection
 
+
 ### Element methods
 * **get([queryParams, headers])**: Gets the element. Query params and headers are optionals
 * **getList(subElement, [queryParams, headers])**: Gets a nested resource. subElement is mandatory. **It's a string with the name of the nested resource (and URL)**. For example `buildings`
@@ -546,7 +556,7 @@ These are the methods that can be called on the Restangular object.
 * **head([queryParams, headers])**: Does a HEAD
 * **trace([queryParams, headers])**: Does a TRACE
 * **options([queryParams, headers])**: Does a OPTIONS
-* **patch([queryParams, headers])**: Does a PATCH
+* **patch(object, [queryParams, headers])**: Does a PATCH
 * **one(route, id)**: Used for RequestLess connections and URL Building. See section below.
 * **all(route)**: Used for RequestLess connections and URL Building. See section below.
 * **several(route, ids*)**: Used for RequestLess connections and URL Building. See section below.
@@ -555,6 +565,7 @@ These are the methods that can be called on the Restangular object.
 * **getRestangularUrl()**: Gets the URL of the current object.
 * **getParentList()**: Gets the parent list to which it belongs (if any)
 * **clone()**: Copies the element
+* **withHttpConfig(httpConfig)**: It lets you set a configuration for $http only for the next call. Check the Local Config HTTP section for an example.
 
 ### Collection methods
 * **getList([queryParams, headers]): Gets itself again (Remember this is a collection)**.
@@ -563,7 +574,7 @@ These are the methods that can be called on the Restangular object.
 * **head([queryParams, headers])**: Does a HEAD
 * **trace: ([queryParams, headers])**: Does a TRACE
 * **options: ([queryParams, headers])**: Does a OPTIONS
-* **patch([queryParams, headers])**: Does a PATCH
+* **patch(object, [queryParams, headers])**: Does a PATCH
 * **putElement(idx, params, headers)**: Puts the element on the required index and returns a promise of the updated new array
 * **getRestangularUrl()**: Gets the URL of the current object.
 * **one(route, id)**: Used for RequestLess connections and URL Building. See section below.
@@ -572,7 +583,7 @@ These are the methods that can be called on the Restangular object.
 * **oneUrl(route, url)**: This will create a new Restangular object that is just a pointer to one element with the specified URL.
 * **allUrl(route, url)**: This creates a Restangular object that is just a pointer to a list at the specified URL.
 * **clone()**: Copies the collection
-
+* **withHttpConfig(httpConfig)**: It lets you set a configuration for $http only for the next call. Check the Local Config HTTP section for an example.
 
 ### Custom methods
 * **customGET(path, [params, headers])**: Does a GET to the specific path. Optionally you can set params and headers.
@@ -694,6 +705,16 @@ Restangular.one("accounts", 123).one("buildings", 456).all("spaces").post({name:
 
 // DELETE /accounts/123/buildings/456
 Restangular.one("accounts", 123).one("buildings", 456).remove();
+````
+
+## Using local $http configuration
+
+There're sometimes when you want to set a specific configuration $http configuration just for one Restangular's call. For that, you can use `withHttpConfig`. You must call that method just before doing the HTTP request. Let's learn how to use it with the following example:
+
+````js
+Restangular.one('accounts', 123).withHttpConfig({timeout: 100}).getList('buildings');
+
+$scope.account.withHttpConfig({timeout: 100}).put();
 ````
 
 ## Creating new Restangular Methods
@@ -823,6 +844,19 @@ RestangularProvider.setDefaultHttpFields({cache: true});
 
 Yes, of course. Every method in Restangular returns a promise so this can be used without any problem.
 
+#### **How can I send a delete WITHOUT a body?**
+
+You must add a requestInterceptor for this.
+
+````js
+RestangularProvider.setRequestInterceptor(function(elem, operation) {
+  if (operation === "remove") {
+     return undefined;
+  } 
+  return elem;
+})
+````
+
 #### **My response is actually wrapped with some metadata. How do I get the data in that case?**
 
 So, let's assume that your data is the following:
@@ -943,6 +977,21 @@ RestangularProvider.setResponseExtractor(function(response) {
 });
 ````
 
+**Addendum :** If you want originalElement to be the original response object instead of having an original value for each key in your newResponse array, replace
+
+
+
+````
+      newResponse[key].originalElement = angular.copy(value);
+````
+
+By
+
+  
+````
+      newResponse.originalElement[key] = angular.copy(value);
+````
+
 #### Why does this depend on Lodash / Underscore?
 
 This is a very good question. I could've done the code so that I don't depend on Underscore nor Lodash, but I think both libraries make your life SO much easier. They have all of the "functional" stuff like map, reduce, filter, find, etc. 
@@ -970,7 +1019,9 @@ This server frameworks play real nice with Restangular, as they let you create a
 
 # Releases Notes
 
-[Click here to see Releases Notes](https://github.com/mgonto/restangular/blob/master/CHANGELOG.md)
+New releases notes are together with releases in GitHub at: https://github.com/mgonto/restangular/releases
+
+To see old releases notes, [you can click here](https://github.com/mgonto/restangular/blob/master/CHANGELOG.md)
 
 # License
 
