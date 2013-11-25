@@ -25,7 +25,7 @@ class TestrunSummary(EmbeddedDocument):
         return retval
 
     @serializable
-    def Total(self):
+    def total(self):
         retval = 0
         for status in ["PASS", "FAIL", "BROKEN_TEST", "NOT_TESTED", "SKIPPED", "NO_RESULT"]:
             if hasattr(self.resultsByStatus, status) and getattr(self.resultsByStatus, status) > 0:

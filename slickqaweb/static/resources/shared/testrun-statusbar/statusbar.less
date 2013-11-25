@@ -1,5 +1,4 @@
 .statusbar {
-  width: 1in;
   padding: 0;
   .flex-container;
   height: .25in;
@@ -7,12 +6,24 @@
 
 }
 
-.statusbar-NORESULT {
+.statusbar-size-normal {
+  width: 1in;
+}
+
+.statusbar-size-large {
+  width: 1.8in;
+}
+
+.statusbar-NO_RESULT, .statusbar-NORESULT {
   background-color: @c-status-noresult;
 }
 
 .statusbar-PASS {
   background-color: @c-status-pass;
+}
+
+.statusbar-BROKEN_TEST, .statusbar-BROKENTEST {
+  background-color: @c-status-broken;
 }
 
 .statusbar-SKIPPED {

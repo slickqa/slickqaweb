@@ -1,0 +1,22 @@
+<div class="slickview">
+    <slick-list-header model="testrunList" search="on" pagination="on" default-sort="-dateCreated">
+        <slick-list-columns class="testruns-list-column-container">
+            <slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
+            <slick-list-column class="testruns-list-results-column" sortable="false">Results</slick-list-column>
+            <slick-list-column class="testruns-list-environment-column" sort-property-name="config.name" sortable="true">Environment</slick-list-column>
+            <slick-list-column class="testruns-list-build-column" sort-property-name="build.name" sortable="true">Build</slick-list-column>
+            <slick-list-column class="testruns-list-created-column" sort-property-name="dateCreated" sortable="true">Created</slick-list-column>
+        </slick-list-columns>
+    </slick-list-header>
+    <div class="testruns-list-row-container">
+        <div ng-repeat="testrun in testruns | slickListFilter:testrunList" class="testruns-list-row">
+            <div class="testruns-list-column-container">
+                <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}">{{ getDisplayName(testrun) }}</a></div>
+                <div class="testruns-list-results-column"><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div>
+                <div class="testruns-list-environment-column">{{ testrun.config.name}}</div>
+                <div class="testruns-list-build-column">{{ testrun.build.name }}</div>
+                <div class="testruns-list-created-column">{{ testrun.dateCreated | date:'MMM d, y h:mm:ss a'}}</div>
+            </div>
+        </div>
+    </div>
+</div>

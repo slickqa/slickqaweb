@@ -13,3 +13,5 @@ pages/multi-product-dashboard/multi-product-dashboard.less
 pages/find-testcases/find-testcases.less
 pages/unittest/unittest.less
 pages/testcase/testcases.less
+shared/testrun-statusbar/statusbar.less
+pages/testruns/testruns.less
