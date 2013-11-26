@@ -13,13 +13,37 @@ angular.module('slickApp')
             });
         nav.addLink('Reports', 'Testrun List', 'testruns');
     }])
-    .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', function ($scope, rest, nav, $routeParams) {
+    .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', '$location', function ($scope, rest, nav, $routeParams, $cookieStore, $location) {
+        if (!$routeParams["project"] && $cookieStore.get('slick-last-project-used')) {
+            $location.search("project", $cookieStore.get('slick-last-project-used'));
+        }
         nav.setTitle("Testruns");
         $scope.testruns = [];
-        rest.all('testruns').getList().then(function(testruns) {
-            $scope.testruns = testruns;
-            window.testruns = testruns;
-        });
+
+        var testrunQuery = [];
+        if ($routeParams["project"]) {
+            testrunQuery.push("eq(project.name,\"" + $routeParams.project + "\")");
+        }
+
+        var q = "";
+        if (testrunQuery.length > 1) {
+            q = "and(";
+        }
+        q = q + testrunQuery.join();
+        if (testrunQuery.length > 1) {
+            q = q + ")";
+        }
+        if (!q) {
+            rest.all('testruns').getList().then(function(testruns) {
+                $scope.testruns = testruns;
+                window.testruns = testruns;
+            });
+        } else {
+            rest.all('testruns').getList({q: q}).then(function(testruns) {
+                $scope.testruns = testruns;
+                window.testruns = testruns;
+            });
+        }
         $scope.testrunList = {}; // Model for the list header and filter
 
         $scope.getDisplayName = function(testrun) {
