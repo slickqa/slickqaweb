@@ -14,15 +14,44 @@ angular.module('slickApp')
         nav.addLink('Reports', 'Testrun List', 'testruns');
     }])
     .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', '$location', function ($scope, rest, nav, $routeParams, $cookieStore, $location) {
+        $scope.project = null;
+        $scope.release = null;
+        $scope.testplanId = null;
         if (!$routeParams["project"] && $cookieStore.get('slick-last-project-used')) {
             $location.search("project", $cookieStore.get('slick-last-project-used'));
         }
+
+        if ($routeParams["release"]) {
+            $scope.release = $routeParams["release"];
+        }
+
+        if ($routeParams["testplanId"]) {
+            $scope.testplanId = $routeParams["testplanId"];
+        }
+
         nav.setTitle("Testruns");
         $scope.testruns = [];
 
+        $scope.projects = [];
+        rest.all('projects').getList().then(function(projects) {
+            $scope.projects = _.sortBy(projects, "lastUpdated");
+            $scope.projects.reverse();
+            if ($routeParams["project"]) {
+                $scope.project = _.find(projects, function(project) {
+                    return $routeParams["project"] == project.name;
+                });
+            }
+        });
+
         var testrunQuery = [];
-        if ($routeParams["project"]) {
-            testrunQuery.push("eq(project.name,\"" + $routeParams.project + "\")");
+        if ($scope.project) {
+            testrunQuery.push("eq(project.name,\"" + $scope.project.name + "\")");
+        }
+        if ($scope.release) {
+            testrunQuery.push("eq(release.name,\"" + $scope.release + "\")");
+        }
+        if ($scope.testplanId) {
+            testrunQuery.push("eq(testplanId,\"" + $scope.testplanId + "\")");
         }
 
         var q = "";

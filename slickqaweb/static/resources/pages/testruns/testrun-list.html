@@ -1,4 +1,7 @@
 <div class="slickview">
+    Filter By: <br />
+    <slick-side-select model="project" options="projects" display="name" label="Projects">
+    </slick-side-select>
     <slick-list-header model="testrunList" search="on" pagination="on" default-sort="-dateCreated">
         <slick-list-columns class="testruns-list-column-container">
             <slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
