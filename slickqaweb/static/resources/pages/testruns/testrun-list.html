@@ -1,7 +1,9 @@
 <div class="slickview">
-    Filter By: <br />
-    <slick-side-select model="project" options="projects" display="name" label="Project">
-    </slick-side-select>
+    <div class="testruns-list-filter">
+        <div class="testruns-list-filter-project">Project: <select ng-model="project" ng-options="p.name for p in projects"></select></div>
+        <div class="testruns-list-filter-release">Release: <select ng-model="release" ng-options="r.name for r in releases"></select></div>
+        <div class="testruns-list-filter-testplan">Testplan: <select ng-model="testplan" ng-options="t.name for t in testplans"></select></div>
+    </div>
     <slick-list-header model="testrunList" search="on" pagination="on" default-sort="-dateCreated">
         <slick-list-columns class="testruns-list-column-container">
             <slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>

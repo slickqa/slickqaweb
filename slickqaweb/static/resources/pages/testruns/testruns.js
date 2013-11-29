@@ -16,23 +16,18 @@ angular.module('slickApp')
     .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', '$location', function ($scope, rest, nav, $routeParams, $cookieStore, $location) {
         $scope.project = null;
         $scope.release = null;
-        $scope.testplanId = null;
+        $scope.testplan = null;
+
+        $scope.projects = [];
+        $scope.releases = [];
+        $scope.testplans = [];
+
+
         if (!$routeParams["project"] && $cookieStore.get('slick-last-project-used')) {
             $location.search("project", $cookieStore.get('slick-last-project-used'));
         }
 
-        if ($routeParams["release"]) {
-            $scope.release = $routeParams["release"];
-        }
-
-        if ($routeParams["testplanId"]) {
-            $scope.testplanId = $routeParams["testplanId"];
-        }
-
         nav.setTitle("Testruns");
-        $scope.testruns = [];
-
-        $scope.projects = [];
         rest.all('projects').getList().then(function(projects) {
             $scope.projects = _.sortBy(projects, "lastUpdated");
             $scope.projects.reverse();
@@ -40,18 +35,52 @@ angular.module('slickApp')
                 $scope.project = _.find(projects, function(project) {
                     return $routeParams["project"] == project.name;
                 });
+                $scope.$watch('project', function (newValue, oldValue) {
+                    if (newValue && oldValue != newValue) {
+                        $location.search("project", newValue.name);
+                        $location.search("release", null);
+                        $location.search("testplanId", null);
+                    }
+                });
+                if ($scope.project) {
+                    $scope.releases = $scope.project.releases;
+                    if ($routeParams["release"]) {
+                        $scope.release = _.find($scope.releases, function(release) {
+                            return $routeParams["release"] == release.name;
+                        });
+                    }
+                    $scope.$watch('release', function (newValue, oldValue) {
+                        if(newValue) {
+                            $location.search('release', newValue.name);
+                        }
+                    });
+                    rest.all('testplans').getList({q: "eq(project.id,\"" + $scope.project.id + "\")"}).then(function(testplans) {
+                        $scope.testplans = testplans;
+                        if ($routeParams["testplanId"]) {
+                            $scope.testplan = _.find($scope.testplans, function(testplan) {
+                                return $routeParams["testplanId"] == testplan.id;
+                            });
+                        }
+                        $scope.$watch('testplan', function(newValue, oldValue) {
+                            if (newValue) {
+                                $location.search("testplanId", newValue.id);
+                            }
+                        });
+                    });
+                }
+
             }
         });
 
         var testrunQuery = [];
-        if ($scope.project) {
-            testrunQuery.push("eq(project.name,\"" + $scope.project.name + "\")");
+        if ($routeParams["project"]) {
+            testrunQuery.push("eq(project.name,\"" + $routeParams["project"] + "\")");
         }
-        if ($scope.release) {
-            testrunQuery.push("eq(release.name,\"" + $scope.release + "\")");
+        if ($routeParams["release"]) {
+            testrunQuery.push("eq(release.name,\"" + $routeParams["release"] + "\")");
         }
-        if ($scope.testplanId) {
-            testrunQuery.push("eq(testplanId,\"" + $scope.testplanId + "\")");
+        if ($routeParams["testplanId"]) {
+            testrunQuery.push("eq(testplanId,\"" + $routeParams["testplanId"] + "\")");
         }
 
         var q = "";
@@ -81,6 +110,7 @@ angular.module('slickApp')
                 retval = testrun.testplan.name;
             }
             return retval;
-        }
+        };
+
     }]);
 
