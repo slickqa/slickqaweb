@@ -19,3 +19,4 @@ pages/testcase/testcases.js
 shared/testrun-statusbar/statusbar.js
 pages/testruns/testruns.js
 shared/side-select/side-select.js
+shared/testrun-stats/stats.js

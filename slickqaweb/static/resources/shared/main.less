@@ -11,8 +11,10 @@
 @c-status-pass: #008000;
 @c-status-fail: #ff0000;
 @c-status-broken: #ffac00;
+@c-status-nottested: #1e90ff;
 @c-status-noresult: #c0c0c0;
 @c-status-skip: #bdb76b;
+@c-status-cancelled: #a0522d;
 @c-status-total: #ffffff;
 //@import url(http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic&subset=latin,latin-ext);
 
@@ -503,9 +505,31 @@ a.result-status-SKIPPED:visited {
   .clickable-text;
 }
 
-a.result-status-total
+a.result-status-total,
 a.result-status-total:visited {
   .clickable-text;
   text-decoration: none;
   color: @c-status-total;
 }
+
+.result-status-BROKENTEST {
+  color: @c-status-broken;
+}
+
+a.result-status-BROKENTEST,
+a.result-status-BROKENTEST:visited {
+  text-decoration: none;
+  color: @c-status-broken;
+}
+
+.result-status-NOTTESTED {
+  color: @c-status-nottested;
+}
+
+a.result-status-NOTTESTED,
+a.result-status-NOTTESTED:visited {
+  text-decoration: none;
+  color: @c-status-nottested;
+}
+
+

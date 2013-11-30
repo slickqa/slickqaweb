@@ -16,3 +16,4 @@ pages/testcase/testcases.less
 shared/testrun-statusbar/statusbar.less
 pages/testruns/testruns.less
 shared/side-select/side-select.less
+shared/testrun-stats/stats.less
