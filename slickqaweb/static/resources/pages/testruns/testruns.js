@@ -119,6 +119,9 @@ angular.module('slickApp')
     }])
     .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$location', function ($scope, rest, nav, $routeParams, $location) {
         $scope.testrun = {};
+        $scope.results = [];
+        $scope.filter = {};
+        $scope.resultQuery = {};
         $scope.data = new google.visualization.DataTable();
         $scope.data.addColumn('string', 'Status');
         $scope.data.addColumn('number', 'Results');
@@ -134,13 +137,41 @@ angular.module('slickApp')
             $scope.data = new google.visualization.DataTable();
             $scope.data.addColumn('string', 'Status');
             $scope.data.addColumn('number', 'Results');
+            var emptyFilter = _.isEmpty($scope.filter);
+            if (emptyFilter) {
+                $scope.filter = {};
+            }
             _.each(testrun.summary.statusListOrdered, function(status) {
                 $scope.data.addRow([status.replace("_", " "), testrun.summary.resultsByStatus[status]]);
                 $scope.options.colors.push(getStyle(status.replace("_", "") + "-element", "color"));
+                if (emptyFilter) {
+                    $scope.filter[status] = status != "PASS";
+                }
             });
 
+            $scope.testrunQuery();
             nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
         });
+
+        $scope.testrunQuery = function() {
+            var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key]});
+            if(includableStatuses.length == 1) {
+                $scope.resultQuery = {
+                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),eq(status,\"" + includableStatuses[0] + "\"))"
+                };
+            } else {
+                var statuses = [];
+                _.each(includableStatuses, function(status) {
+                    statuses.push("eq(status,\"" + status + "\")");
+                });
+                $scope.resultQuery = {
+                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),or(" + statuses.join(",") + "))"
+                }
+            }
+            rest.all('results').getList($scope.resultQuery).then(function(results) {
+                $scope.results = results;
+            })
+        };
 
         $scope.getDisplayName = function(testrun) {
             var retval = testrun.name;
@@ -149,6 +180,18 @@ angular.module('slickApp')
             }
             return retval;
         };
+
+        $scope.getRuntime = function(testrun) {
+            return moment.duration(testrun.runFinished - testrun.runStarted).humanize();
+        };
+
+        $scope.$watch('statusFilter.$dirty', function(newValue, oldValue) {
+            if (newValue && (newValue != oldValue)) {
+                $scope.testrunQuery();
+                $scope.statusFilter.$setPristine();
+            }
+        });
+        window.scope = $scope;
     }]);
 
 

@@ -1,3 +1,74 @@
 <div class="slickview">
-    <google-pie-chart style="width: 5in; height: 5in;" data="data" options="options"></google-pie-chart>
+    <div class="testrun-summary-outer">
+        <div class="testrun-summary-inner">
+            <div class="testrun-summary-container">
+                <google-pie-chart class="testrun-summary-chart" data="data" options="options"></google-pie-chart>
+                <div class="testrun-summary-data">
+                    <div class="testrun-summary-data-container">
+                        <div class="testrun-summary-data-row result-status-{{status.replace('_','')}}" ng-repeat="status in testrun.summary.statusListOrdered">
+                            <div class="testrun-summary-data-status" ng-bind="status.replace('_',' ')"></div>
+                            <div class="testrun-summary-data-number" ng-bind="testrun.summary.resultsByStatus[status]"></div>
+                            <div class="testrun-summary-data-percent" ng-bind="'' + (((testrun.summary.resultsByStatus[status] * 1.0)/testrun.summary.total) * 100).toFixed(1) + '%'"></div>
+                        </div>
+                        <div class="testrun-summary-data-row result-status-total">
+                            <div class="testrun-summary-data-status">Total</div>
+                            <div class="testrun-summary-data-number" ng-bind="testrun.summary.total"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testrun-summary-metadata">
+                    <div class="testrun-summary-metadata-row testrun-summary-metadata-row-project" ng-show="testrun.project">
+                        <div class="testrun-summary-metadata-key">Project: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.project.name"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row testrun-summary-metadata-row-release" ng-show="testrun.release">
+                        <div class="testrun-summary-metadata-key">Release: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.release.name"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row testrun-summary-metadata-row-build" ng-show="testrun.build">
+                        <div class="testrun-summary-metadata-key">Build: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.build.name"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.testplan">
+                        <div class="testrun-summary-metadata-key">Testplan: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.testplan.name"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.config">
+                        <div class="testrun-summary-metadata-key">Environment: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.config.name"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.dateCreated">
+                        <div class="testrun-summary-metadata-key">Created: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.dateCreated |date:'medium'"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.state">
+                        <div class="testrun-summary-metadata-key">Testrun State: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.state"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.runStarted">
+                        <div class="testrun-summary-metadata-key">Started: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.runStarted |date:'medium'"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.runFinished">
+                        <div class="testrun-summary-metadata-key">Finished: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="testrun.runFinished |date:'medium'"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.runStarted && testrun.runFinished">
+                        <div class="testrun-summary-metadata-key">Run Time: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="getRuntime(testrun)"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="testrun-summary-outer">
+        <div class="testrun-summary-inner testrun-summary-filter-container">
+            <form name="statusFilter">
+                Include:
+                <span ng-repeat="status in testrun.summary.statusListOrdered" class="testrun-summary-filter result-status-{{status}}">
+                    <input type="checkbox" ng-model="filter[status]">{{status}}
+                </span>
+            </form>
+        </div>
+    </div>
 </div>
