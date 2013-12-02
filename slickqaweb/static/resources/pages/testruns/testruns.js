@@ -10,6 +10,10 @@ angular.module('slickApp')
             .when('/testruns', {
                 templateUrl: 'static/resources/pages/testruns/testrun-list.html',
                 controller: 'TestrunListCtrl'
+            })
+            .when('/testruns/:testrunid', {
+                templateUrl: 'static/resources/pages/testruns/testrun-summary.html',
+                controller: 'TestrunSummaryCtrl'
             });
         nav.addLink('Reports', 'Testrun List', 'testruns');
     }])
@@ -112,5 +116,39 @@ angular.module('slickApp')
             return retval;
         };
 
+    }])
+    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$location', function ($scope, rest, nav, $routeParams, $location) {
+        $scope.testrun = {};
+        $scope.data = new google.visualization.DataTable();
+        $scope.data.addColumn('string', 'Status');
+        $scope.data.addColumn('number', 'Results');
+        $scope.options = {
+            chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
+            backgroundColor: "#000000",
+            pieSliceBorderColor: "#000000",
+            legend: 'none',
+            colors: []
+        };
+        rest.one('testruns', $routeParams["testrunid"]).get().then(function(testrun) {
+            $scope.testrun = testrun;
+            $scope.data = new google.visualization.DataTable();
+            $scope.data.addColumn('string', 'Status');
+            $scope.data.addColumn('number', 'Results');
+            _.each(testrun.summary.statusListOrdered, function(status) {
+                $scope.data.addRow([status.replace("_", " "), testrun.summary.resultsByStatus[status]]);
+                $scope.options.colors.push(getStyle(status.replace("_", "") + "-element", "color"));
+            });
+
+            nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
+        });
+
+        $scope.getDisplayName = function(testrun) {
+            var retval = testrun.name;
+            if (testrun.testplan) {
+                retval = testrun.testplan.name;
+            }
+            return retval;
+        };
     }]);
+
 

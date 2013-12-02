@@ -11,5 +11,8 @@
     "underscore": "*",
     "jasmine": "*",
     "restangular": "*"
+  },
+  "resolutions": {
+    "angular": "1.2.3"
   }
 }

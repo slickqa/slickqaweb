@@ -8,6 +8,8 @@
     <meta name="viewport" content="width=device-width">
     <link rel="shortcut icon" href="static/favicon.ico" />
 
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
     <!-- static files -->
     <script src="static/components/angular/angular.js"></script>
     <script src="static/components/angular-route/angular-route.js"></script>
@@ -19,6 +21,7 @@
     <script src="static/components/restangular/dist/restangular.js"></script>
     <script src="static/components/objectid/Objectid.js"></script>
     <script src="static/components/kalendae/kalendae.standalone.js"></script>
+
     <link rel="stylesheet" href="static/components/kalendae/kalendae.css" />
     <!-- <link rel="stylesheet" href="static/components/animate.css/animate.css" /> -->
 
@@ -33,11 +36,24 @@
     <link rel="stylesheet" href="style.css" />
     <script src="scripts.js"></script>
 
+    <script type="text/javascript">
+        google.load("visualization", "1", {packages:["corechart"]});
+        google.setOnLoadCallback(function() {
+            angular.bootstrap(document.body, ['slickApp']);
+        });
+    </script>
+
     {% if development %}
     <script src="jstests.js"></script>
     {% endif %}
 </head>
-<body ng-app="slickApp">
+<body>
+<span class="result-status-PASS" id="PASS-element"></span>
+<span class="result-status-FAIL" id="FAIL-element"></span>
+<span class="result-status-BROKENTEST" id="BROKENTEST-element"></span>
+<span class="result-status-NORESULT" id="NORESULT-element"></span>
+<span class="result-status-NOTTESTED" id="NOTTESTED-element"></span>
+<span class="result-status-SKIPPED" id="SKIPPED-element"></span>
 <header ng-controller="HeaderCtrl">
     <div class="inner-header">
         <div>
