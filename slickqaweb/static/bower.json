@@ -10,7 +10,8 @@
     "angular-sanitize": "*",
     "underscore": "*",
     "jasmine": "*",
-    "restangular": "*"
+    "restangular": "*",
+    "moment": "~2.4.0"
   },
   "resolutions": {
     "angular": "1.2.3"
