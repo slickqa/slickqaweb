@@ -71,4 +71,27 @@
             </form>
         </div>
     </div>
+    <slick-list-header model="resultList" search="on" pagination="on" default-sort="-recorded">
+        <slick-list-columns class="result-list-column-container">
+            <slick-list-column class="result-list-name-column" sort-property-name="testcase.name" sortable="true">Name</slick-list-column>
+            <slick-list-column class="result-list-component-column" sort-property-name="component.name" sortable="true">Component</slick-list-column>
+            <slick-list-column class="result-list-recorded-column" sort-property-name="recorded" sortable="true">Recorded</slick-list-column>
+            <slick-list-column class="result-list-duration-column" sort-property-name="runlength" sortable="true">Duration</slick-list-column>
+            <slick-list-column class="result-list-hostname-column" sort-property-name="hostname" sortable="true">Hostname</slick-list-column>
+            <slick-list-column class="result-list-history-column" sortable="false">History</slick-list-column>
+            <slick-list-column class="result-list-status-column" sort-property-name="status" sortable="true">Status</slick-list-column>
+        </slick-list-columns>
+    </slick-list-header>
+    <div class="result-list-row" ng-repeat="result in results | slickListFilter:resultList">
+        <div class="result-list-column-container">
+            <div class="result-list-name-column" ng-bind="result.testcase.name"></div>
+            <div class="result-list-component-column" ng-bind="result.component.name"></div>
+            <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'"></div>
+            <div class="result-list-duration-column" ng-bind="result.runlength"></div>
+            <div class="result-list-hostname-column" ng-bind="result.hostname"></div>
+            <div class="result-list-history-column" ng-bind=""></div>
+            <div class="result-list-status-column result-status-{{result.status.replace('_','')}}" ng-bind="result.status.replace('_',' ')"></div>
+        </div>
+    </div>
+
 </div>

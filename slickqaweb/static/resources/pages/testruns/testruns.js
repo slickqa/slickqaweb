@@ -122,6 +122,7 @@ angular.module('slickApp')
         $scope.results = [];
         $scope.filter = {};
         $scope.resultQuery = {};
+        $scope.resultList = {};
         $scope.data = new google.visualization.DataTable();
         $scope.data.addColumn('string', 'Status');
         $scope.data.addColumn('number', 'Results');

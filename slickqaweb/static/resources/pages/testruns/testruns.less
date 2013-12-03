@@ -84,7 +84,7 @@
 .testrun-summary-container {
   .flex-container;
   text-align: left;
-  margin-bottom: 1in;
+  margin-bottom: .5in;
 }
 
 .testrun-summary-data {
@@ -158,4 +158,58 @@
 
 .testrun-summary-filter-container {
   font-size: 1.5em;
+}
+
+.result-list-column-container {
+  .flex-container;
+}
+
+.result-list-name-column {
+  padding-left: .1in;
+  .flex-grow-on;
+}
+
+.result-list-component-column {
+  padding-left: .1in;
+  width: 1.5in;
+  .flex-grow-off;
+}
+
+.result-list-recorded-column {
+  padding-left: .1in;
+  width: 2in;
+  .flex-grow-off;
+}
+
+.result-list-duration-column {
+  padding-left: .1in;
+  width: 1in;
+  .flex-grow-off;
+}
+
+.result-list-hostname-column {
+  padding-left: .1in;
+  width: 1.5in;
+  .flex-grow-off;
+}
+
+.result-list-history-column {
+  padding-left: .1in;
+  width: 2in;
+  .flex-grow-off;
+}
+
+.result-list-status-column {
+  padding-left: .1in;
+  width: 1.5in;
+  .flex-grow-off;
+}
+
+.result-list-row {
+  padding-top: .05in;
+  margin-bottom: .05in;
+}
+
+.result-list-row:nth-child(odd) {
+  background: #222222;
 }
