@@ -158,7 +158,8 @@ angular.module('slickApp')
             var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key]});
             if(includableStatuses.length == 1) {
                 $scope.resultQuery = {
-                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),eq(status,\"" + includableStatuses[0] + "\"))"
+                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),eq(status,\"" + includableStatuses[0] + "\"))",
+                    allfields: "true"
                 };
             } else {
                 var statuses = [];
@@ -166,7 +167,8 @@ angular.module('slickApp')
                     statuses.push("eq(status,\"" + status + "\")");
                 });
                 $scope.resultQuery = {
-                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),or(" + statuses.join(",") + "))"
+                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),or(" + statuses.join(",") + "))",
+                    allfields: "true"
                 }
             }
             rest.all('results').getList($scope.resultQuery).then(function(results) {
