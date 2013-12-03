@@ -59,6 +59,13 @@ angular.module("slickApp")
                 };
             },
             link: function(scope, element, attrs) {
+                if(attrs.defaultPageSize) {
+                    scope.model.pageSize = Number(attrs.defaultPageSize);
+                }
+
+                if(attrs.defaultSortReverse && (attrs.defaultSortReverse == "true" || attrs.defaultSortReverse == "on" || attrs.defaultSortReverse == "yes")) {
+                    scope.model.reverseOrder = true;
+                }
             }
         }
     })
