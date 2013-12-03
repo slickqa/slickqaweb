@@ -182,8 +182,17 @@ angular.module('slickApp')
             return retval;
         };
 
-        $scope.getRuntime = function(testrun) {
-            return moment.duration(testrun.runFinished - testrun.runStarted).humanize();
+        $scope.getTestrunDuration = function(testrun) {
+            return getDurationString(testrun.runFinished - testrun.runStarted);
+        };
+
+        $scope.getResultDuration = function(result) {
+            if (result.runlength) {
+                return getDurationString(result.runlength);
+            }
+            if (result.started && result.finished) {
+                return getDurationString(result.finished - result.started);
+            }
         };
 
         $scope.$watch('statusFilter.$dirty', function(newValue, oldValue) {

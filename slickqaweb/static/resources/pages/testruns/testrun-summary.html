@@ -55,7 +55,7 @@
                     </div>
                     <div class="testrun-summary-metadata-row" ng-show="testrun.runStarted && testrun.runFinished">
                         <div class="testrun-summary-metadata-key">Run Time: </div>
-                        <div class="testrun-summary-metadata-value" ng-bind="getRuntime(testrun)"></div>
+                        <div class="testrun-summary-metadata-value" ng-bind="getTestrunDuration(testrun)"></div>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
     </div>
     <div class="testrun-summary-outer">
         <div class="testrun-summary-inner testrun-summary-filter-container">
-            <form name="statusFilter">
+            <form class="testrun-summary-filter-form" name="statusFilter">
                 Include:
                 <span ng-repeat="status in testrun.summary.statusListOrdered" class="testrun-summary-filter result-status-{{status}}">
                     <input type="checkbox" ng-model="filter[status]">{{status}}
@@ -71,7 +71,7 @@
             </form>
         </div>
     </div>
-    <slick-list-header model="resultList" search="on" pagination="on" default-sort="-recorded">
+    <slick-list-header model="resultList" search="on" pagination="on" default-sort="recorded">
         <slick-list-columns class="result-list-column-container">
             <slick-list-column class="result-list-name-column" sort-property-name="testcase.name" sortable="true">Name</slick-list-column>
             <slick-list-column class="result-list-component-column" sort-property-name="component.name" sortable="true">Component</slick-list-column>
@@ -87,7 +87,7 @@
             <div class="result-list-name-column" ng-bind="result.testcase.name"></div>
             <div class="result-list-component-column" ng-bind="result.component.name"></div>
             <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'"></div>
-            <div class="result-list-duration-column" ng-bind="result.runlength"></div>
+            <div class="result-list-duration-column" ng-bind="getResultDuration(result)"></div>
             <div class="result-list-hostname-column" ng-bind="result.hostname"></div>
             <div class="result-list-history-column" ng-bind=""></div>
             <div class="result-list-status-column result-status-{{result.status.replace('_','')}}" ng-bind="result.status.replace('_',' ')"></div>
