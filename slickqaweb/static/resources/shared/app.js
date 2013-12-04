@@ -33,14 +33,14 @@ function getDurationString(duration) {
     }
 
     if (minutes > 60) {
-        hours = minutes / 60;
+        hours = Math.floor(minutes / 60);
         minutes = (minutes % 60) + " minutes ";
     } else if (minutes > 0) {
         minutes = minutes + " minutes ";
     }
 
     if (hours > 24) {
-        days = hours / 24;
+        days = Math.floor(hours / 24);
         hours = (hours % 24) + " hours ";
     } else if (hours > 0) {
         hours = hours + " hours ";
