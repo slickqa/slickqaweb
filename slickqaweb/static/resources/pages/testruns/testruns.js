@@ -123,6 +123,7 @@ angular.module('slickApp')
         $scope.filter = {};
         $scope.resultQuery = {};
         $scope.resultList = {};
+        $scope.moreDetail = false;
         $scope.data = new google.visualization.DataTable();
         $scope.data.addColumn('string', 'Status');
         $scope.data.addColumn('number', 'Results');
@@ -155,6 +156,7 @@ angular.module('slickApp')
         });
 
         $scope.testrunQuery = function() {
+            var oldQuery = $scope.resultQuery.q;
             var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key]});
             if(includableStatuses.length == 1) {
                 $scope.resultQuery = {
@@ -171,9 +173,11 @@ angular.module('slickApp')
                     allfields: "true"
                 }
             }
-            rest.all('results').getList($scope.resultQuery).then(function(results) {
-                $scope.results = results;
-            })
+            if (oldQuery != $scope.resultQuery.q) {
+                rest.all('results').getList($scope.resultQuery).then(function(results) {
+                    $scope.results = results;
+                });
+            }
         };
 
         $scope.getDisplayName = function(testrun) {
@@ -203,6 +207,16 @@ angular.module('slickApp')
                 $scope.statusFilter.$setPristine();
             }
         });
+
+        $scope.getAbbreviatedReason = function(result) {
+            var line = result.reason.split("\n")[0];
+            return line;
+        };
+
+        $scope.getImages = function(result) {
+            return _.filter(result.files, function(file) { return /^image/.test(file.mimetype);});
+        };
+
         window.scope = $scope;
     }]);
 

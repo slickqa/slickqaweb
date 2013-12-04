@@ -68,6 +68,9 @@
                 <span ng-repeat="status in testrun.summary.statusListOrdered" class="testrun-summary-filter result-status-{{status}}">
                     <input type="checkbox" ng-model="filter[status]">{{status}}
                 </span>
+                <span class="testrun-summary-filter">
+                    <input type="checkbox" ng-model="moreDetail">More Detail
+                </span>
             </form>
         </div>
     </div>
@@ -102,6 +105,20 @@
                         <span ng-show="!$last">,</span>
                     </span>
                 ]</div>
+            <div class="result-list-reason-column" ng-show="result.reason  && !moreDetail">
+                <a href="results/{{result.id}}/reason" ng-click="displayReason(result)">Reason: <pre class="result-list-reason-field">{{getAbbreviatedReason(result)}}</pre>...</a>
+            </div>
+        </div>
+        <div class="result-list-more-detail-part" ng-show="moreDetail">
+            <div class="result-list-more-detail-reason">
+                <pre>{{result.reason}}</pre>
+            </div>
+            <div class="result-list-more-detail-screenshots">
+                <div class="result-list-more-detail-screenshot" ng-repeat="image in getImages(result)">
+                    <div class="result-list-more-detail-screenshot-filename">{{image.filename}}</div>
+                    <img ng-src="api/files/{{image.id}}/content/{{image.filename}}" alt="{{image.filename}}" />
+                </div>
+            </div>
         </div>
     </div>
 
