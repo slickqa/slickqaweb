@@ -335,10 +335,12 @@ def update_result(result_id):
 def add_to_log(result_id):
     orig = Result.objects(id=result_id).first()
     list_of_log_entries = request.get_json()
+    print list_of_log_entries
     if not hasattr(orig, 'log') or orig.log is None:
         orig.log = []
     for entry_json in list_of_log_entries:
         orig.log.append(deserialize_that(entry_json, LogEntry()))
+    orig.save()
     return JsonResponse(len(orig.log))
 
 

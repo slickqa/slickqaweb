@@ -123,10 +123,20 @@ angular.module('slickApp')
         $scope.filter = {};
         $scope.resultQuery = {};
         $scope.resultList = {};
+        $scope.moreDetailForResult = {};
         $scope.moreDetail = false;
         $scope.data = new google.visualization.DataTable();
         $scope.data.addColumn('string', 'Status');
         $scope.data.addColumn('number', 'Results');
+        $scope.showAddNote = false;
+        $scope.note = {
+            result: null,
+            message: '',
+            externalLink: '',
+            recurring: false,
+            matchRelease: true,
+            matchEnvironment: true
+        };
         $scope.options = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
             backgroundColor: "#000000",
@@ -215,6 +225,48 @@ angular.module('slickApp')
 
         $scope.getImages = function(result) {
             return _.filter(result.files, function(file) { return /^image/.test(file.mimetype);});
+        };
+
+        $scope.addMoreDetail = function(result) {
+            $scope.moreDetailForResult[result.id] = true;
+        };
+
+        $scope.removeDetail = function(result) {
+            $scope.moreDetailForResult[result.id] = false;
+        };
+
+        $scope.addNote = function(result) {
+            $scope.note.result = result;
+            $scope.showAddNote = true;
+        };
+
+        $scope.addNoteDialogButtonClicked = function(buttonName) {
+            if (buttonName == "Add") {
+                var result = $scope.note.result;
+                var logEntry = {
+                    entryTime: new Date().getTime(),
+                    level: "WARN",
+                    loggerName: "slick.note",
+                    message: $scope.note.message,
+                    exceptionMessage: $scope.note.externalLink
+                };
+                console.log(JSON.stringify([logEntry]));
+                rest.one('results', result.id).post('log',[logEntry]).then(function(numOfLogEntries) {
+                    if (!result.log) {
+                        result.log = [];
+                    }
+                    result.log.push(logEntry);
+                });
+            }
+            $scope.showAddNote = false;
+            $scope.note = {
+                result: null,
+                message: '',
+                externalLink: '',
+                recurring: false,
+                matchRelease: true,
+                matchEnvironment: true
+            };
         };
 
         window.scope = $scope;

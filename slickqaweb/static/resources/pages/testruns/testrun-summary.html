@@ -1,4 +1,28 @@
 <div class="slickview">
+    <slick-dialog title="Add Note" size="small" show="showAddNote" buttons="Add|Cancel" button-callback="addNoteDialogButtonClicked(buttonName)">
+        <div class="data-view testrun-summary-add-note">
+            <div class="data-view-item">
+                <div class="data-view-property-name">Message</div>
+                <div class="data-view-property-value"><input type="text" ng-model="note.message" /></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">URL (optional)</div>
+                <div class="data-view-property-value"><input type="url" ng-model="note.externalUrl" /></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">Recurring</div>
+                <div class="data-view-property-value"><input type="checkbox" ng-model="note.recurring" /></div>
+            </div>
+            <div class="data-view-item" ng-show="note.recurring">
+                <div class="data-view-property-name">Match Release</div>
+                <div class="data-view-property-value"><input type="checkbox" ng-model="note.matchRelease" />{{note.result.release.name}}</div>
+            </div>
+            <div class="data-view-item" ng-show="note.recurring">
+                <div class="data-view-property-name">Match Environment</div>
+                <div class="data-view-property-value"><input type="checkbox" ng-model="note.matchEnvironment" />{{note.result.config.name}}</div>
+            </div>
+        </div>
+    </slick-dialog>
     <div class="testrun-summary-outer">
         <div class="testrun-summary-inner">
             <div class="testrun-summary-container">
@@ -105,11 +129,16 @@
                         <span ng-show="!$last">,</span>
                     </span>
                 ]</div>
-            <div class="result-list-reason-column" ng-show="result.reason  && !moreDetail">
-                <a href="results/{{result.id}}/reason" ng-click="displayReason(result)">Reason: <pre class="result-list-reason-field">{{getAbbreviatedReason(result)}}</pre>...</a>
+            <div class="result-list-actions-column">
+                <span class="button" ng-click="addNote(result)">Add Note</span>
+                <span class="button" ng-hide="moreDetail || moreDetailForResult[result.id]" ng-click="addMoreDetail(result)">More Detail</span>
+                <span class="button" ng-show="moreDetail || moreDetailForResult[result.id]" ng-click="removeDetail(result)">Less Detail</span>
             </div>
         </div>
-        <div class="result-list-more-detail-part" ng-show="moreDetail">
+        <div class="result-list-reason-part" ng-show="result.reason && !moreDetail && !moreDetailForResult[result.id]">
+            <a href="results/{{result.id}}/reason" ng-click="displayReason(result)">Reason: <span class="result-list-reason-field">{{getAbbreviatedReason(result)}}</span>...</a>
+        </div>
+        <div class="result-list-more-detail-part" ng-show="moreDetail || moreDetailForResult[result.id]">
             <div class="result-list-more-detail-reason">
                 <pre>{{result.reason}}</pre>
             </div>

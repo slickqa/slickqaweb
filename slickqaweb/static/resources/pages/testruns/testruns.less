@@ -229,30 +229,52 @@
 }
 
 .result-list-second-part {
-  padding-left: .3in;
+  margin-left: .3in;
   .flex-container;
 }
 
+.result-list-reason-part {
+  margin-left: .3in;
+}
+
+.result-list-reason-part.ng-hide-remove {
+  .animated;
+  .animated.fadeIn;
+}
+
 .result-list-log-column {
-  width: 1.5in;
+  width: 15%;
+  min-width: 15%;
 }
 
 .result-list-files-column {
   padding-left: .2in;
-  width: 7in;
+  width: 60%;
+  min-width: 60%;
 }
 
-.result-list-reason-column {
+.result-list-actions-column {
   padding-left: .2in;
-  .flex-grow-on;
 }
 
 .result-list-reason-field {
-  display: inline;
+  font-family: monospace;
+  padding-left: .2in;
 }
 
 .result-list-more-detail-part {
   margin-top: .1in;
+}
+
+.result-list-more-detail-part.ng-hide-remove {
+  .animated;
+  .animated.fadeInDown;
+}
+
+.result-list-more-detail-part.ng-hide-add {
+  display: block!important;
+  .animated;
+  .animated.fadeOutUp;
 }
 
 .result-list-more-detail-screenshots {
@@ -273,3 +295,25 @@
 .result-list-more-detail-reason {
   padding-left: .1in;
 }
+
+.testrun-summary-add-note .data-view-property-value input[type=text],
+.testrun-summary-add-note .data-view-property-value input[type=url]
+{
+  -webkit-box-sizing: border-box;
+  -moz-box-shadow: border-box;
+  box-sizing: border-box;
+  width: 90%;
+}
+
+.testrun-summary-add-note .data-view-item.ng-hide-remove {
+  .animated;
+  .animated.fadeIn;
+}
+
+.testrun-summary-add-note .data-view-item.ng-hide-add {
+  .flex-container-important;
+  .animated;
+  .animated.fadeOut;
+}
+
+
