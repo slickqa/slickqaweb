@@ -52,6 +52,13 @@ if app.debug:
         if request.query_string:
             path = path + "?" + request.query_string
         request_logger.debug("%s %s = %d (%s)", request.method, path, response.status_code, response.mimetype)
+        if response.status_code == 400:
+            data = request.data
+            if not data:
+                request_logger.debug('data was empty, grabbing data from for keys')
+                data = request.form.keys()[0]
+            request_logger.debug("Request Data: %s", data)
+            request_logger.debug("Headers: %s", repr(request.headers))
         return response
 
 
