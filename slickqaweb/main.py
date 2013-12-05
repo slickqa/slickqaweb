@@ -48,7 +48,10 @@ if app.debug:
     request_logger = logging.getLogger("access")
     @app.after_request
     def write_access_log(response):
-        request_logger.debug("%s = %d", request.path, response.status_code)
+        path = request.path
+        if request.query_string:
+            path = path + "?" + request.query_string
+        request_logger.debug("%s %s = %d (%s)", request.method, path, response.status_code, response.mimetype)
         return response
 
 
