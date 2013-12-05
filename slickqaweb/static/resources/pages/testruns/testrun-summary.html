@@ -109,7 +109,7 @@
             <slick-list-column class="result-list-status-column" sort-property-name="status" sortable="true">Status</slick-list-column>
         </slick-list-columns>
     </slick-list-header>
-    <div class="result-list-row" ng-repeat="result in results | slickListFilter:resultList">
+    <div class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id">
         <div class="result-list-column-container">
             <div class="result-list-name-column" ng-bind="result.testcase.name"></div>
             <div class="result-list-component-column" ng-bind="result.component.name"></div>
