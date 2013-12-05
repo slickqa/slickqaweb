@@ -250,8 +250,7 @@ angular.module('slickApp')
                     message: $scope.note.message,
                     exceptionMessage: $scope.note.externalLink
                 };
-                console.log(JSON.stringify([logEntry]));
-                rest.one('results', result.id).post('log',[logEntry]).then(function(numOfLogEntries) {
+                rest.one('results', result.id).post('log',logEntry).then(function(numOfLogEntries) {
                     if (!result.log) {
                         result.log = [];
                     }
@@ -267,6 +266,12 @@ angular.module('slickApp')
                 matchRelease: true,
                 matchEnvironment: true
             };
+        };
+
+        $scope.getResultNotes = function(result) {
+            return _.filter(result.log, function(logEntry) {
+                return logEntry.level == "WARN" && logEntry.loggerName == "slick.note";
+            });
         };
 
         window.scope = $scope;

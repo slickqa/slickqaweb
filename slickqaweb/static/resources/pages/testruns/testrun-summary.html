@@ -7,7 +7,7 @@
             </div>
             <div class="data-view-item">
                 <div class="data-view-property-name">URL (optional)</div>
-                <div class="data-view-property-value"><input type="url" ng-model="note.externalUrl" /></div>
+                <div class="data-view-property-value"><input type="url" ng-model="note.externalLink" /></div>
             </div>
             <div class="data-view-item">
                 <div class="data-view-property-name">Recurring</div>
@@ -133,6 +133,13 @@
                 <span class="button" ng-click="addNote(result)">Add Note</span>
                 <span class="button" ng-hide="moreDetail || moreDetailForResult[result.id]" ng-click="addMoreDetail(result)">More Detail</span>
                 <span class="button" ng-show="moreDetail || moreDetailForResult[result.id]" ng-click="removeDetail(result)">Less Detail</span>
+            </div>
+        </div>
+        <div class="result-list-notes-part">
+            <div ng-repeat="note in getResultNotes(result)" class="result-note">
+                <span class="result-note-timestamp" ng-bind="note.entryTime |date:'medium'"></span>
+                <span class="result-note-message" ng-bind="note.message"></span>
+                <a href="{{note.exceptionMessage}}" class="result-note-link" ng-show="note.exceptionMessage" ng-bind="note.exceptionMessage"></a>
             </div>
         </div>
         <div class="result-list-reason-part" ng-show="result.reason && !moreDetail && !moreDetailForResult[result.id]">
