@@ -51,7 +51,10 @@ if app.debug:
         path = request.path
         if request.query_string:
             path = path + "?" + request.query_string
-        request_logger.debug("%s %s = %d (%s)", request.method, path, response.status_code, response.mimetype)
+        mimetype = response.mimetype
+        if request.method != "GET":
+            mimetype = "in:{},out:{}".format(request.mimetype, response.mimetype)
+        request_logger.debug("%s %s = %d (%s)", request.method, path, response.status_code, mimetype)
         if response.status_code == 400:
             data = request.data
             if not data:
