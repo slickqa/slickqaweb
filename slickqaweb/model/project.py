@@ -6,7 +6,7 @@ from mongoengine import *
 
 
 class Project(Document):
-    attributes = StringField()
+    attributes = DictField()
     automationTools = ListField(StringField())
     components = ListField(EmbeddedDocumentField(Component))
     configuration = ReferenceField(Configuration)
