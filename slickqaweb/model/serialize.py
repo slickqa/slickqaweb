@@ -5,6 +5,7 @@ import bson
 import datetime
 import types
 import inspect
+import logging
 
 def serializable(func):
     func.__serialize__ = True
@@ -33,6 +34,7 @@ def document_to_plain(doc):
         return str(doc)
     raise Exception("I don't know how to serialize %s" % doc.__class__.__name__)
 
+logger = logging.getLogger('slickqaweb.model.serialize')
 
 def plain_to_document(plain, doctype):
     if isinstance(plain, types.DictionaryType):
@@ -43,17 +45,9 @@ def plain_to_document(plain, doctype):
                     if isinstance(retval._fields[fieldname], (mongoengine.EmbeddedDocumentField, mongoengine.ReferenceField)):
                         if getattr(retval, fieldname) is None:
                             setattr(retval, fieldname, retval._fields[fieldname].document_type())
-                        try:
-                            setattr(retval, fieldname, plain_to_document(plain[fieldname], getattr(retval, fieldname)))
-                        except:
-                            print "Error serializing", fieldname
-                            raise
+                        setattr(retval, fieldname, plain_to_document(plain[fieldname], getattr(retval, fieldname)))
                     else:
-                        try:
-                            setattr(retval, fieldname, plain_to_document(plain[fieldname], retval._fields[fieldname]))
-                        except:
-                            print "Error serializing", fieldname
-                            raise
+                        setattr(retval, fieldname, plain_to_document(plain[fieldname], retval._fields[fieldname]))
             return retval
         if isinstance(doctype, mongoengine.EmbeddedDocumentField):
             return plain_to_document(plain, doctype.document_type())
@@ -91,7 +85,7 @@ def plain_to_document(plain, doctype):
             return plain
     if isinstance(plain, types.NoneType):
         return plain
-    raise Exception("I don't know what to do with %s and doctype %s" % (repr(plain), repr(doctype)))
+    logger.warn("I don't know what to do with %s and doctype %s", repr(plain), repr(doctype))
 
 
 # Better names
