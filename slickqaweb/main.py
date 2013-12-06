@@ -55,7 +55,7 @@ if app.debug:
         if request.method != "GET":
             mimetype = "in:{},out:{}".format(request.mimetype, response.mimetype)
         request_logger.debug("%s %s = %d (%s)", request.method, path, response.status_code, mimetype)
-        if response.status_code == 400:
+        if response.status_code == 400 or response.status_code == 500:
             data = request.data
             if not data:
                 request_logger.debug('data was empty, grabbing data from for keys')
