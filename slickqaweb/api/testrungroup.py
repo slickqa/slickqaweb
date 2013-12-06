@@ -6,7 +6,7 @@ from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import buildQueryFromRequest
 from flask import request, g
-from .standardResponses import JsonResponse
+from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
 
 # TODO: add error handling. Not sure how to handle that yet.
@@ -21,7 +21,7 @@ def get_testrungroup_by_id(testrungroup_id):
 
 @app.route('/api/testrungroups', methods=["POST"])
 def add_testrungroup():
-    new_trg = deserialize_that(request.get_json(), TestrunGroup())
+    new_trg = deserialize_that(read_request(), TestrunGroup())
     if (new_trg.createdBy is None or new_trg.createdBy == "") and g.user is not None:
         new_trg.createdBy = g.user.full_name
     new_trg.save()
@@ -30,7 +30,7 @@ def add_testrungroup():
 @app.route('/api/testrungroups/<testrungroup_id>', methods=["PUT"])
 def update_testrungroup(testrungroup_id):
     orig = TestrunGroup.objects(id=testrungroup_id).first()
-    deserialize_that(request.get_json(), orig)
+    deserialize_that(read_request(), orig)
     orig.save()
     return JsonResponse(orig)
 

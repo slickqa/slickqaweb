@@ -1,6 +1,6 @@
 __author__ = 'jcorbett'
 
-from .standardResponses import JsonResponse
+from .standardResponses import JsonResponse, read_request
 from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.query import buildQueryFromRequest
 from slickqaweb.app import app
@@ -128,7 +128,7 @@ def get_result_by_id(result_id):
 
 @app.route('/api/results', methods=["POST"])
 def add_result():
-    new_result = deserialize_that(request.get_json(), Result())
+    new_result = deserialize_that(read_request(), Result())
     assert isinstance(new_result, Result)
     # validate --------------------------------------------------------------
     # you must have a testcase reference (some info about the testcase) and a
@@ -320,7 +320,7 @@ def add_result():
 @app.route('/api/results/<result_id>', methods=["PUT"])
 def update_result(result_id):
     orig = Result.objects(id=result_id).first()
-    update = request.get_json()
+    update = read_request()
     if  'status' in update and update['status'] != orig.status:
         atomic_update = {
             'dec__summary__resultsByStatus__' + orig.status: 1,
@@ -337,7 +337,7 @@ def add_to_log(result_id):
     if not hasattr(orig, 'log') or orig.log is None:
         orig.log = []
 
-    list_of_log_entries = request.get_json()
+    list_of_log_entries = read_request()
     if isinstance(list_of_log_entries, types.ListType):
         for entry_json in list_of_log_entries:
             orig.log.append(deserialize_that(entry_json, LogEntry()))

@@ -5,7 +5,7 @@ from slickqaweb.model.component import Component
 from slickqaweb.model.build import Build
 from slickqaweb.model.serialize import deserialize_that
 from flask import Response, request
-from .standardResponses import JsonResponse
+from .standardResponses import JsonResponse, read_request
 from slickqaweb.model.query import buildQueryFromRequest
 from bson import ObjectId
 import datetime
@@ -35,7 +35,7 @@ def get_project_by_name(project_name):
 
 @app.route('/api/projects', methods=["POST"])
 def add_project():
-    new_project = deserialize_that(request.get_json(), Project())
+    new_project = deserialize_that(read_request(), Project())
     new_project.lastUpdated = datetime.datetime.utcnow()
     new_project.save()
     return JsonResponse(new_project)
@@ -44,7 +44,7 @@ def add_project():
 @app.route('/api/projects/<project_name>', methods=["PUT"])
 def update_project(project_name):
     orig = get_project(project_name)
-    deserialize_that(request.get_json(), orig)
+    deserialize_that(read_request(), orig)
     orig.lastUpdated = datetime.datetime.utcnow()
     orig.save()
     return JsonResponse(orig)
@@ -59,7 +59,7 @@ def delete_project(project_name):
 # ----------------- For backwards compatibility -----------------------------
 @app.route('/api/projects/<project_id>/name', methods=["PUT"])
 def change_project_name(project_id):
-    name = request.get_json()
+    name = read_request()
     assert isinstance(name, types.StringTypes)
     orig = get_project(project_id)
     orig.name = name
@@ -69,7 +69,7 @@ def change_project_name(project_id):
 
 @app.route('/api/projects/<project_id>/description', methods=["PUT"])
 def change_project_description(project_id):
-    description = request.get_json()
+    description = read_request()
     assert isinstance(description, types.StringTypes)
     orig = get_project(project_id)
     orig.description = description
@@ -100,7 +100,7 @@ def get_releases_for_project(project_id):
 def add_release_for_project(project_id):
     project = get_project(project_id)
     assert isinstance(project, Project)
-    rel = deserialize_that(request.get_json(), Release())
+    rel = deserialize_that(read_request(), Release())
     if not hasattr(rel, 'id') or rel.id is None:
         rel.id = ObjectId()
     if not hasattr(project, 'releases'):
@@ -134,7 +134,7 @@ def set_default_release_for_project(project_id, release_id):
 def update_release(project_id, release_id):
     project = get_project(project_id)
     release = get_release(project, release_id)
-    deserialize_that(request.get_json(), release)
+    deserialize_that(read_request(), release)
     project.save()
     return JsonResponse(release)
 
@@ -171,7 +171,7 @@ def add_build(project_id, release_id):
     release = get_release(project, release_id)
     assert isinstance(project, Project)
     assert isinstance(release, Release)
-    build = deserialize_that(request.get_json(), Build())
+    build = deserialize_that(read_request(), Build())
     if not hasattr(build, 'id') or build.id is None:
         build.id = ObjectId()
     if not hasattr(release, 'builds'):
@@ -209,7 +209,7 @@ def update_build(project_id, release_id, build_id):
     project = get_project(project_id)
     release = get_release(project, release_id)
     build = get_build(release, build_id)
-    deserialize_that(request.get_json(), build)
+    deserialize_that(read_request(), build)
     project.save()
     return JsonResponse(build)
 
@@ -244,7 +244,7 @@ def get_components(project_id):
 def add_component_for_project(project_id):
     project = get_project(project_id)
     assert isinstance(project, Project)
-    component = deserialize_that(request.get_json(), Component())
+    component = deserialize_that(read_request(), Component())
     if not hasattr(component, 'id') or component.id is None:
         component.id = ObjectId()
     if not hasattr(project, 'components'):
@@ -262,7 +262,7 @@ def get_specific_component_for_project(project_id, component_id):
 def update_component(project_id, component_id):
     project = get_project(project_id)
     component = get_component(project, component_id)
-    deserialize_that(request.get_json(), component)
+    deserialize_that(read_request(), component)
     project.save()
     return JsonResponse(component)
 

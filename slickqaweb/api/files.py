@@ -6,7 +6,7 @@ from bson import ObjectId
 from slickqaweb.model.storedFile import StoredFile
 from slickqaweb.model.fileChunk import FileChunk
 from slickqaweb.model.serialize import deserialize_that
-from .standardResponses import JsonResponse
+from .standardResponses import JsonResponse, read_request
 from hashlib import md5
 
 @app.route("/api/files/<file_id>")
@@ -16,13 +16,13 @@ def get_stored_file(file_id):
 @app.route("/api/files/<file_id>", methods=["PUT"])
 def update_stored_file(file_id):
     stored_file = StoredFile.objects(id=ObjectId(file_id)).first()
-    stored_file = deserialize_that(request.get_json(), stored_file)
+    stored_file = deserialize_that(read_request(), stored_file)
     stored_file.save()
     return JsonResponse(stored_file)
 
 @app.route("/api/files", methods=["POST"])
 def create_stored_file():
-    new_stored_file = deserialize_that(request.get_json(), StoredFile())
+    new_stored_file = deserialize_that(read_request(), StoredFile())
     new_stored_file.chunkSize = 262144
     new_stored_file.save()
     return JsonResponse(new_stored_file)
