@@ -18,7 +18,7 @@ import logging
 app.config.from_object('slickqaweb.settings')
 if 'SLICK_SETTINGS' in os.environ:
     app.config.from_envvar("SLICK_SETTINGS")
-initialize_logging(app.config)
+initialize_logging(app)
 
 logger = logging.getLogger("slickqaweb.main")
 logger.info("Slick Web App Server starting...")
