@@ -58,6 +58,8 @@ def plain_to_document(plain, doctype):
             return plain
         if isinstance(doctype, mongoengine.ObjectIdField):
             return bson.ObjectId(plain)
+        if isinstance(doctype, mongoengine.DateTimeField):
+            return datetime.datetime.utcfromtimestamp(float(plain) / 1000)
     if isinstance(plain, types.IntType):
         if isinstance(doctype, (mongoengine.IntField, mongoengine.LongField)):
             return plain
