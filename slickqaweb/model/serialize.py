@@ -43,9 +43,17 @@ def plain_to_document(plain, doctype):
                     if isinstance(retval._fields[fieldname], (mongoengine.EmbeddedDocumentField, mongoengine.ReferenceField)):
                         if getattr(retval, fieldname) is None:
                             setattr(retval, fieldname, retval._fields[fieldname].document_type())
-                        setattr(retval, fieldname, plain_to_document(plain[fieldname], getattr(retval, fieldname)))
+                        try:
+                            setattr(retval, fieldname, plain_to_document(plain[fieldname], getattr(retval, fieldname)))
+                        except:
+                            print "Error serializing", fieldname
+                            raise
                     else:
-                        setattr(retval, fieldname, plain_to_document(plain[fieldname], retval._fields[fieldname]))
+                        try:
+                            setattr(retval, fieldname, plain_to_document(plain[fieldname], retval._fields[fieldname]))
+                        except:
+                            print "Error serializing", fieldname
+                            raise
             return retval
         if isinstance(doctype, mongoengine.EmbeddedDocumentField):
             return plain_to_document(plain, doctype.document_type())
