@@ -254,7 +254,7 @@ def add_component_for_project(project_id):
     return JsonResponse(component)
 
 @app.route('/api/projects/<project_id>/components/<component_id>')
-@app.route('/api/projects/<project_id>/components/byname/<component_id>')
+@app.route('/api/projects/<project_id>/components/byname/<path:component_id>')
 def get_specific_component_for_project(project_id, component_id):
     return JsonResponse(get_component(get_project(project_id), component_id))
 
