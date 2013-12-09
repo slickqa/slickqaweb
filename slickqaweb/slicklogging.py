@@ -23,7 +23,6 @@ def initialize_logging(app):
     for handler in handlers:
         handler.setFormatter(formatter)
         root_logger.addHandler(handler)
-        app.logger.addHandler(handler)
     if exc_info is not None:
         logger = logging.getLogger("slickqaweb.logging.initialize_logging")
         logger.warning("Unable to write to log file %s: ", config["LOG_PATH"], exc_info=exc_info)
