@@ -24,9 +24,18 @@
         </div>
     </slick-dialog>
     <slick-dialog title="{{fileToDisplay.filename}}" size="large" show="showDisplayFile" buttons="Ok" button-callback="displayFileDialogButtonClicked(buttonName)">
-        <div class="testrun-summary-display-file-image" ng-show="fileToDisplay.mimetype.indexOf('image/') === 0">
-            <img ng-src="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}" alt="{{fileToDisplay.filename}}"/>
+        <div ng-switch on="getFileViewer(fileToDisplay)">
+            <div class="testrun-summary-display-file-image" ng-switch-when="image">
+                <img ng-src="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}" alt="{{fileToDisplay.filename}}"/>
+            </div>
+            <div class="testrun-summary-display-file-embed-video" ng-switch-when="embed-video">
+                <object type="{{fileToDisplay.mimetype}}" width="800" height="600" data="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}"></object>
+            </div>
+            <div class="testrun-summary-display-file-html5-video" ng-switch-when="html5-vide">
+                <video ng-src="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}"></video>
+            </div>
         </div>
+
     </slick-dialog>
     <div class="testrun-summary-outer">
         <div class="testrun-summary-inner">

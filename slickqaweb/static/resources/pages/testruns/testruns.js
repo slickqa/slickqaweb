@@ -282,6 +282,18 @@ angular.module('slickApp')
             $event.preventDefault();
         };
 
+        $scope.getFileViewer = function(file) {
+            if (file.mimetype.indexOf("image") === 0) {
+                return "image";
+            } else if(file.mimetype.indexOf("video") === 0) {
+                if (file.mimetype == "video/mp4") {
+                    return "html5-video"
+                } else {
+                    return "embed-video";
+                }
+            }
+        };
+
         $scope.displayFileDialogButtonClicked = function(buttonName) {
             $scope.showDisplayFile = false;
         };
