@@ -31,8 +31,11 @@
             <div class="testrun-summary-display-file-embed-video" ng-switch-when="embed-video">
                 <object type="{{fileToDisplay.mimetype}}" width="800" height="600" data="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}"></object>
             </div>
-            <div class="testrun-summary-display-file-html5-video" ng-switch-when="html5-vide">
-                <video ng-src="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}"></video>
+            <div class="testrun-summary-display-file-html5-video" ng-switch-when="html5-video">
+                <video ng-src="{{getUrlForFile(fileToDisplay)}}"></video>
+            </div>
+            <div class="testrun-summary-display-file-text" ng-switch-when="text">
+                <pre ng-bind="fileToDisplay.text"></pre>
             </div>
         </div>
 

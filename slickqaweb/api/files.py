@@ -66,7 +66,7 @@ def get_file_content(file_id, filename):
     def write_chunks():
         for chunk in FileChunk.objects(files_id=stored_file.id).order_by('+n'):
             yield chunk.data
-    return Response(write_chunks(), mimetype=stored_file.mimetype)
+    return Response(write_chunks(), headers={'Content-Length': stored_file.length}, mimetype=stored_file.mimetype, direct_passthrough=True)
 
 
 
