@@ -23,6 +23,11 @@
             </div>
         </div>
     </slick-dialog>
+    <slick-dialog title="{{fileToDisplay.filename}}" size="large" show="showDisplayFile" buttons="Ok" button-callback="displayFileDialogButtonClicked(buttonName)">
+        <div class="testrun-summary-display-file-image" ng-show="fileToDisplay.mimetype.indexOf('image/') === 0">
+            <img ng-src="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}" alt="{{fileToDisplay.filename}}"/>
+        </div>
+    </slick-dialog>
     <div class="testrun-summary-outer">
         <div class="testrun-summary-inner">
             <div class="testrun-summary-container">
@@ -126,7 +131,7 @@
                     Files ({{result.files.length}}):
                     [
                         <span ng-repeat="file in result.files">
-                            <a href="api/files/{{file.id}}/content/{{file.filename}}" ng-click="displayFile(file)">{{file.filename}} </a>
+                            <a href="api/files/{{file.id}}/content/{{file.filename}}" ng-click="displayFile(file, $event)">{{file.filename}} </a>
                             <span ng-show="!$last">,</span>
                         </span>]
                 </span>

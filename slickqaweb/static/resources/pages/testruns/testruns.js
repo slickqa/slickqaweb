@@ -137,6 +137,8 @@ angular.module('slickApp')
             matchRelease: true,
             matchEnvironment: true
         };
+        $scope.showDisplayFile = false;
+        $scope.fileToDisplay = {};
         $scope.options = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
             backgroundColor: "#000000",
@@ -272,6 +274,16 @@ angular.module('slickApp')
             return _.filter(result.log, function(logEntry) {
                 return logEntry.level == "WARN" && logEntry.loggerName == "slick.note";
             });
+        };
+
+        $scope.displayFile = function(file, $event) {
+            $scope.fileToDisplay = file;
+            $scope.showDisplayFile = true;
+            $event.preventDefault();
+        };
+
+        $scope.displayFileDialogButtonClicked = function(buttonName) {
+            $scope.showDisplayFile = false;
         };
 
         window.scope = $scope;
