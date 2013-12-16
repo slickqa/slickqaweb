@@ -120,15 +120,17 @@
             <div class="result-list-status-column result-status-{{result.status.replace('_','')}}" ng-bind="result.status.replace('_',' ')"></div>
         </div>
         <div class="result-list-second-part">
-            <div class="result-list-log-column" ng-show="result.log"><a href="results/{{result.id}}/log" ng-click="displayLog(result)">Log Entries ({{result.log.length}})</a></div>
-            <div class="result-list-files-column" ng-show="result.files">
-                Files ({{result.files.length}}):
-                [
-                    <span ng-repeat="file in result.files">
-                        <a href="api/files/{{file.id}}/content/{{file.filename}}" ng-click="displayFile(file)">{{file.filename}} </a>
-                        <span ng-show="!$last">,</span>
-                    </span>
-                ]</div>
+            <div class="result-list-log-column"><a href="results/{{result.id}}/log" ng-show="result.log" ng-click="displayLog(result)">Log Entries ({{result.log.length}})</a></div>
+            <div class="result-list-files-column">
+                <span  ng-show="result.files">
+                    Files ({{result.files.length}}):
+                    [
+                        <span ng-repeat="file in result.files">
+                            <a href="api/files/{{file.id}}/content/{{file.filename}}" ng-click="displayFile(file)">{{file.filename}} </a>
+                            <span ng-show="!$last">,</span>
+                        </span>]
+                </span>
+            </div>
             <div class="result-list-actions-column">
                 <span class="button" ng-click="addNote(result)">Add Note</span>
                 <span class="button" ng-hide="moreDetail || moreDetailForResult[result.id]" ng-click="addMoreDetail(result)">More Detail</span>
