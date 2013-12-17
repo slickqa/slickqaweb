@@ -40,6 +40,9 @@
         </div>
 
     </slick-dialog>
+    <slick-dialog title="Reason" size="large" show="showDisplayReason" buttons="Ok" button-callback="displayReasonDialogButtonClicked(buttonName)">
+        <pre ng-bind="reason"></pre>
+    </slick-dialog>
     <div class="testrun-summary-outer">
         <div class="testrun-summary-inner">
             <div class="testrun-summary-container">
@@ -162,7 +165,7 @@
             </div>
         </div>
         <div class="result-list-reason-part" ng-show="result.reason && !moreDetail && !moreDetailForResult[result.id]">
-            <a href="results/{{result.id}}/reason" ng-click="displayReason(result)">Reason: <span class="result-list-reason-field">{{getAbbreviatedReason(result)}}</span>...</a>
+            <a href="results/{{result.id}}/reason" ng-click="displayReason(result, $event)">Reason: <span class="result-list-reason-field">{{getAbbreviatedReason(result)}}</span>...</a>
         </div>
         <div class="result-list-more-detail-part" ng-show="moreDetail || moreDetailForResult[result.id]">
             <div class="result-list-more-detail-reason">

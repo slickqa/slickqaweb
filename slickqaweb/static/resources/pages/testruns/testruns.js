@@ -139,6 +139,8 @@ angular.module('slickApp')
         };
         $scope.showDisplayFile = false;
         $scope.fileToDisplay = {};
+        $scope.reason = "";
+        $scope.showDisplayReason = false;
         $scope.options = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
             backgroundColor: "#000000",
@@ -297,7 +299,7 @@ angular.module('slickApp')
                     } else {
                         return "embed-video";
                     }
-                } else if(file.mimetype.indexOf("text") === 0 || file.mimetype == "application/xml") {
+                } else if(file.mimetype.indexOf("text") >= 0 || file.mimetype == "application/xml") {
                     return "text";
                 }
 
@@ -310,7 +312,20 @@ angular.module('slickApp')
 
         $scope.displayFileDialogButtonClicked = function(buttonName) {
             $scope.showDisplayFile = false;
+            $scope.fileToDisplay = {};
         };
+
+        $scope.displayReason = function(result, $event) {
+            $event.preventDefault();
+            $scope.showDisplayReason = true;
+            $scope.reason = result.reason;
+        };
+
+        $scope.displayReasonDialogButtonClicked = function(buttonName) {
+            $scope.showDisplayReason = false;
+            $scope.reason = "";
+        };
+
 
         window.scope = $scope;
     }]);
