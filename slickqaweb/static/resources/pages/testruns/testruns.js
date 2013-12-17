@@ -282,7 +282,7 @@ angular.module('slickApp')
             $scope.fileToDisplay = file;
             $scope.showDisplayFile = true;
             $event.preventDefault();
-            if(file && file.mimetype && (file.mimetype.indexOf("text") === 0 || file.mimetype == "application/xml")) {
+            if(file && file.mimetype && (file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml")) {
                 rest.one('files', file.id).one('content', file.filename).get().then(function(text) {
                     $scope.fileToDisplay.text = text;
                 });
@@ -299,7 +299,7 @@ angular.module('slickApp')
                     } else {
                         return "embed-video";
                     }
-                } else if(file.mimetype.indexOf("text") >= 0 || file.mimetype == "application/xml") {
+                } else if(file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml") {
                     return "text";
                 }
 
