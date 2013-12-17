@@ -15,7 +15,7 @@ angular.module("slickApp")
             link: function($scope, $el) {
                 $scope.$watch('code', function() {
                     $el.text($scope.code);
-                    $el.html(prettyPrintOne($el.html()));
+                    $el.html(prettyPrintOne($el.html(), null, true));
                 });
             }
         };
