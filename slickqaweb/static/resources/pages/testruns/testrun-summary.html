@@ -35,7 +35,7 @@
                 <video ng-src="{{getUrlForFile(fileToDisplay)}}"></video>
             </div>
             <div class="testrun-summary-display-file-text" ng-switch-when="text">
-                <pre ng-bind="fileToDisplay.text"></pre>
+                <pre prettyprint code="fileToDisplay.text"></pre>
             </div>
         </div>
 

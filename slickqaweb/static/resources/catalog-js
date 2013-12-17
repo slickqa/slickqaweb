@@ -21,3 +21,4 @@ pages/testruns/testruns.js
 shared/side-select/side-select.js
 shared/testrun-stats/stats.js
 shared/google-chart/google-chart.js
+shared/prettyprint/prettyprint.js
