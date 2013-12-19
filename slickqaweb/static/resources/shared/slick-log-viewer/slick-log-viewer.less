@@ -1,0 +1,49 @@
+.logs-list-column-container {
+  .flex-container;
+}
+
+.logs-list-entryTime-column {
+  .flex-grow-off;
+  width: 25%;
+  padding-left: .1in;
+}
+
+.logs-list-loggerName-column {
+  .flex-grow-off;
+  width: 50%;
+  padding-left: .1in;
+}
+
+.logs-list-level-column {
+  width: 25%;
+  padding-left: .1in;
+}
+
+.logs-list-row {
+  padding-top: .05in;
+  // border-bottom: 1px solid #FFFFFF;
+  padding-bottom: .05in;
+}
+
+.logs-list-row.ng-enter {
+  .animated;
+  .animated.fadeInRightBig;
+}
+
+.logs-list-row.ng-leave {
+  .animated;
+  .animated.fadeOutRightBig;
+}
+
+.logs-list-row:nth-child(even) {
+  background: #222222;
+}
+
+.logs-list-row:last-child {
+  border-bottom: none;
+}
+
+.logs-list-message {
+  margin-left: .1in;
+}
+

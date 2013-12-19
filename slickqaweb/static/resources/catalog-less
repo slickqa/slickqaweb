@@ -17,3 +17,4 @@ shared/testrun-statusbar/statusbar.less
 pages/testruns/testruns.less
 shared/side-select/side-select.less
 shared/testrun-stats/stats.less
+shared/slick-log-viewer/slick-log-viewer.less

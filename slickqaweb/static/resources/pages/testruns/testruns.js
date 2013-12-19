@@ -141,6 +141,8 @@ angular.module('slickApp')
         $scope.fileToDisplay = {};
         $scope.reason = "";
         $scope.showDisplayReason = false;
+        $scope.logs = [];
+        $scope.showDisplayLogs = false;
         $scope.options = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
             backgroundColor: "#000000",
@@ -326,6 +328,16 @@ angular.module('slickApp')
             $scope.reason = "";
         };
 
+        $scope.displayLogs = function(result, $event) {
+            $event.preventDefault();
+            $scope.logs = result.log;
+            $scope.showDisplayLogs = true;
+        };
+
+        $scope.displayLogsDialogButtonClicked = function(buttonName) {
+            $scope.logs = [];
+            $scope.showDisplayLogs = false;
+        };
 
         window.scope = $scope;
     }]);

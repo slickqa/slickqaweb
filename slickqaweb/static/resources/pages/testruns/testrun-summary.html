@@ -43,6 +43,9 @@
     <slick-dialog title="Reason" size="large" show="showDisplayReason" buttons="Ok" button-callback="displayReasonDialogButtonClicked(buttonName)">
         <pre ng-bind="reason"></pre>
     </slick-dialog>
+    <slick-dialog title="Logs" size="large" show="showDisplayLogs" buttons="Ok" button-callback="displayLogsDialogButtonClicked(buttonName)">
+        <slick-log-viewer logs="logs"></slick-log-viewer>
+    </slick-dialog>
     <div class="testrun-summary-outer">
         <div class="testrun-summary-inner">
             <div class="testrun-summary-container">
@@ -140,7 +143,7 @@
             <div class="result-list-status-column result-status-{{result.status.replace('_','')}}" ng-bind="result.status.replace('_',' ')"></div>
         </div>
         <div class="result-list-second-part">
-            <div class="result-list-log-column"><a href="results/{{result.id}}/log" ng-show="result.log" ng-click="displayLog(result)">Log Entries ({{result.log.length}})</a></div>
+            <div class="result-list-log-column"><a href="results/{{result.id}}/log" ng-show="result.log" ng-click="displayLogs(result, $event)">Log Entries ({{result.log.length}})</a></div>
             <div class="result-list-files-column">
                 <span  ng-show="result.files">
                     Files ({{result.files.length}}):

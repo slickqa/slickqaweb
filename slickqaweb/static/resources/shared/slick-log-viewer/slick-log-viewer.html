@@ -1,0 +1,19 @@
+<div class="slick-log-viewer">
+    <slick-list-header model="logList" search="on" pagination="on" default-sort="entryTime">
+        <slick-list-columns class="logs-list-column-container">
+            <slick-list-column class="logs-list-entryTime-column" sort-property-name="entryTime" sortable="true">Entry Time</slick-list-column>
+            <slick-list-column class="logs-list-loggerName-column" sort-property-name="loggerName" sortable="true">Logger Name</slick-list-column>
+            <slick-list-column class="logs-list-level-column" sort-property-name="level" sortable="true">Log Level</slick-list-column>
+        </slick-list-columns>
+    </slick-list-header>
+    <div class="logs-list-row-container">
+        <div ng-repeat="entry in logs | slickListFilter:logList" class="logs-list-row">
+            <div class="logs-list-column-container">
+                <div class="logs-list-entryTime-column" ng-bind="entry.entryTime | date:'medium'"></div>
+                <div class="logs-list-loggerName-column" ng-bind="entry.loggerName"></div>
+                <div class="logs-list-level-column" ng-bind="entry.level"></div>
+            </div>
+            <pre class="logs-list-message" ng-bind="entry.message"></pre>
+        </div>
+    </div>
+</div>
