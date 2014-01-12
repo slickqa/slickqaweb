@@ -9,6 +9,8 @@ from flask_openid import OpenID
 from slickqaweb.app import app
 from slickqaweb.slicklogging import initialize_logging
 from slickqaweb import compiledResources
+from .amqpcon import connect_to_amqp
+from .model.systemConfiguration.amqpSystemConfiguration import AMQPSystemConfiguration
 
 import os
 import sys
@@ -42,6 +44,24 @@ try:
 except:
     logger.fatal("Error connecting to database: ", exc_info=sys.exc_info())
     logger.fatal("Unable to connect to mongodb database '%s' on host '%s'.", )
+    raise
+try:
+    amqp_configuration = AMQPSystemConfiguration.objects().first()
+    if amqp_configuration is not None:
+        c = connect_to_amqp(amqp_configuration)
+        app.config['event_connection'] = c[0]
+        app.config['event_exchange'] = c[1]
+    else:
+        logger.info("No AMQP System Configuration defined, no events will be published.")
+except:
+    logger.warn('AMQP System Configuration was provided, but there was an error initializing it:', exc_info=sys.exc_info())
+
+if 'event_connection' in app.config and 'event_exchange' in app.config and app.config['event_connection'].connected:
+    logger.info('AMQP configuration complete, connection established, events are enabled.')
+    app.config['events'] = True
+else:
+    logger.warn('Events are disabled')
+    app.config['events'] = False
 
 
 if app.debug:

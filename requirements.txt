@@ -8,3 +8,5 @@ argcomplete
 nose
 python-dateutil
 pyparsing
+kombu
+librabbitmq

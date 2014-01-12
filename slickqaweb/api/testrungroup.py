@@ -22,8 +22,6 @@ def get_testrungroup_by_id(testrungroup_id):
 @app.route('/api/testrungroups', methods=["POST"])
 def add_testrungroup():
     new_trg = deserialize_that(read_request(), TestrunGroup())
-    if (new_trg.createdBy is None or new_trg.createdBy == "") and g.user is not None:
-        new_trg.createdBy = g.user.full_name
     new_trg.save()
     return JsonResponse(new_trg)
 

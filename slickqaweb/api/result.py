@@ -19,6 +19,7 @@ from slickqaweb.model.release import Release
 from slickqaweb.model.build import Build
 from slickqaweb.model.configuration import Configuration
 from slickqaweb.model.configurationReference import ConfigurationReference
+from slickqaweb import events
 
 from bson import ObjectId
 import types
@@ -314,21 +315,31 @@ def add_result():
     new_result.history = find_history(new_result)
     new_result.save()
 
-
+    events.CreateEvent(new_result)
     return JsonResponse(new_result)
 
 @app.route('/api/results/<result_id>', methods=["PUT"])
 def update_result(result_id):
     orig = Result.objects(id=result_id).first()
+    update_event = events.UpdateEvent(before=orig)
     update = read_request()
-    if  'status' in update and update['status'] != orig.status:
+    if 'status' in update and update['status'] != orig.status:
         atomic_update = {
             'dec__summary__resultsByStatus__' + orig.status: 1,
             'inc__summary__resultsByStatus__' + update['status']: 1
         }
+        update_testrun_event = None
+        testrun = None
+        if app.config['events']:
+            testrun = Testrun.objects(id=orig.testrun.testrunId).first()
+            update_testrun_event = events.UpdateEvent(before=testrun)
         Testrun.objects(id=orig.testrun.testrunId).update_one(**atomic_update)
+        if app.config['events']:
+            testrun.reload()
+            update_testrun_event.after(testrun)
     deserialize_that(update, orig)
     orig.save()
+    update_event.after(orig)
     return JsonResponse(orig)
 
 @app.route('/api/results/<result_id>/log', methods=["POST"])
