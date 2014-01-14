@@ -340,7 +340,7 @@ header h1 {
 }
 
 .nav-group-box {
-  border-top: 1px solid white;
+  //border-top: 1px solid white;
   border-left: 1px solid white;
   margin-left: @nav-image-width + @nav-image-margin;
   padding-left: .1in;
@@ -348,13 +348,15 @@ header h1 {
 
 .nav-group-box.ng-hide-remove {
   .animated;
-  .animated.flipInX;
+  //.animated.flipInX;
+  .animated.fadeInDown;
 }
 
 .nav-group-box.ng-hide-add {
   display: block!important;
   .animated;
-  .animated.flipOutX;
+  //.animated.flipOutX;
+  .animated.fadeOutUp;
 }
 
 .sidenav-pin-box {
