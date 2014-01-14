@@ -32,7 +32,7 @@ def document_to_plain(doc):
         return int((doc - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
     if isinstance(doc, bson.ObjectId):
         return str(doc)
-    raise Exception("I don't know how to serialize %s" % doc.__class__.__name__)
+    raise Exception("I don't know how to serialize %s: looks like %s" % (doc.__class__.__name__, repr(doc)))
 
 logger = logging.getLogger('slickqaweb.model.serialize')
 
