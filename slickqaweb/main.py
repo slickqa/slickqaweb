@@ -16,6 +16,9 @@ import os
 import sys
 import api
 import logging
+import mimetypes
+
+mimetypes.add_type('image/svg+xml', '.svg')
 
 app.config.from_object('slickqaweb.settings')
 if 'SLICK_SETTINGS' in os.environ:
