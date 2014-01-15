@@ -3,7 +3,7 @@ __author__ = 'jcorbett'
 from slickqaweb.app import app
 from slickqaweb.model.systemConfiguration import load_system_configuration_type, SystemConfigurationTypes, BaseSystemConfiguration
 from slickqaweb.model.serialize import deserialize_that
-from slickqaweb.model.query import buildQueryFromRequest
+from slickqaweb.model.query import queryFor
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
@@ -19,7 +19,7 @@ def get_system_configurations():
         else:
             args['configurationType'] = args['config-type']
         del args['config-type']
-    return JsonResponse(type.objects(buildQueryFromRequest(args)))
+    return JsonResponse(queryFor(type, args))
 
 @app.route('/api/system-configuration/<config_id>')
 def get_system_configuration_by_id(config_id):

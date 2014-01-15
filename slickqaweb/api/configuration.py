@@ -1,7 +1,7 @@
 __author__ = 'jcorbett'
 
 from slickqaweb.model.configuration import Configuration
-from slickqaweb.model.query import buildQueryFromRequest
+from slickqaweb.model.query import queryFor
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.app import app
 from .standardResponses import JsonResponse, read_request
@@ -10,7 +10,7 @@ from bson import ObjectId
 
 @app.route('/api/configurations')
 def get_all_matching_configurations():
-    return JsonResponse(Configuration.objects(buildQueryFromRequest()))
+    return JsonResponse(queryFor(Configuration))
 
 
 @app.route('/api/configurations', methods=['POST'])

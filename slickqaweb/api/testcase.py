@@ -3,7 +3,7 @@ __author__ = 'slambson'
 from slickqaweb.app import app
 from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.serialize import deserialize_that
-from slickqaweb.model.query import buildQueryFromRequest
+from slickqaweb.model.query import queryFor
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 
@@ -15,7 +15,7 @@ def get_testcases():
         args = args.to_dict()
         args['project.id'] = request.args['projectid']
         del args['projectid']
-    return JsonResponse(Testcase.objects(buildQueryFromRequest(args)))
+    return JsonResponse(queryFor(Testcase, args))
 
 @app.route('/api/testcases/<testcase_id>')
 def get_testcase_by_id(testcase_id):

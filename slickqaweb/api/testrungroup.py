@@ -4,7 +4,7 @@ from slickqaweb.app import app
 from slickqaweb.model.testrunGroup import TestrunGroup
 from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.serialize import deserialize_that
-from slickqaweb.model.query import buildQueryFromRequest
+from slickqaweb.model.query import queryFor
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
@@ -12,7 +12,7 @@ from bson import ObjectId
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/testrungroups')
 def get_testrungroups():
-    return JsonResponse(TestrunGroup.objects(buildQueryFromRequest()))
+    return JsonResponse(queryFor(TestrunGroup))
 
 @app.route('/api/testrungroups/<testrungroup_id>')
 def get_testrungroup_by_id(testrungroup_id):

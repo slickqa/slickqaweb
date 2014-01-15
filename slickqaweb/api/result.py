@@ -2,7 +2,7 @@ __author__ = 'jcorbett'
 
 from .standardResponses import JsonResponse, read_request
 from slickqaweb.utils import is_provided, is_not_provided
-from slickqaweb.model.query import buildQueryFromRequest
+from slickqaweb.model.query import queryFor
 from slickqaweb.app import app
 from slickqaweb.model.result import Result
 from slickqaweb.model.serialize import deserialize_that
@@ -97,29 +97,18 @@ def find_history(result):
 @app.route('/api/results')
 def get_results():
     args = request.args.to_dict()
-    query = None
-    all_fields = False
     if args.has_key('testrunid'):
         args['testrun.testrunId'] = request.args['testrunid']
         del args['testrunid']
-    if args.has_key('status') and args.has_key('excludestatus'):
-        print "Oh crap, got status and excludestatus"
+    if args.has_key('excludestatus'):
+        args['q'] = "ne(status,\"{}\")".format(args['excludestatus'])
         del args['excludestatus']
     if args.has_key('allfields'):
-        all_fields = True
         del args['allfields']
-    if args.has_key('excludestatus'):
-        exclude = args['excludestatus']
-        del args['excludestatus']
-        query = buildQueryFromRequest(args)
-        query = (query & Q(status__ne=exclude))
-    else:
-        query = buildQueryFromRequest(args)
+    if not args.has_key("orderby"):
+        args["orderby"] = '-recorded'
 
-    if all_fields:
-        return JsonResponse(Result.objects(query).order_by('-recorded'))
-    else:
-        return JsonResponse(Result.objects(query).order_by('-recorded').exclude("log", "build", "release", "project", "testrun", "config"))
+    return JsonResponse(queryFor(Result, args))
 
 
 @app.route('/api/results/<result_id>')

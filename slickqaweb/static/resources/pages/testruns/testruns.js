@@ -189,7 +189,6 @@ angular.module('slickApp')
             if(includableStatuses.length == 1) {
                 $scope.resultQuery = {
                     q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),eq(status,\"" + includableStatuses[0] + "\"))",
-                    allfields: "true"
                 };
             } else {
                 var statuses = [];
@@ -198,7 +197,6 @@ angular.module('slickApp')
                 });
                 $scope.resultQuery = {
                     q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),or(" + statuses.join(",") + "))",
-                    allfields: "true"
                 }
             }
             if (oldQuery != $scope.resultQuery.q || $scope.recentlyFetchedTestrun) {

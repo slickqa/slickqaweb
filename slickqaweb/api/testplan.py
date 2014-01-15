@@ -3,7 +3,7 @@ __author__ = 'Jared'
 from slickqaweb.app import app
 from slickqaweb.model.testPlan import TestPlan
 from slickqaweb.model.serialize import deserialize_that
-from slickqaweb.model.query import buildQueryFromRequest
+from slickqaweb.model.query import queryFor
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 
@@ -16,7 +16,7 @@ def get_testplans():
         args = args.to_dict()
         args['project.id'] = request.args['projectid']
         del args['projectid']
-    return JsonResponse(TestPlan.objects(buildQueryFromRequest(args)))
+    return JsonResponse(queryFor(TestPlan, args))
 
 @app.route('/api/testplans/<testplan_id>')
 def get_testplan_by_id(testplan_id):

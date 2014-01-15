@@ -6,7 +6,7 @@ from slickqaweb.app import app
 from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.serialize import deserialize_that
-from slickqaweb.model.query import buildQueryFromRequest
+from slickqaweb.model.query import queryFor
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from slickqaweb import events
@@ -14,7 +14,7 @@ from slickqaweb import events
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/testruns')
 def get_testruns():
-    return JsonResponse(Testrun.objects(buildQueryFromRequest()))
+    return JsonResponse(queryFor(Testrun))
 
 @app.route('/api/testruns/<testrun_id>')
 def get_testrun_by_id(testrun_id):

@@ -135,3 +135,32 @@ def buildQueryFromRequest(args=None):
                 query = Q(**{param: value})
         return query
 
+def queryFor(model, args=None):
+    if args is None:
+        args = request.args.to_dict()
+    orderby = None
+    if args.has_key('orderby'):
+        orderby = args.get('orderby')
+        del args['orderby']
+    skip = 0
+    if args.has_key('skip'):
+        skip = int(args.get('skip'))
+        del args['skip']
+    limit = None
+    if args.has_key('limit'):
+        limit = int(args.get('limit'))
+        if skip > 0:
+            limit += skip
+        del args['limit']
+    if orderby is None:
+        if limit is None:
+            return model.objects(buildQueryFromRequest(args))[skip:]
+        else:
+            return model.objects(buildQueryFromRequest(args))[skip:limit]
+    else:
+        if limit is None:
+            return model.objects(buildQueryFromRequest(args)).order_by(orderby)[skip:]
+        else:
+            return model.objects(buildQueryFromRequest(args)).order_by(orderby)[skip:limit]
+
+

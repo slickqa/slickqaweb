@@ -6,7 +6,7 @@ from slickqaweb.model.build import Build
 from slickqaweb.model.serialize import deserialize_that
 from flask import Response, request
 from .standardResponses import JsonResponse, read_request
-from slickqaweb.model.query import buildQueryFromRequest
+from slickqaweb.model.query import queryFor
 from bson import ObjectId
 import datetime
 import types
@@ -14,7 +14,7 @@ import types
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/projects')
 def get_projects():
-    return JsonResponse(Project.objects(buildQueryFromRequest()))
+    return JsonResponse(queryFor(Project))
 
 def get_project(project_name_or_id):
     project_id = None
