@@ -1,5 +1,6 @@
 from mongoengine import *
 from .testrun import Testrun
+from .testrunSummary import TestrunSummary, ResultsByStatus
 from .serialize import serializable
 
 
@@ -21,3 +22,14 @@ class TestrunGroup(Document):
             elif testrun.state == "RUNNING":
                 retval = "RUNNING" # we don't have to worry about overwriting lower state TO_BE_RUN
         return retval
+
+    @serializable
+    def groupSummary(self):
+        """Return a summary of all the testruns in the group."""
+        retval = TestrunSummary()
+        retval.resultsByStatus = ResultsByStatus()
+        for run in self.testruns:
+            for status in run.summary.statusListOrdered():
+                setattr(retval.resultsByStatus, status, getattr(retval.resultsByStatus, status) + getattr(run.summary.resultsByStatus, status))
+        return retval
+
