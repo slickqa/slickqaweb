@@ -23,3 +23,5 @@ shared/testrun-stats/stats.js
 shared/google-chart/google-chart.js
 shared/prettyprint/prettyprint.js
 shared/slick-log-viewer/slick-log-viewer.js
+pages/testrungroup/testcases.js
+pages/testrungroup/testrungroup.js
