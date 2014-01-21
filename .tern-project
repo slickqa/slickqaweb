@@ -1,0 +1,17 @@
+{
+    "libs": [
+        "browser",
+        "ecma5",
+        "underscore"
+    ],
+    "plugins": {
+        "angular": {}
+    },
+    "loadEagerly": [
+        "slickqaweb/static/components/restangular/dist/restangular.js",
+        "slickqaweb/static/components/objectid/Objectid.js",
+        "slickqaweb/static/components/angular-*/angular-*.js",
+        "slickqaweb/slickqaweb/static/resources/shared/*/*.js",
+        "slickqaweb/slickqaweb/static/resources/shared/*.js"
+    ]
+}
