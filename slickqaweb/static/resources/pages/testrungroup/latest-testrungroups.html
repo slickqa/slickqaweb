@@ -1,0 +1,25 @@
+<div class="slickview">
+    <slick-list-header model="groupList" search="on" pagination="on" default-sort="created" default-page-size="25">
+        <slick-list-columns class="testrungroups-list-column-container">
+            <slick-list-column class="testrungroups-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
+            <slick-list-column class="testrungroups-list-overall-results-column" sortable="false">Overall Results</slick-list-column>
+            <slick-list-column class="testrungroups-list-testrun-count-column" sortable="false">Testruns</slick-list-column>
+            <slick-list-column class="testrungroups-list-grouptype-column" sortable="false">Group Type</slick-list-column>
+            <slick-list-column class="testrungroups-list-created-column" sort-property-name="created" sortable="true">Created</slick-list-column>
+        </slick-list-columns>
+    </slick-list-header>
+    <div class="testrungroups-list-row-container">
+        <div ng-repeat="trgroup in testrungroups | slickListFilter:groupList" class="testrungroups-list-row">
+            <div class="testrungroups-list-column-container">
+                <div class="testrungroups-list-name-column"><a href="testrungroup/{{ trgroup.id }}">{{ trgroup.name }}</a></div>
+                <div class="testrungroups-list-overall-results-column" sortable="false"><slick-testrun-group-stats testrungroup="trgroup"></div>
+                <div class="testrungroups-list-testrun-count-column" sortable="false" ng-bind="trgroup.testruns.length"></div>
+                <div class="testrungroups-list-grouptype-column" sortable="false" ng-bind="trgroup.grouptype"></div>
+                <div class="testrungroups-list-created-column" sort-property-name="created" sortable="true" ng-bind="trgroup.created | date:'medium'"></div>
+            </div>
+            <div class="testrungroups-list-status-bar" ng-show="trgroup.testruns.length > 0">
+                <slick-testrun-statusbar summary="trgroup.groupSummary" size="thin"></slick-testrun-statusbar>
+            </div>
+        </div>
+    </div>
+</div>

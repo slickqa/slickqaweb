@@ -11,7 +11,12 @@ angular.module('slickApp')
             .when('/testrungroup/:id', {
                 templateUrl: 'static/resources/pages/testrungroup/view-testrungroup.html',
                 controller: 'ViewTestrunGroupCtrl'
+            })
+            .when('/testrungroups/latest', {
+                templateUrl: 'static/resources/pages/testrungroup/latest-testrungroups.html',
+                controller: 'LatestTestrunGroupsCtrl'
             });
+        nav.addLink('Reports', 'Latest Testrun Groups', 'testrungroups/latest');
     }])
     .controller('ViewTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', function ($scope, rest, nav, $routeParams) {
         $scope.trgroup = {};
@@ -41,5 +46,13 @@ angular.module('slickApp')
                 $scope.options.colors.push(getStyle(status.replace("_", "") + "-element", "color"));
             });
 
+        });
+    }])
+    .controller('LatestTestrunGroupsCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', function ($scope, rest, nav, $routeParams) {
+        $scope.testrungroups = [];
+        $scope.groupList = {};
+
+        rest.all('testrungroups').getList({orderby: "-created",limit: 200}).then(function(testrungroups) {
+            $scope.testrungroups = testrungroups;
         });
     }]);

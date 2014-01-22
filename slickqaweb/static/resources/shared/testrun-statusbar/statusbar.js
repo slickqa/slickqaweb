@@ -23,14 +23,9 @@ angular.module("slickApp")
                 }
                 scope.stats = [];
 
-                //TODO: it would be good to get the width from css instead of defining it both places
-                var totalWidth = 1.8;
-                if (scope.size == "normal") {
-                    totalWidth = 1.0;
-                }
                 _.each(scope.summary.statusListOrdered, function(statusName) {
                     scope.stats.push({name: statusName,
-                                      width: ((scope.summary.resultsByStatus[statusName] / scope.summary.total) * totalWidth).toFixed(2)});
+                                      width: ((scope.summary.resultsByStatus[statusName] / scope.summary.total) * 100).toFixed(0)});
                 });
             }
 
