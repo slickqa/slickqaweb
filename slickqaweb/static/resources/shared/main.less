@@ -293,14 +293,19 @@ header h1 {
 }
 
 .sidenav.ng-hide-remove {
-  .animated;
-  .bounceInLeft;
+  //.animated;
+  //.bounceInLeft;
+  -webkit-animation: bounceInLeft 1s;
+  -moz-animation: bounceInLeft 1s;
+  animation: bounceInLeft 1s;
 }
 
 .sidenav.ng-hide-add {
   display: block!important;
-  .animated;
-  .bounceOutLeft;
+  animation: bounceOutLeft 1s;
+  -webkit-animation: bounceOutLeft 1s;
+  -moz-animation: bounceOutLeft 1s;
+  //.bounceOutLeft;
 }
 
 .sidenav-inner {
