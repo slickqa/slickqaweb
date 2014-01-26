@@ -5,8 +5,6 @@ site/
 .bundle/
 .pairs
 .rvmrc
-.ruby-gemset
-.ruby-version
 *.gem
 .bundle
 tags
@@ -14,6 +12,3 @@ Gemfile.lock
 pkg/*
 .sass-cache/*
 src/html/.sass-cache/*
-node_modules/
-sauce_connect.log
-*.swp
