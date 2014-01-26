@@ -16,6 +16,7 @@ It's a perfect fit for any WebApp that consumes data from a RESTful API.
 - [Differences with $resource](#differences-with-resource)
 - [How do I add this to my project?](#how-do-i-add-this-to-my-project)
 - [Dependencies](#dependencies)
+- [Production apps using Restangular](#production-apps-using-restangular)
 - [Starter Guide](#starter-guide)
 	- [Quick configuration for Lazy Readers](#quick-configuration-for-lazy-readers)
 	- [Adding dependency to Restangular module in your app](#adding-dependency-to-restangular-module-in-your-app)
@@ -49,9 +50,10 @@ It's a perfect fit for any WebApp that consumes data from a RESTful API.
 		- [Restangular methods](#restangular-methods)
 		- [Element methods](#element-methods)
 		- [Collection methods](#collection-methods)
-		- [Custom methods](#custom-methods)
+		- [Custom methods](#custom-methods) 
 	- [Copying elements](#copying-elements)
 	- [Enhanced promises](#enhanced-promises)
+        - [Using values directly in templates](#using-values-directly-in-templates)
 	- [Using Self reference resources](#using-self-reference-resources)
 	- [URL Building](#url-building)
 	- [Creating new Restangular Methods](#creating-new-restangular-methods)
@@ -66,6 +68,7 @@ It's a perfect fit for any WebApp that consumes data from a RESTful API.
     - [Can it be used in $routeProvider.resolve?](#can-it-be-used-in-routeproviderresolve)
     - [My response is actually wrapped with some metadata. How do I get the data in that case?](#my-response-is-actually-wrapped-with-some-metadata-how-do-i-get-the-data-in-that-case)
     - [I use Mongo and the ID of the elements is _id not id as the default. Therefore requests are sent to undefined routes](#i-use-mongo-and-the-id-of-the-elements-is-_id-not-id-as-the-default-therefore-requests-are-sent-to-undefined-routes)
+    - [What if each of my models has a different ID name like CustomerID for Customer](#what-if-each-of-my-models-has-a-different-id-name-like-customerid-for-customer)
     - [How do I handle CRUD operations in a List returned by Restangular?](#how-do-i-handle-crud-operations-in-a-list-returned-by-restangular)
     - [When I set baseUrl with a port, it's stripped out.](#when-i-set-baseurl-with-a-port-its-stripped-out)
     - [How can I access the unrestangularized element as well as the restangularized one?](#how-can-i-access-the-unrestangularized-element-as-well-as-the-restangularized-one)
@@ -138,7 +141,14 @@ You can download this by:
 
 #Dependencies
 
-Restangular depends on Angular and Lodash (or Underscore). **angular-resource is no longer needed since version 1.0.6, now this uses `$http` instead of `$resource`**
+Restangular depends on Angular and Lodash (or Underscore). 
+
+# Production apps using Restangular
+
+Each time, there're more Production WebApps using `Restangular`. If your webapp uses it and it's not in the list, please create an issue or submit a PR:
+
+* **Life360** is using Restangular to build the WebApp version of their platform
+* **Thomas Reuters** is using Restangular for the new Webapp they've built
 
 #Starter Guide
 
@@ -184,9 +194,15 @@ Now that we have our main Object let's start playing with it.
 // First way of creating a Restangular object. Just saying the base URL
 var baseAccounts = Restangular.all('accounts');
 
-// This will query /accounts and return a promise. As Angular supports setting promises to scope variables
-// as soon as we get the information from the server, it will be shown in our template :)
-$scope.allAccounts = baseAccounts.getList();
+// This will query /accounts and return a promise.
+baseAccounts.getList().then(function(accounts) {
+  $scope.allAccounts = accounts;
+});
+
+// Does a GET to /accounts
+// Returns an empty array by default. Once a value is returned from the server
+// that array is filled with those values. So you can use this in your template
+$scope.accounts = Restangular.all('accounts').getList().$object;
 
 var newAccount = {name: "Gonto's account"};
 
@@ -543,8 +559,8 @@ These are the methods that can be called on the Restangular object.
 * **oneUrl(route, url)**: This will create a new Restangular object that is just a pointer to one element with the specified URL.
 * **allUrl(route, url)**: This creates a Restangular object that is just a pointer to a list at the specified URL.
 * **copy(fromElement)**: This will create a copy of the from element so that we can modified the copied one.
-* **restangularizeElement(parent, element, route)**: Restangularizes a new element
-* **restangularizeCollection(parent, element, route)**: Restangularizes a new collection
+* **restangularizeElement(parent, element, route, queryParams)**: Restangularizes a new element
+* **restangularizeCollection(parent, element, route, queryParams)**: Restangularizes a new collection
 
 
 ### Element methods
@@ -563,6 +579,7 @@ These are the methods that can be called on the Restangular object.
 * **oneUrl(route, url)**: This will create a new Restangular object that is just a pointer to one element with the specified URL.
 * **allUrl(route, url)**: This creates a Restangular object that is just a pointer to a list at the specified URL.
 * **getRestangularUrl()**: Gets the URL of the current object.
+* **getRequestedUrl()**: Gets the real URL the current object was requested with (incl. GET parameters). Will equal getRestangularUrl() when no parameters were used, before calling `get()`, or when using on a nested child.
 * **getParentList()**: Gets the parent list to which it belongs (if any)
 * **clone()**: Copies the element
 * **withHttpConfig(httpConfig)**: It lets you set a configuration for $http only for the next call. Check the Local Config HTTP section for an example.
@@ -575,8 +592,10 @@ These are the methods that can be called on the Restangular object.
 * **trace: ([queryParams, headers])**: Does a TRACE
 * **options: ([queryParams, headers])**: Does a OPTIONS
 * **patch(object, [queryParams, headers])**: Does a PATCH
+* **remove([queryParams, headers])**: Does a DELETE
 * **putElement(idx, params, headers)**: Puts the element on the required index and returns a promise of the updated new array
 * **getRestangularUrl()**: Gets the URL of the current object.
+* **getRequestedUrl()**: Gets the real URL the current object was requested with (incl. GET parameters). Will equal getRestangularUrl() when no parameters were used, before calling `getList()`, or when using on a nested child.
 * **one(route, id)**: Used for RequestLess connections and URL Building. See section below.
 * **all(route)**: Used for RequestLess connections and URL Building. See section below.
 * **several(route, ids*)**: Used for RequestLess connections and URL Building. See section below.
@@ -614,6 +633,7 @@ Restangular uses enhanced promises when returning. What does this mean? All prom
 * **call(methodName, params*)**: This will return a new promise of the previous value, after calling the method called methodName with the parameters params.
 * **get(fieldName)**: This will return a new promise for the type of the field. The param of this new promise is the property `fieldName` from the original promise result.
 * **push(object)**: This method will only be in the promises of arrays. It's a subset of the call method that does a push.
+* **$object**: This returns the reference to the object that will be filled once the server responds a value. This means that if you call `getList` this will be an empty array by default. Once the array is returned from the server, this same `$object` property will get filled with results from the server.
  
 I know these explanations are quite complicated, so let's see an example :D.
 
@@ -634,6 +654,35 @@ lengthPromise.then(function(length) {
   // Here the length is the real length value of the returned collection of buildings
 });
 ````
+## Using values directly in templates
+
+Since Angular 1.2, Promise unwrapping in templates has been disabled by default and will be depracated soon.
+
+**This means that the following will cease to work**:
+
+````js
+$scope.accounts = Restangular.all('accounts').getList();
+````
+
+````html
+<tr ng-repeat="account in accounts">
+  <td>{{account.name}}</td>
+</tr>
+````
+
+**As this was a really handy way of working with Restangular, I've made a feature similar to $resource that will enable this behavior again**:
+
+````js
+$scope.accounts = Restangular.all('accounts').getList().$object;
+````
+
+````html
+<tr ng-repeat="account in accounts">
+  <td>{{account.name}}</td>
+</tr>
+````
+
+The `$object` property is a new property I've added to promises. By default, it'll be an empty array or object. Once the sever has responded with the real value, that object or array is filled with the correct response, therefore making the ng-repeat work :). Pretty neat :D
 
 ## Using Self reference resources
 
@@ -918,6 +967,18 @@ RestangularProvider.setRestangularFields({
 });
 ````
 
+#### **What if each of my models has a different ID name like CustomerID for Customer**
+
+In some cases, peolpe have different ID name for each entity. For example, they have CustomerID for customer and EquipmentID for Equipment. If that's the case, you can override's Restangular's getIdFromElem. For that, you need to do:
+
+````js
+RestangularProvider.configuration.getIdFromElem = function(elem) {
+  // if route is customers ==> returns customerID
+  return elem[_.initial(elem.route).join('') + "ID"];
+}
+````
+
+With that, you'd get what you need :)
 
 #### **How do I handle CRUD operations in a List returned by Restangular?**
 
@@ -1001,21 +1062,21 @@ So, why not use it? If you've never heard of them, by using Restangular, you cou
 
 # Supported Angular versions
 
-Restangular supports both 1.0.X and 1.1.X up to versions 1.0.8 and 1.1.5.
+Restangular supports all angular versions including 1.0.X, 1.1.X and 1.2.X (1.2.4 being the current at the time)
 
 Also, when using Restangular with version >= 1.1.4, in case you're using Restangular inside a callback not handled by Angular, you have to wrap the whole request with `$scope.apply` to make it work or you need to run one extra `$digest` manually. Check out https://github.com/mgonto/restangular/issues/71
 
 
 # Server Frameworks
 
-This server frameworks play real nice with Restangular, as they let you create a Nested Restful Resources API easily:
+Users reported that this server frameworks play real nice with Restangular, as they let you create a Nested Restful Resources API easily:
 
 * Ruby on Rails
-* CakePHP for PHP
+* CakePHP, Laravel and FatFREE for PHP
 * Play1 & 2 for Java & scala
 * Restify and Express for NodeJS
-* Tastypie for Django 
-
+* Tastypie and Django Rest Framework for Django 
+* Slim Framework
 
 # Releases Notes
 
@@ -1034,4 +1095,8 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mgonto/restangular/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 

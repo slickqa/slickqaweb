@@ -18,7 +18,8 @@ describe("Restangular", function() {
     return _.omit(item, "route", "parentResource", "getList", "get", "post", "put", "remove", "head", "trace", "options", "patch",
       "$then", "$resolved", "restangularCollection", "customOperation", "customGET", "customPOST",
       "customPUT", "customDELETE", "customGETLIST", "$getList", "$resolved", "restangularCollection", "one", "all","doGET", "doPOST",
-      "doPUT", "doDELETE", "doGETLIST", "addRestangularMethod", "getRestangularUrl", "several");
+      "doPUT", "doDELETE", "doGETLIST", "addRestangularMethod", "getRestangularUrl", "several", "getRequestedUrl", "clone",
+      "reqParams", "withHttpConfig", "oneUrl", "allUrl", "getParentList");
   };
 
   // Load required modules
@@ -52,6 +53,9 @@ describe("Restangular", function() {
     $httpBackend.whenGET("/accounts/1").respond(accountsModel[1]);
     $httpBackend.whenGET("/accounts/1/transactions").respond(accountsModel[1].transactions);
     $httpBackend.whenGET("/accounts/1/transactions/1").respond(accountsModel[1].transactions[1]);
+
+    // Full URL
+    $httpBackend.whenGET('http://accounts.com/all').respond(accountsModel);
 
     $httpBackend.whenPOST("/accounts").respond(function(method, url, data, headers) {
       var newData = angular.fromJson(data);
@@ -87,6 +91,58 @@ describe("Restangular", function() {
     $httpBackend.verifyNoOutstandingRequest();
   });
 
+  describe("With Url", function() {
+    it("Shouldn't add suffix to URL", function() {
+      var suffixRestangular = Restangular.withConfig(function(RestangularConfigurer) {
+        RestangularConfigurer.setRequestSuffix('.json');
+      });
+
+      $httpBackend.expectGET('http://accounts.com/all');
+      suffixRestangular.allUrl('accounts', 'http://accounts.com/all').getList();
+      $httpBackend.flush();
+    });
+  });
+
+  describe("Local data", function() {
+    it("Should restangularize a collection OK", function() {
+      var collection = angular.copy(accountsModel);
+
+      Restangular.restangularizeCollection(null, collection, 'accounts');
+
+      expect(_.has(collection, 'get')).toBe(true);
+      expect(_.has(collection[0], 'get')).toBe(true);
+
+      expect(collection.getRestangularUrl()).toBe('/accounts');
+      expect(collection[0].getRestangularUrl()).toBe('/accounts/0');
+
+    });
+  });
+
+  describe("$object", function() {
+    it("Should work for single get", function() {
+      var promise = Restangular.one('accounts', 1).get();
+      var obj = promise.$object;
+      expect(obj).toBeDefined();
+      expect(obj.amount).toBeUndefined();
+
+      $httpBackend.flush();
+
+      expect(obj.amount).toEqual(3.1416);      
+    });
+
+    it("Should work for single get", function() {
+      var promise = Restangular.all('accounts').getList();
+      var list = promise.$object;
+      expect(list).toBeDefined();
+      expect(list.length).toEqual(0);
+
+      $httpBackend.flush();
+
+      expect(list.length).toEqual(2);
+      expect(list[1].amount).toEqual(3.1416);
+    });
+  });
+
   describe("ALL", function() {
     it("getList() should return an array of items", function() {
       restangularAccounts.getList().then(function(accounts) {
@@ -101,6 +157,13 @@ describe("Restangular", function() {
       Restangular.several("accounts", 0, 1).getList().then(function(accounts) {
         expect(sanitizeRestangularAll(accounts)).toEqual(sanitizeRestangularAll(accountsModel));
       });
+
+      $httpBackend.flush();
+    });
+
+    it("several remove() should work", function() {
+      $httpBackend.expectDELETE('/accounts/0,1').respond([200, "", ""]);
+      Restangular.several("accounts", 0, 1).remove();
 
       $httpBackend.flush();
     });
@@ -133,6 +196,18 @@ describe("Restangular", function() {
      });
 
     $httpBackend.expectPOST('/accounts').respond(201, '');
+    $httpBackend.flush();
+   });
+
+    it("post() should work with arrays", function() {
+     Restangular.all('places').post([{name: "Gonto"}, {name: 'John'}]).then(function(value) {
+       expect(value.length).toEqual(2);
+     });
+
+    $httpBackend.expectPOST('/places').respond(function(method, url, data, headers) {
+      return [201, angular.fromJson(data), ""];
+    });
+
     $httpBackend.flush();
    });
 
@@ -439,6 +514,37 @@ describe("Restangular", function() {
       expect(Restangular.requestParams.put).toEqual(defaultParams);
       
       expect(Restangular.requestParams.common).not.toEqual(defaultParams);
+    });
+  });
+
+  describe("withConfig", function() {
+    it("should create new service with scoped configuration", function() {
+      var childRestangular = Restangular.withConfig(function(RestangularConfigurer){
+        RestangularConfigurer.setBaseUrl('/api/v1');
+      });
+
+      expect(Restangular.configuration.baseUrl).toEqual('');
+      expect(childRestangular.configuration.baseUrl).toEqual('/api/v1');
+      
+    });
+
+    it("should allow nested configurations", function() {
+      var childRestangular = Restangular.withConfig(function(RestangularConfigurer){
+        RestangularConfigurer.setBaseUrl('/api/v1');
+      });
+    
+      var grandchildRestangular = childRestangular.withConfig(function(RestangularConfigurer){
+        RestangularConfigurer.setRequestSuffix('.json');
+      });
+
+      expect(Restangular.configuration.baseUrl).toEqual('');
+      expect(Restangular.configuration.suffix).toEqual(null);
+
+      expect(childRestangular.configuration.baseUrl).toEqual('/api/v1');
+      expect(childRestangular.configuration.suffix).toEqual(null);
+
+      expect(grandchildRestangular.configuration.baseUrl).toEqual('/api/v1');
+      expect(grandchildRestangular.configuration.suffix).toEqual('.json');
     });
   });
 });

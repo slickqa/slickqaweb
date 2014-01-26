@@ -13,8 +13,5 @@
     "restangular": "*",
     "moment": "~2.4.0",
     "google-code-prettify": "~1.0.1"
-  },
-  "resolutions": {
-    "angular": "1.2.3"
   }
 }
