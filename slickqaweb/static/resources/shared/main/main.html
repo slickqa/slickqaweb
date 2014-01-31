@@ -105,19 +105,17 @@
                     </div>
                 </div>
                 <div class="landing-recent-info-table2-box">
-                    <div class="landing-recent-info-table2-box" ng-show="testrungroupListTwo.length > 0">
-                        <slick-list-header model="testrungroupTableTwo" search="off" pagination="off" sort="off">
-                            <slick-list-columns class="landing-testrungroup-column-container">
-                                <slick-list-column class="landing-testrungroup-name-column" sortable="false">Name</slick-list-column>
-                                <slick-list-column class="landing-testrungroup-testruns-column" sortable="false">Testruns</slick-list-column>
-                                <slick-list-column class="landing-testrungroup-results-column" sortable="false">Results</slick-list-column>
-                            </slick-list-columns>
-                        </slick-list-header>
-                        <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListTwo |slickListFilter:testrungroupTableTwo">
-                            <div class="landing-testrungroup-name-column"><a href="testrungroup/{{testrungroup.id}}" ng-bind="testrungroup.name"></a></div>
-                            <div class="landing-testrungroup-testruns-column" ng-bind="testrungroup.testruns.length"></div>
-                            <div class="landing-testrungroup-results-column"><slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar></div>
-                        </div>
+                    <slick-list-header model="testrungroupTableTwo" search="off" pagination="off" sort="off" ng-show="testrungroupListTwo.length > 0">
+                        <slick-list-columns class="landing-testrungroup-column-container">
+                            <slick-list-column class="landing-testrungroup-name-column" sortable="false">Name</slick-list-column>
+                            <slick-list-column class="landing-testrungroup-testruns-column" sortable="false">Testruns</slick-list-column>
+                            <slick-list-column class="landing-testrungroup-results-column" sortable="false">Results</slick-list-column>
+                        </slick-list-columns>
+                    </slick-list-header>
+                    <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListTwo |slickListFilter:testrungroupTableTwo">
+                        <div class="landing-testrungroup-name-column"><a href="testrungroup/{{testrungroup.id}}" ng-bind="testrungroup.name"></a></div>
+                        <div class="landing-testrungroup-testruns-column" ng-bind="testrungroup.testruns.length"></div>
+                        <div class="landing-testrungroup-results-column"><slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar></div>
                     </div>
                 </div>
             </div>
