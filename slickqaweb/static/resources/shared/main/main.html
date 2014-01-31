@@ -1,5 +1,76 @@
 <div class="slickview">
-  <h1>Welcome to Slick</h1>
-  <p>This page will get better in time.</p>
-  <a href="foo/bar">An invalid link</a>
+    <div class="landing-recent-info">
+        <div class="landing-recent-info-image-box">
+            <img src="static/images/recent-testruns.png" alt="recent testruns image" />
+        </div>
+        <div class="landing-recent-info-box">
+            <div class="landing-recent-info-title">Recent Testruns</div>
+            <div class="landing-recent-info-table-box">
+                <div class="landing-recent-info-table1-box">
+                    <slick-list-header model="testrunTableOne" search="off" pagination="off" sort="off">
+                        <slick-list-columns class="landing-testrun-column-container">
+                            <slick-list-column class="landing-testrun-project-column" sortable="false">Project</slick-list-column>
+                            <slick-list-column class="landing-testrun-name-column" sortable="false">Testrun</slick-list-column>
+                            <slick-list-column class="landing-testrun-build-column" sortable="false">Build</slick-list-column>
+                            <slick-list-column class="landing-testrun-results-column" sortable="false">Results</slick-list-column>
+                        </slick-list-columns>
+                    </slick-list-header>
+                    <div class="landing-testrun-column-container landing-testrun-row" ng-repeat="testrun in testrunListOne |slickListFilter:testrunTableOne">
+                        <div class="landing-testrun-project-column"><a href="projects/{{testrun.project.name}}" ng-bind="testrun.project.name"></a></div>
+                        <div class="landing-testrun-name-column"><a href="testruns/{{testrun.id}}" ng-bind="testrun.name"></a></div>
+                        <div class="landing-testrun-build-column">{{testrun.release.name}} Build {{testrun.build.name}}</div>
+                        <div class="landing-testrun-results-column"><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div>
+                    </div>
+                </div>
+                <div class="landing-recent-info-table2-box">
+                    <slick-list-header model="testrunTableTwo" search="off" pagination="off" sort="off">
+                        <slick-list-columns class="landing-testrun-column-container">
+                            <slick-list-column class="landing-testrun-project-column" sortable="false">Project</slick-list-column>
+                            <slick-list-column class="landing-testrun-name-column" sortable="false">Testrun</slick-list-column>
+                            <slick-list-column class="landing-testrun-build-column" sortable="false">Build</slick-list-column>
+                            <slick-list-column class="landing-testrun-results-column" sortable="false">Results</slick-list-column>
+                        </slick-list-columns>
+                    </slick-list-header>
+                    <div class="landing-testrun-column-container landing-testrun-row" ng-repeat="testrun in testrunListTwo |slickListFilter:testrunTableTwo">
+                        <div class="landing-testrun-project-column"><a href="projects/{{testrun.project.name}}" ng-bind="testrun.project.name"></a></div>
+                        <div class="landing-testrun-name-column"><a href="testruns/{{testrun.id}}" ng-bind="testrun.name"></a></div>
+                        <div class="landing-testrun-build-column">{{testrun.release.name}} Build {{testrun.build.name}}</div>
+                        <div class="landing-testrun-results-column"><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="landing-recent-info">
+        <div class="landing-recent-info-image-box">
+            <img src="static/images/recent-builds.png" alt="recent builds image" />
+        </div>
+        <div class="landing-recent-info-box">
+            <div class="landing-recent-info-title">Recent Builds</div>
+            <div class="landing-recent-info-table-box">
+                <div class="landing-recent-info-table1-box">
+                    Data
+                </div>
+                <div class="landing-recent-info-table2-box">
+                    Data
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="landing-recent-info">
+        <div class="landing-recent-info-image-box">
+            <img src="static/images/recent-testrun-groups.png" alt="recent testrun groups image" />
+        </div>
+        <div class="landing-recent-info-box">
+            <div class="landing-recent-info-title">Recent Testrun Groups</div>
+            <div class="landing-recent-info-table-box">
+                <div class="landing-recent-info-table1-box">
+                    Data
+                </div>
+                <div class="landing-recent-info-table2-box">
+                    Data
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

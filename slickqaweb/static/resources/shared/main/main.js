@@ -8,5 +8,17 @@ angular.module('slickApp')
         controller: 'MainCtrl'
       });
   }])
-  .controller('MainCtrl', ['$scope', function ($scope) {
+  .controller('MainCtrl', ['$scope', 'Restangular', function ($scope, rest) {
+        $scope.testrunTableOne = {};
+        $scope.testrunTableTwo = {};
+
+        $scope.testrunListOne = [];
+        $scope.testrunListTwo = [];
+
+        rest.all('testruns').getList({orderby: '-dateCreated', limit: 10}).then(function(testruns) {
+            $scope.testrunListOne = testruns.splice(0, 5);
+            $scope.testrunListTwo = testruns;
+            window.testruns = testruns;
+        });
+        window.scope = $scope;
   }]);

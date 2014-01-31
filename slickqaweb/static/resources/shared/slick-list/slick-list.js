@@ -15,7 +15,8 @@ angular.module("slickApp")
                 model: "=",
                 search: "@",
                 pagination: "@",
-                defaultSort: "@"
+                defaultSort: "@",
+                sort: "@"
             },
             controller: function($scope) {
                 $scope.paginationOn = $scope.pagination == 'on' || $scope.pagination == 'yes' || $scope.pagination == 'true';
@@ -51,6 +52,9 @@ angular.module("slickApp")
                 };
 
                 this.getOrderBy = function() {
+                    if($scope.sort == 'off' || $scope.sort == 'no' || $scope.sort == 'false') {
+                        return null;
+                    }
                     return $scope.model.orderBy;
                 };
 
@@ -123,6 +127,9 @@ angular.module("slickApp")
                     element.addClass("slick-list-sortable-column");
                 }
                 scope.currentlySorted = function() {
+                    if(!sortable) {
+                        return false;
+                    }
                     return slickListColumnsController.getOrderBy() == scope.sortPropertyName;
                 };
 
