@@ -11,10 +11,12 @@ if base is None:
 
 cherrypy.tree.graft(app, base)
 cherrypy.config.update({
-    'engine.autoreload_on': True,
     'server.socket_port': 9000,
     'server.socket_host': '0.0.0.0'
 })
+
+cherrypy.engine.autoreload.unsubscribe()
+cherrypy.engine.timeout_monitor.unsubscribe()
 
 if __name__ == '__main__':
    try:
