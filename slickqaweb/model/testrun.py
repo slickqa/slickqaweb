@@ -15,6 +15,7 @@ from .testPlan import TestPlan
 class Testrun(Document):
     testplanId = ObjectIdField()
     name = StringField()
+    info = StringField()
     config = EmbeddedDocumentField(ConfigurationReference)
     runtimeOptions = EmbeddedDocumentField(ConfigurationReference)
     project = EmbeddedDocumentField(ProjectReference)
