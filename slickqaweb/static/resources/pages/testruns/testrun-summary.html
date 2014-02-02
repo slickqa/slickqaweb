@@ -53,7 +53,7 @@
                 <div class="testrun-summary-data">
                     <div class="testrun-summary-data-container">
                         <div class="testrun-summary-data-row result-status-{{status.replace('_','')}}" ng-repeat="status in testrun.summary.statusListOrdered">
-                            <div class="testrun-summary-data-status" ng-bind="status.replace('_',' ')"></div>
+                            <div class="testrun-summary-data-status clickable-text" ng-bind="status.replace('_',' ')" ng-click="toggleFilter(status)"></div>
                             <div class="testrun-summary-data-number" ng-bind="testrun.summary.resultsByStatus[status]"></div>
                             <div class="testrun-summary-data-percent" ng-bind="'' + (((testrun.summary.resultsByStatus[status] * 1.0)/testrun.summary.total) * 100).toFixed(1) + '%'"></div>
                         </div>
@@ -104,6 +104,9 @@
                         <div class="testrun-summary-metadata-key">Run Time: </div>
                         <div class="testrun-summary-metadata-value" ng-bind="getTestrunDuration(testrun)"></div>
                     </div>
+                    <div ng-show="testrun.info">
+                        <pre ng-bind="testrun.info"></pre>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,8 +115,8 @@
         <div class="testrun-summary-inner testrun-summary-filter-container">
             <form class="testrun-summary-filter-form" name="statusFilter">
                 Include:
-                <span ng-repeat="status in testrun.summary.statusListOrdered" class="testrun-summary-filter result-status-{{status}}">
-                    <input type="checkbox" ng-model="filter[status]">{{status}}
+                <span ng-repeat="status in testrun.summary.statusListOrdered" class="testrun-summary-filter result-status-{{status.replace('_','')}}">
+                    <input type="checkbox" ng-model="filter[status]">{{status.replace("_"," ")}}
                 </span>
                 <span class="testrun-summary-filter">
                     <input type="checkbox" ng-model="moreDetail">More Detail

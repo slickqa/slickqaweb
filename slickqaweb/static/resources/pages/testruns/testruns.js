@@ -117,7 +117,7 @@ angular.module('slickApp')
         };
 
     }])
-    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', function ($scope, rest, nav, $routeParams, $timeout) {
+    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', function ($scope, rest, nav, $routeParams, $timeout, projrest) {
         $scope.testrun = {};
         $scope.results = [];
         $scope.filter = {};
@@ -152,6 +152,10 @@ angular.module('slickApp')
             colors: []
         };
 
+        if ($routeParams.only) {
+            $scope.filter[$routeParams.only] = true;
+        }
+
         $scope.fetchTestrun = function() {
             rest.one('testruns', $routeParams["testrunid"]).get().then(function(testrun) {
                 $scope.testrun = testrun;
@@ -176,6 +180,12 @@ angular.module('slickApp')
 
                 if(testrun.state != "FINISHED") {
                     $timeout($scope.fetchTestrun, 3000);
+                }
+
+                if(!testrun.info && testrun.project && testrun.release && testrun.build) {
+                    projrest.one('projects', testrun.project.name).one('releases', testrun.release.name).one('builds', testrun.build.name).get().then(function(build) {
+                        testrun.info = build.description;
+                    });
                 }
 
             });
@@ -215,6 +225,11 @@ angular.module('slickApp')
             return retval;
         };
 
+        $scope.toggleFilter = function(status) {
+            $scope.filter[status] = ! $scope.filter[status];
+            $scope.statusFilter.$setDirty();
+        };
+
         $scope.getTestrunDuration = function(testrun) {
             return getDurationString(testrun.runFinished - testrun.runStarted);
         };
@@ -229,10 +244,8 @@ angular.module('slickApp')
         };
 
         $scope.$watch('statusFilter.$dirty', function(newValue, oldValue) {
-            if (newValue && (newValue != oldValue)) {
-                $scope.testrunQuery();
-                $scope.statusFilter.$setPristine();
-            }
+            $scope.testrunQuery();
+            $scope.statusFilter.$setPristine();
         });
 
         $scope.getAbbreviatedReason = function(result) {
