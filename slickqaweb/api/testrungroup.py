@@ -5,6 +5,8 @@ from slickqaweb.model.testrunGroup import TestrunGroup
 from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
+from slickqaweb.utils import *
+import datetime
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
@@ -22,6 +24,8 @@ def get_testrungroup_by_id(testrungroup_id):
 @app.route('/api/testrungroups', methods=["POST"])
 def add_testrungroup():
     new_trg = deserialize_that(read_request(), TestrunGroup())
+    if is_not_provided(new_trg, 'created'):
+        new_trg.created = datetime.datetime.now()
     new_trg.save()
     return JsonResponse(new_trg)
 
