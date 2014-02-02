@@ -19,13 +19,20 @@ angular.module('slickApp')
         nav.addLink('Reports', 'Latest Testrun Groups', 'testrungroups/latest');
     }])
     .controller('ViewTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', function ($scope, rest, nav, $routeParams) {
-        $scope.trgroup = {};
+        $scope.testrungroup = {};
+        $scope.testrunList = {};
 
-        $scope.parallelData = new google.visualization.DataTable();
-        $scope.parallelData.addColumn('string', 'Status');
-        $scope.parallelData.addColumn('number', 'Results');
+        $scope.parallelSummaryData = new google.visualization.DataTable();
+        $scope.parallelSummaryData.addColumn('string', 'Status');
+        $scope.parallelSummaryData.addColumn('number', 'Results');
 
-        $scope.options = {
+        $scope.parallelIndividualData = new google.visualization.DataTable();
+        $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
+
+        $scope.serialData = new google.visualization.DataTable();
+        $scope.serialData.addColumn('string', 'Testrun Name');
+
+        $scope.summaryChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
             backgroundColor: "#000000",
             pieSliceBorderColor: "#000000",
@@ -33,18 +40,80 @@ angular.module('slickApp')
             colors: []
         };
 
-        rest.one('testrungroups', $routeParams.id).get().then(function(trgroup) {
-            $scope.trgroup = trgroup;
-            nav.setTitle(trgroup.name);
+        $scope.individualChartOptions = {
+            chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
+            backgroundColor: "#000000",
+            isStacked: true,
+            legend: 'none',
+            hAxis: {
+                textStyle: {
+                    color: '#ffffff'
+                },
+                slantedText: true
+            },
+            colors: []
+        };
 
-            $scope.parallelData = new google.visualization.DataTable();
-            $scope.parallelData.addColumn('string', 'Status');
-            $scope.parallelData.addColumn('number', 'Results');
+        $scope.serialChartOptions = {
+            chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+            backgroundColor: "#000000",
+            legend: {
+                textStyle: {
+                    color: "#ffffff"
+                }
+            },
+            colors: []
+        };
 
-            _.each(trgroup.groupSummary.statusListOrdered, function(status) {
-                $scope.parallelData.addRow([status.replace("_", " "), trgroup.groupSummary.resultsByStatus[status]]);
-                $scope.options.colors.push(getStyle(status.replace("_", "") + "-element", "color"));
-            });
+        rest.one('testrungroups', $routeParams.id).get().then(function(testrungroup) {
+            $scope.testrungroup = testrungroup;
+            nav.setTitle(testrungroup.name);
+
+            if(testrungroup.grouptype == "PARALLEL") {
+
+                $scope.parallelSummaryData = new google.visualization.DataTable();
+                $scope.parallelSummaryData.addColumn('string', 'Status');
+                $scope.parallelSummaryData.addColumn('number', 'Results');
+
+                $scope.parallelIndividualData = new google.visualization.DataTable();
+                $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
+
+
+                _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
+                    $scope.parallelSummaryData.addRow([status.replace("_", " "), testrungroup.groupSummary.resultsByStatus[status]]);
+                    var color = getStyle(status.replace("_", "") + "-element", "color");
+                    $scope.summaryChartOptions.colors.push(color);
+                    $scope.individualChartOptions.colors.push(color);
+
+                    $scope.parallelIndividualData.addColumn('number', status.replace("_", " "))
+                });
+
+                _.each(testrungroup.testruns, function(testrun) {
+                    var row = [testrun.project.name + " - " + testrun.name];
+                    _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
+                        row.push(testrun.summary.resultsByStatus[status]);
+                    });
+                    $scope.parallelIndividualData.addRow(row);
+                });
+            } else {
+                $scope.serialData = new google.visualization.DataTable();
+                $scope.serialData.addColumn('date', 'Recorded');
+                _.sortBy($scope.testruns, function(testrun) {
+                    return testrun.dateCreated;
+                });
+                _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
+                    var color = getStyle(status.replace("_", "") + "-element", "color");
+                    $scope.serialChartOptions.colors.push(color);
+                    $scope.serialData.addColumn('number', status.replace("_", " "))
+                });
+                _.each(testrungroup.testruns, function(testrun) {
+                    var row = [new Date(testrun.dateCreated)];
+                    _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
+                        row.push(testrun.summary.resultsByStatus[status]);
+                    });
+                    $scope.serialData.addRow(row);
+                });
+            }
 
         });
     }])
