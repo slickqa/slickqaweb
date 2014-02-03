@@ -1,7 +1,16 @@
 <div class="slickview">
-    <slick-list-header model="groupList" search="on" pagination="on" default-sort="created" default-page-size="25">
+    <div class="testrungroup-add-form">
+        Add A Testrun Group:
+        <form name="newTestrungroup">
+            Name: <input type="text" ng-model="newtr.name" required>
+            Type: <select ng-model="newtr.grouptype" ng-options="t for t in grouptypes"></select>
+            <span class="button" ng-click="addTestrunGroup()" ng-show="newTestrungroup.$dirty">Add</span>
+        </form>
+    </div>
+    <slick-list-header model="groupList" search="on" pagination="on" default-sort="created" default-sort-reverse="true" default-page-size="25">
         <slick-list-columns class="testrungroups-list-column-container">
             <slick-list-column class="testrungroups-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
+            <slick-list-column class="testrungroups-list-actions-column" sortable="false">Actions</slick-list-column>
             <slick-list-column class="testrungroups-list-overall-results-column" sortable="false">Overall Results</slick-list-column>
             <slick-list-column class="testrungroups-list-testrun-count-column" sortable="false">Testruns</slick-list-column>
             <slick-list-column class="testrungroups-list-grouptype-column" sortable="false">Group Type</slick-list-column>
@@ -9,13 +18,14 @@
         </slick-list-columns>
     </slick-list-header>
     <div class="testrungroups-list-row-container">
-        <div ng-repeat="trgroup in testrungroups | slickListFilter:groupList" class="testrungroups-list-row">
+        <div ng-repeat="trgroup in testrungroups | slickListFilter:groupList track by trgroup.id" class="testrungroups-list-row">
             <div class="testrungroups-list-column-container">
                 <div class="testrungroups-list-name-column"><a href="testrungroup/{{ trgroup.id }}">{{ trgroup.name }}</a></div>
-                <div class="testrungroups-list-overall-results-column" sortable="false"><slick-testrun-group-stats testrungroup="trgroup"></div>
-                <div class="testrungroups-list-testrun-count-column" sortable="false" ng-bind="trgroup.testruns.length"></div>
-                <div class="testrungroups-list-grouptype-column" sortable="false" ng-bind="trgroup.grouptype"></div>
-                <div class="testrungroups-list-created-column" sort-property-name="created" sortable="true" ng-bind="trgroup.created | date:'medium'"></div>
+                <div class="testrungroups-list-actions-column"><a class="button" href="testrungroup/{{ trgroup.id }}/edit">Edit</a></div>
+                <div class="testrungroups-list-overall-results-column"><slick-testrun-group-stats testrungroup="trgroup"></slick-testrun-group-stats></div>
+                <div class="testrungroups-list-testrun-count-column" ng-bind="trgroup.testruns.length"></div>
+                <div class="testrungroups-list-grouptype-column" ng-bind="trgroup.grouptype"></div>
+                <div class="testrungroups-list-created-column" ng-bind="trgroup.created | date:'medium'"></div>
             </div>
             <div class="testrungroups-list-status-bar" ng-show="trgroup.testruns.length > 0">
                 <slick-testrun-statusbar summary="trgroup.groupSummary" size="thin"></slick-testrun-statusbar>

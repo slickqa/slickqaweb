@@ -121,7 +121,26 @@ angular.module('slickApp')
         $scope.testrungroups = [];
         $scope.groupList = {};
 
-        rest.all('testrungroups').getList({orderby: "-created",limit: 200}).then(function(testrungroups) {
-            $scope.testrungroups = testrungroups;
-        });
+        $scope.newtr = {
+            name: '',
+            grouptype: 'PARALLEL'
+        };
+        $scope.grouptypes = ['PARALLEL', 'SERIAL'];
+
+        $scope.getTestrunGroups = function() {
+            rest.all('testrungroups').getList({orderby: "-created",limit: 200}).then(function(testrungroups) {
+                $scope.testrungroups = testrungroups;
+            });
+        };
+        $scope.getTestrunGroups();
+
+        $scope.addTestrunGroup = function() {
+            if ($scope.newtr.name != '') {
+                rest.all('testrungroups').post($scope.newtr).then(function() {
+                    $scope.newtr.name = '';
+                    $scope.newTestrungroup.$setPristine();
+                    $scope.getTestrunGroups();
+                });
+            }
+        };
     }]);
