@@ -1,7 +1,6 @@
 __author__ = 'jcorbett'
 
 from flask import render_template, Response, request
-from flask_gzip import Gzip
 from mongoengine import connect
 from flask_openid import OpenID
 

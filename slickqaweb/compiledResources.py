@@ -10,6 +10,7 @@ from cStringIO import StringIO
 import subprocess
 import hashlib
 import logging
+import gzip
 
 logger = logging.getLogger('slickqaweb.compiledResources')
 
@@ -59,13 +60,21 @@ scripts_hash = hashlib.sha256()
 scriptsjs.seek(0)
 scripts_hash.update(scriptsjs.read())
 scripts_etag = scripts_hash.hexdigest()
+scripts_gzip = StringIO()
+scriptsjs.seek(0)
+gzip_scripts_file = gzip.GzipFile(mode='wb', compresslevel=9, fileobj=scripts_gzip)
+gzip_scripts_file.write(scriptsjs.read())
+gzip_scripts_file.close()
 
 @app.route('/scripts.js')
 def combined_scriptsjs():
     if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == scripts_etag:
         return Response(status=304)
     scriptsjs.seek(0)
-    return Response(scriptsjs.read(), headers={'Etag': scripts_etag}, mimetype='application/javascript')
+    if 'gzip' not in request.headers.get('Accept-Encoding', '').lower():
+        return Response(scriptsjs.read(), headers={'Etag': scripts_etag}, mimetype='application/javascript')
+    else:
+        return Response(scripts_gzip.read(), headers={'Etag': scripts_etag, 'Content-Encoding': 'gzip'}, mimetype='application/javascript')
 
 
 ########################### build style.css #############################
