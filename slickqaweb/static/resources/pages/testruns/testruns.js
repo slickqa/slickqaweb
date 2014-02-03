@@ -30,6 +30,13 @@ angular.module('slickApp')
         if (!$routeParams["project"] && $cookieStore.get('slick-last-project-used')) {
             $location.search("project", $cookieStore.get('slick-last-project-used'));
         }
+        $scope.$watch('project', function (newValue, oldValue) {
+            if (newValue && oldValue != newValue) {
+                $location.search("project", newValue.name);
+                $location.search("release", null);
+                $location.search("testplanId", null);
+            }
+        });
 
         nav.setTitle("Testruns");
         rest.all('projects').getList().then(function(projects) {
@@ -38,13 +45,6 @@ angular.module('slickApp')
             if ($routeParams["project"]) {
                 $scope.project = _.find(projects, function(project) {
                     return $routeParams["project"] == project.name;
-                });
-                $scope.$watch('project', function (newValue, oldValue) {
-                    if (newValue && oldValue != newValue) {
-                        $location.search("project", newValue.name);
-                        $location.search("release", null);
-                        $location.search("testplanId", null);
-                    }
                 });
                 if ($scope.project) {
                     $scope.releases = $scope.project.releases;
