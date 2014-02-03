@@ -42,8 +42,6 @@ def delete_testrungroup(testrungroup_id):
     orig.delete()
     return JsonResponse(orig)
 
-# --------------- For backwards compatibility -------------------------------
-
 @app.route('/api/testrungroups/<testrungroup_id>/addtestrun/<testrun_id>', methods=["POST"])
 def add_testrun_to_testrun_group(testrungroup_id, testrun_id):
     orig = TestrunGroup.objects(id=ObjectId(testrungroup_id)).first()
@@ -53,3 +51,18 @@ def add_testrun_to_testrun_group(testrungroup_id, testrun_id):
     orig.testruns.append(testrun)
     orig.save()
     return JsonResponse(orig)
+
+@app.route('/api/testrungroups/<testrungroup_id>/removetestrun/<testrun_id>', methods=["DELETE"])
+def remove_testrun_from_testrun_group(testrungroup_id, testrun_id):
+    orig = TestrunGroup.objects(id=ObjectId(testrungroup_id)).first()
+    real_testrunid = ObjectId(testrun_id)
+    index = -1
+    for i in range(len(orig.testruns)):
+        if orig.testruns[i].id == real_testrunid:
+            index = i
+            break
+    if index >= 0:
+        del orig.testruns[index]
+        orig.save()
+    return JsonResponse(orig)
+
