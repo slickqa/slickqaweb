@@ -96,12 +96,12 @@ angular.module('slickApp')
             q = q + ")";
         }
         if (!q) {
-            rest.all('testruns').getList({limit: 500}).then(function(testruns) {
+            rest.all('testruns').getList({orderby: '-recorded', limit: 500}).then(function(testruns) {
                 $scope.testruns = testruns;
                 window.testruns = testruns;
             });
         } else {
-            rest.all('testruns').getList({q: q, limit: 500}).then(function(testruns) {
+            rest.all('testruns').getList({q: q, limit: 500, orderby: '-recorded'}).then(function(testruns) {
                 $scope.testruns = testruns;
                 window.testruns = testruns;
             });
