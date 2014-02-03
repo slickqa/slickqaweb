@@ -59,7 +59,7 @@
                     </slick-list-header>
                     <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListOne |slickListFilter:buildTableOne">
                         <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
-                        <div class="landing-build-build-column">{{build.release.name}} Build {{build.build.name}}</div>
+                        <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
                         <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
                         <div class="landing-build-results-column"><div ng-if="build.report.groupSummary"><slick-testrun-statusbar summary="build.report.groupSummary" size="normal"></slick-testrun-statusbar></div></div>
                     </div>
@@ -75,7 +75,7 @@
                     </slick-list-header>
                     <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListTwo |slickListFilter:buildTableTwo">
                         <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
-                        <div class="landing-build-build-column">{{build.release.name}} Build {{build.build.name}}</div>
+                        <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
                         <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
                         <div class="landing-build-results-column"><div ng-if="build.report.groupSummary"><slick-testrun-statusbar summary="build.report.groupSummary" size="normal"></slick-testrun-statusbar></div></div>
                     </div>

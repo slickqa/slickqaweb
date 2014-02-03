@@ -26,3 +26,4 @@ shared/slick-log-viewer/slick-log-viewer.js
 pages/testrungroup/testcases.js
 pages/testrungroup/testrungroup.js
 shared/testrungroup-stats/stats.js
+pages/buildreport/buildreport.js
