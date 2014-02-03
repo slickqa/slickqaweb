@@ -15,7 +15,15 @@ from slickqaweb import events
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/testruns')
 def get_testruns():
-    return JsonResponse(queryFor(Testrun))
+    args = request.args.to_dict()
+    if args.has_key('releaseid'):
+        args['release.releaseId'] = args['releaseid']
+        del args['releaseid']
+    if args.has_key('testplanid'):
+        args['testplanId'] = args['testplanid']
+        del args['testplanid']
+
+    return JsonResponse(queryFor(Testrun, args))
 
 @app.route('/api/testruns/<testrun_id>')
 def get_testrun_by_id(testrun_id):
