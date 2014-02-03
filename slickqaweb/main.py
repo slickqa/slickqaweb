@@ -96,5 +96,8 @@ def catch_all(path):
     base = app.config['APPLICATION_ROOT']
     if base is None:
         base = "/"
-    return render_template('index.html', base=base, development=app.config['DEVELOPMENT'], debug=app.debug)
+    min = '.min'
+    if app.config['DEVELOPMENT']:
+        min = ''
+    return render_template('index.html', base=base, development=app.config['DEVELOPMENT'], debug=app.debug, min=min)
 
