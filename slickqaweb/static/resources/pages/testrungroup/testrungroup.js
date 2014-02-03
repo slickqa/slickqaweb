@@ -15,6 +15,10 @@ angular.module('slickApp')
             .when('/testrungroups/latest', {
                 templateUrl: 'static/resources/pages/testrungroup/latest-testrungroups.html',
                 controller: 'LatestTestrunGroupsCtrl'
+            })
+            .when('/testrungroup/:id/edit', {
+                templateUrl: 'static/resources/pages/testrungroup/edit-testrungroup.html',
+                controller: 'EditTestrunGroupCtrl'
             });
         nav.addLink('Reports', 'Latest Testrun Groups', 'testrungroups/latest');
     }])
@@ -143,4 +147,87 @@ angular.module('slickApp')
                 });
             }
         };
+
+        $scope.deleteTestrunGroup = function(trgroup) {
+            trgroup.remove().then(function() {
+                $scope.getTestrunGroups();
+            });
+        };
+    }])
+    .controller('EditTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', function($scope, rest, nav, $routeParams, $cookieStore) {
+        $scope.testrungroup = {};
+        $scope.testrungroupTestrunList = {};
+        $scope.availableTestrunList = {};
+
+        $scope.project = null;
+        $scope.release = null;
+        $scope.testplan = null;
+
+        $scope.projects = [];
+        $scope.releases = [];
+        $scope.testplans = [];
+        $scope.testruns = [];
+
+        rest.one('testrungroups', $routeParams.id).get().then(function(testrungroup) {
+            $scope.testrungroup = testrungroup;
+            nav.setTitle('Edit: ' + testrungroup.name);
+        });
+
+        rest.all('projects').getList().then(function(projects) {
+            $scope.projects = _.sortBy(projects, "lastUpdated");
+            $scope.projects.reverse();
+            if ($cookieStore.get('slick-last-project-used')) {
+                $scope.project = _.find(projects, function(project) {
+                    return $cookieStore.get('slick-last-project-used') == project.name;
+                });
+            }
+        });
+
+        $scope.$watch('project', function() {
+            if ($scope.project) {
+                $scope.releases = $scope.project.releases;
+                $scope.release = null;
+                rest.all('testplans').getList({q: "eq(project.id,\"" + $scope.project.id + "\")"}).then(function(testplans) {
+                    $scope.testplan = null;
+                    $scope.testplans = testplans;
+                });
+                $scope.updateTestrunList();
+            }
+        });
+
+        $scope.$watch('release', function() {
+            $scope.updateTestrunList();
+        });
+        $scope.$watch('testplan', function() {
+            $scope.updateTestrunList();
+        });
+
+        $scope.updateTestrunList = function() {
+            var filter = { 'limit': 500, 'orderby': '-dateCreated' };
+            if ($scope.project) {
+                filter['project.id'] = $scope.project.id;
+            }
+            if ($scope.release) {
+                filter['release.releaseId'] = $scope.release.id;
+            }
+            if ($scope.testplan) {
+                filter['testplanId'] = $scope.testplan.id;
+            }
+            rest.all('testruns').getList(filter).then(function(testruns) {
+                $scope.testruns = testruns;
+            });
+        };
+
+        $scope.addTestrunToGroup = function(testrun) {
+            rest.one('testrungroups', $scope.testrungroup.id).one('addtestrun', testrun.id).post().then(function(testrungroup) {
+                $scope.testrungroup = testrungroup;
+            });
+        };
+
+        $scope.removeTestrunFromGroup = function(testrun) {
+            rest.one('testrungroups', $scope.testrungroup.id).one('removetestrun', testrun.id).remove().then(function(testrungroup) {
+                $scope.testrungroup = testrungroup;
+            });
+        };
+
     }]);

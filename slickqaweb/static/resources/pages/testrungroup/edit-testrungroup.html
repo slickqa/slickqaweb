@@ -1,0 +1,59 @@
+<div class="slickview">
+    <h2 class="center-text">Currently In Testrun Group</h2>
+    <div class="testrungroup-data-container">
+        <slick-list-header model="testrungroupTestrunList" search="on" pagination="on" default-sort="dateCreated">
+            <slick-list-columns class="testruns-list-column-container">
+                <slick-list-column class="testrungroup-testruns-list-project-column" sort-property-name="project.name" sortable="true">Project</slick-list-column>
+                <slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
+                <slick-list-column class="testrungroups-list-actions-column" sortable="false">Actions</slick-list-column>
+                <slick-list-column class="testruns-list-results-column" sortable="false">Results</slick-list-column>
+                <slick-list-column class="testruns-list-environment-column" sort-property-name="config.name" sortable="true">Environment</slick-list-column>
+                <slick-list-column class="testruns-list-build-column" sort-property-name="build.name" sortable="true">Build</slick-list-column>
+                <slick-list-column class="testruns-list-created-column" sort-property-name="dateCreated" sortable="true">Created</slick-list-column>
+            </slick-list-columns>
+        </slick-list-header>
+        <div class="testruns-list-row-container">
+            <div ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrungroupTestrunList track by testrun.id" class="testruns-list-row">
+                <div class="testruns-list-column-container">
+                    <div class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></div>
+                    <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a></div>
+                    <div class="testrungroups-list-actions-column"><span class="button" ng-click="removeTestrunFromGroup(testrun)">Remove</span></div>
+                    <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
+                    <div class="testruns-list-environment-column" ng-bind="testrun.config.name"></div>
+                    <div class="testruns-list-build-column">{{testrun.release.name}} Build {{ testrun.build.name }}</div>
+                    <div class="testruns-list-created-column" ng-bind="testrun.dateCreated | date:'medium'"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="center-text">Available Testruns</h2>
+    <div class="testruns-list-filter">
+        <div class="testruns-list-filter-project">Project: <select ng-model="project" ng-options="p.name for p in projects"></select></div>
+        <div class="testruns-list-filter-release">Release: <select ng-model="release" ng-options="r.name for r in releases"></select></div>
+        <div class="testruns-list-filter-testplan">Testplan: <select ng-model="testplan" ng-options="t.name for t in testplans"></select></div>
+    </div>
+    <slick-list-header model="availableTestrunList" search="on" pagination="on" default-sort="dateCreated" default-sort-reverse="true" default-page-size="10">
+        <slick-list-columns class="testruns-list-column-container">
+            <slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
+            <slick-list-column class="testrungroups-list-actions-column" sortable="false">Actions</slick-list-column>
+            <slick-list-column class="testruns-list-results-column" sortable="false">Results</slick-list-column>
+            <slick-list-column class="testruns-list-environment-column" sort-property-name="config.name" sortable="true">Environment</slick-list-column>
+            <slick-list-column class="testruns-list-build-column" sort-property-name="build.name" sortable="true">Build</slick-list-column>
+            <slick-list-column class="testruns-list-created-column" sort-property-name="dateCreated" sortable="true">Created</slick-list-column>
+        </slick-list-columns>
+    </slick-list-header>
+    <div class="testruns-list-row-container">
+        <div ng-repeat="testrun in testruns | slickListFilter:availableTestrunList" class="testruns-list-row">
+            <div class="testruns-list-column-container">
+                <div class="testruns-list-name-column" ng-bind="testrun.name"></div>
+                <div class="testrungroups-list-actions-column"><span class="button" ng-click="addTestrunToGroup(testrun)">Add</span></div>
+                <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
+                <div class="testruns-list-environment-column">{{ testrun.config.name}}</div>
+                <div class="testruns-list-build-column">{{ testrun.release.name }} Build {{ testrun.build.name }}</div>
+                <div class="testruns-list-created-column">{{ testrun.dateCreated | date:'MMM d, y h:mm:ss a'}}</div>
+            </div>
+        </div>
+    </div>
+
+</div>
