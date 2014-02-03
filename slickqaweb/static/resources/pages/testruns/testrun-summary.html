@@ -142,7 +142,7 @@
             <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'"></div>
             <div class="result-list-duration-column" ng-bind="getResultDuration(result)"></div>
             <div class="result-list-hostname-column" ng-bind="result.hostname"></div>
-            <div class="result-list-history-column" ng-bind=""></div>
+            <div class="result-list-history-column"><img ng-repeat="hres in result.history | reverse" ng-src="static/images/status-{{hres.status}}.png" /></div>
             <div class="result-list-status-column result-status-{{result.status.replace('_','')}}" ng-bind="result.status.replace('_',' ')"></div>
         </div>
         <div class="result-list-second-part">

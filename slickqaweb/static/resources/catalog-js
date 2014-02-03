@@ -27,3 +27,4 @@ pages/testrungroup/testcases.js
 pages/testrungroup/testrungroup.js
 shared/testrungroup-stats/stats.js
 pages/buildreport/buildreport.js
+shared/reverse/reverse-filter.js
