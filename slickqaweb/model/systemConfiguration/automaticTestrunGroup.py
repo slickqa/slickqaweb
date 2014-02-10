@@ -7,6 +7,10 @@ from .types import AllTypes
 
 AutomaticTestrunGroupSystemConfigurationType = "auto-add-to-testrungroup"
 
+class TestrunMatch(EmbeddedDocument):
+    propertyName = StringField()
+    propertyValue = StringField()
+
 
 class AutomaticTestrunGroupSystemConfiguration(Document):
     meta = {'collection': 'system-configurations'}
@@ -21,9 +25,5 @@ class AutomaticTestrunGroupSystemConfiguration(Document):
         """Custom QuerySet Manager that filters based on the configurationType"""
         return queryset.filter(configurationType=AutomaticTestrunGroupSystemConfigurationType)
 
-
-class TestrunMatch(EmbeddedDocument):
-    propertyName = StringField()
-    propertyValue = StringField()
 
 AllTypes[AutomaticTestrunGroupSystemConfigurationType] = AutomaticTestrunGroupSystemConfiguration
