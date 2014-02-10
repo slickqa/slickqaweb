@@ -10,6 +10,7 @@ AutomaticTestrunGroupSystemConfigurationType = "auto-add-to-testrungroup"
 class TestrunMatch(EmbeddedDocument):
     propertyName = StringField()
     propertyValue = StringField()
+    comparisonType = StringField(choices=["equals", "equals-ignore-case", "contains"])
 
 
 class AutomaticTestrunGroupSystemConfiguration(Document):
