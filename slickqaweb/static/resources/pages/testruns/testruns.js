@@ -249,8 +249,12 @@ angular.module('slickApp')
         });
 
         $scope.getAbbreviatedReason = function(result) {
-            var line = result.reason.split("\n")[0];
-            return line;
+            if (result.reason) {
+                var line = result.reason.split("\n")[0];
+                return line;
+            } else {
+                return "";
+            }
         };
 
         $scope.getImages = function(result) {
