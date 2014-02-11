@@ -19,6 +19,8 @@ class AutomaticTestrunGroupSystemConfiguration(Document):
     enabled = BooleanField()
     configurationType = StringField(required=True, default=AutomaticTestrunGroupSystemConfigurationType, choices=[AutomaticTestrunGroupSystemConfigurationType,])
     template = StringField()
+    groupType = StringField(default="PARALLEL", choices=["PARALLEL", "SERIAL"])
+    replaceSameBuild = BooleanField(default=True)
     matchers = ListField(EmbeddedDocumentField(TestrunMatch))
 
     @queryset_manager

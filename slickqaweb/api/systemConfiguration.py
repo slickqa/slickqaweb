@@ -30,6 +30,27 @@ def get_system_configuration_by_id(config_id):
     return JsonResponse(type.objects(id=config_id).first())
 
 
+@app.route('/api/system-configuration', methods=["POST"])
+def add_system_configuration():
+    data = read_request()
+    if 'configurationType' not in data or data['configurationType'] not in SystemConfigurationTypes:
+        return
+    value = deserialize_that(data, SystemConfigurationTypes[data['configurationType']]())
+    value.save()
+    return JsonResponse(value)
+
+@app.route('/api/system-configuration/<config_id>', methods=["PUT"])
+def update_system_configuration(config_id):
+    type_name = load_system_configuration_type(ObjectId(config_id))
+    type = BaseSystemConfiguration
+    if type_name in SystemConfigurationTypes:
+        type = SystemConfigurationTypes[type_name]
+    orig = type.objects(id=config_id).first()
+    deserialize_that(read_request(), orig)
+    orig.save()
+    return JsonResponse(orig)
+
+
 # @app.route('/api/testcases', methods=["POST"])
 # def add_testcase():
 #     new_tc = deserialize_that(read_request(), Testcase())
