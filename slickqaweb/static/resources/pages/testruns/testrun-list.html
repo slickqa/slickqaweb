@@ -14,7 +14,7 @@
         </slick-list-columns>
     </slick-list-header>
     <div class="testruns-list-row-container">
-        <div ng-repeat="testrun in testruns | slickListFilter:testrunList" class="testruns-list-row">
+        <div ng-repeat="testrun in testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row">
             <div class="testruns-list-column-container">
                 <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}">{{ getDisplayName(testrun) }}</a></div>
                 <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>

@@ -60,14 +60,14 @@ angular.module('slickApp')
                     });
                     rest.all('testplans').getList({q: "eq(project.id,\"" + $scope.project.id + "\")"}).then(function(testplans) {
                         $scope.testplans = testplans;
-                        if ($routeParams["testplanId"]) {
+                        if ($routeParams["testplanid"]) {
                             $scope.testplan = _.find($scope.testplans, function(testplan) {
-                                return $routeParams["testplanId"] == testplan.id;
+                                return $routeParams["testplanid"] == testplan.id;
                             });
                         }
                         $scope.$watch('testplan', function(newValue, oldValue) {
                             if (newValue) {
-                                $location.search("testplanId", newValue.id);
+                                $location.search("testplanid", newValue.id);
                             }
                         });
                     });
@@ -83,8 +83,8 @@ angular.module('slickApp')
         if ($routeParams["release"]) {
             testrunQuery.push("eq(release.name,\"" + $routeParams["release"] + "\")");
         }
-        if ($routeParams["testplanId"]) {
-            testrunQuery.push("eq(testplanId,\"" + $routeParams["testplanId"] + "\")");
+        if ($routeParams["testplanid"]) {
+            testrunQuery.push("eq(testplanId,\"" + $routeParams["testplanid"] + "\")");
         }
 
         var q = "";
