@@ -11,6 +11,9 @@
             </div>
         </div>
     </div>
+    <div class="list-action-bar">
+        <a class="button" href="testrungroup/{{testrungroup.id}}/edit">Add or Remove Testruns</a>
+    </div>
     <google-line-chart class="testrungroup-serial-chart" data="serialData" options="serialChartOptions" ng-switch-when="SERIAL"></google-line-chart>
     <div class="testrungroup-data-container">
         <slick-list-header model="testrunList" search="on" pagination="on" default-sort="dateCreated">
