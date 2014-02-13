@@ -44,7 +44,7 @@
         </slick-list-columns>
     </slick-list-header>
     <div class="testruns-list-row-container">
-        <div ng-repeat="testrun in testruns | slickListFilter:availableTestrunList" class="testruns-list-row">
+        <div ng-repeat="testrun in testruns | slickListFilter:availableTestrunList track by testrun.id" class="testruns-list-row">
             <div class="testruns-list-column-container">
                 <div class="testruns-list-name-column" ng-bind="testrun.name"></div>
                 <div class="testrungroups-list-actions-column"><span class="button" ng-click="addTestrunToGroup(testrun)">Add</span></div>
