@@ -121,7 +121,7 @@ angular.module('slickApp')
         };
 
     }])
-    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', function ($scope, rest, nav, $routeParams, $timeout, projrest) {
+    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location) {
         $scope.testrun = {};
         $scope.results = [];
         $scope.filter = {};
@@ -160,6 +160,10 @@ angular.module('slickApp')
             $scope.filter[$routeParams.only] = true;
         }
 
+        if ($routeParams.result) {
+            $scope.resultList.searchField = { $: $routeParams.result };
+        }
+
         $scope.fetchTestrun = function() {
             rest.one('testruns', $routeParams["testrunid"]).get().then(function(testrun) {
                 $scope.testrun = testrun;
@@ -175,6 +179,9 @@ angular.module('slickApp')
                     $scope.options.colors.push(getStyle(status.replace("_", "") + "-element", "color"));
                     if (emptyFilter) {
                         $scope.filter[status] = status != "PASS";
+                        if ($routeParams.all) {
+                            $scope.filter[status] = true;
+                        }
                     }
                 });
 
@@ -369,6 +376,17 @@ angular.module('slickApp')
         $scope.displayLogsDialogButtonClicked = function(buttonName) {
             $scope.logs = [];
             $scope.showDisplayLogs = false;
+        };
+
+        $scope.onHistoryClick = function(history) {
+            rest.one('results', history.resultId).get().then(function(result) {
+                $location.path('testruns/' + result.testrun.testrunId);
+                if (result.status == "PASS") {
+                    $location.search({result: result.id, all: "true"});
+                } else {
+                    $location.search({result: result.id});
+                }
+            });
         };
 
         window.scope = $scope;
