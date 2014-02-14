@@ -96,14 +96,18 @@ angular.module('slickApp')
             q = q + ")";
         }
         if (!q) {
-            rest.all('testruns').getList({orderby: '-dateCreated', limit: 500}).then(function(testruns) {
+            rest.all('testruns').getList({orderby: '-dateCreated', limit: 25}).then(function(testruns) {
                 $scope.testruns = testruns;
-                window.testruns = testruns;
+                rest.all('testruns').getList({orderby: '-dateCreated', limit: 500, skip: 25}).then(function(therest) {
+                    _.each(therest, function(testrun) { $scope.testruns.push(testrun)});
+                });
             });
         } else {
-            rest.all('testruns').getList({q: q, limit: 500, orderby: '-dateCreated'}).then(function(testruns) {
+            rest.all('testruns').getList({q: q, limit: 25, orderby: '-dateCreated'}).then(function(testruns) {
                 $scope.testruns = testruns;
-                window.testruns = testruns;
+                rest.all('testruns').getList({q: q, orderby: '-dateCreated', limit: 500, skip: 25}).then(function(therest) {
+                    _.each(therest, function(testrun) { $scope.testruns.push(testrun)});
+                });
             });
         }
         $scope.testrunList = {}; // Model for the list header and filter
