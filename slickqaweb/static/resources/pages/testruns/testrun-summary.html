@@ -142,7 +142,7 @@
             <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'"></div>
             <div class="result-list-duration-column" ng-bind="getResultDuration(result)"></div>
             <div class="result-list-hostname-column" ng-bind="result.hostname"></div>
-            <div class="result-list-history-column"><img ng-repeat="hres in result.history | reverse" ng-src="static/images/status-{{hres.status}}.png" /></div>
+            <div class="result-list-history-column"><img ng-repeat="hres in result.history | reverse track by hres.resultId" ng-src="static/images/status-{{hres.status}}.png" /></div>
             <div class="result-list-status-column result-status-{{result.status.replace('_','')}}" ng-bind="result.status.replace('_',' ')"></div>
         </div>
         <div class="result-list-second-part">
@@ -178,7 +178,7 @@
                 <pre>{{result.reason}}</pre>
             </div>
             <div class="result-list-more-detail-screenshots">
-                <div class="result-list-more-detail-screenshot" ng-repeat="image in getImages(result)">
+                <div class="result-list-more-detail-screenshot" ng-repeat="image in getImages(result) track by image.id">
                     <div class="result-list-more-detail-screenshot-filename">{{image.filename}}</div>
                     <img ng-src="api/files/{{image.id}}/content/{{image.filename}}" alt="{{image.filename}}" />
                 </div>
