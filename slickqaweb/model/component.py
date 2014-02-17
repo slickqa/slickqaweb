@@ -1,4 +1,5 @@
 from mongoengine import *
+from .feature import Feature
 
 
 class Component(EmbeddedDocument):
@@ -6,3 +7,4 @@ class Component(EmbeddedDocument):
     code = StringField()
     description = StringField()
     name = StringField()
+    features = ListField(EmbeddedDocumentField(Feature))

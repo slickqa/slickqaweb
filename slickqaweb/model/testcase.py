@@ -3,6 +3,7 @@ __author__ = 'jcorbett'
 from mongoengine import *
 from .componentReference import ComponentReference
 from .projectReference import ProjectReference
+from .featureReference import FeatureReference
 from .step import Step
 
 
@@ -24,5 +25,6 @@ class Testcase(Document):
     tags = ListField(StringField())
     project = EmbeddedDocumentField(ProjectReference)
     component = EmbeddedDocumentField(ComponentReference)
+    feature = EmbeddedDocumentField(FeatureReference)
     deleted = BooleanField()
 
