@@ -15,7 +15,7 @@ angular.module('slickApp')
                 templateUrl: 'static/resources/pages/testruns/testrun-summary.html',
                 controller: 'TestrunSummaryCtrl'
             });
-        nav.addLink('Reports', 'Testrun List', 'testruns');
+        nav.addLink('Reports', 'Testruns', 'testruns');
     }])
     .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', '$location', function ($scope, rest, nav, $routeParams, $cookieStore, $location) {
         $scope.project = null;

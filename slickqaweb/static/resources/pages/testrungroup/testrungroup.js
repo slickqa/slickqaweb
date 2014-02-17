@@ -24,7 +24,7 @@ angular.module('slickApp')
                 templateUrl: 'static/resources/pages/testrungroup/edit-testrungroup.html',
                 controller: 'EditTestrunGroupCtrl'
             });
-        nav.addLink('Reports', 'Latest Testrun Groups', 'testrungroups/latest');
+        nav.addLink('Reports', 'Testrun Groups', 'testrungroups/latest');
     }])
     .controller('ViewTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', function ($scope, rest, nav, $routeParams) {
         $scope.testrungroup = {};
