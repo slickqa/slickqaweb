@@ -13,10 +13,15 @@ angular.module('slickApp')
                 templateUrl: 'static/resources/pages/find-testcases/find-testcases.html',
                 controller: 'FindTestcasesCtrl'
             })
-        nav.addLink('Test Management', 'Find Testcases', 'find-testcases');
+            .when('/testcases', {
+                templateUrl: 'static/resources/pages/find-testcases/testcase-tree.html',
+                controller: 'TestcaseTreeCtrl'
+            });
+        nav.addLink('Test Management', 'Query for Testcases', 'find-testcases');
+        nav.addLink('Test Management', 'Browse Testcases', 'testcases');
     }])
     .controller('FindTestcasesCtrl', ['$scope', 'NameBasedRestangular', 'Restangular', 'NavigationService', '$routeParams', '$location', function ($scope, projrest, rest, nav, $routeParams, $location) {
-        nav.setTitle("Find Testcases");
+        nav.setTitle("Query For Testcases");
         // --------------------  required variables initialization ----------------------
         $scope.testcaseList = {};
 
@@ -167,6 +172,52 @@ angular.module('slickApp')
             $scope.generateQuery();
         });
 
+
+    }])
+    .controller('TestcaseTreeCtrl', ['$scope', 'NameBasedRestangular', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookieStore', function ($scope, projrest, rest, nav, $routeParams, $location, $cookieStore) {
+        // --------------- Initialize Variables used in the Page -------------------
+        $scope.projects = [];
+        $scope.project = null;
+        $scope.selectedProjectName = null;
+        $scope.testTree = [];
+        $scope.testcaseList = {};
+
+
+        // determine if we have a pre-selected project
+        if ($routeParams['project']) {
+            $scope.selectedProjectName = $routeParams['project'];
+            $cookieStore.put('slick-last-project-used', $routeParams['project']);
+        } else if ($cookieStore.get('slick-last-project-used')) {
+            $scope.selectedProjectName =  $cookieStore.get('slick-last-project-used');
+        }
+
+        // Get the list of projects, sorted by last updated
+        projrest.all('projects').getList({orderby: '-lastUpdated'}).then(function(projects) {
+            $scope.projects = projects;
+            if ($scope.selectedProjectName) {
+                $scope.project = _.find($scope.projects, function(project) { return project.name == $scope.selectedProjectName; });
+            } else {
+                // auto-select the most recently updated project
+                $scope.project = $scope.projects[0];
+            }
+            _.each($scope.project.components, function(component) {
+                $scope.testcaseList[component.id] = {};
+                var copy = _.cloneDeep(component);
+                $scope.testTree.push(copy);
+                rest.all('testcases').getList({q: 'and(eq(project.id,"' + $scope.project.id + '"),eq(component.id,"' + copy.id + '"),not(exists(feature,true)))'}).then(function(testcases) {
+                    copy.testcases = testcases;
+                });
+            })
+        });
+
+
+        // --------------- Response Functions ------------------
+
+        $scope.selectProject = function(project) {
+            $location.search({project: project.name});
+        };
+
+        window.scope = $scope;
 
     }]);
 

@@ -1,0 +1,42 @@
+<div class="slickview">
+   <div class="testcase-tree">
+       <div class="testcase-tree-project-list">
+           <h3 class="testcase-tree-project" ng-repeat="project in projects track by project.id" ng-class="{'testcase-tree-project-selected': project.name == selectedProjectName}" ng-bind="project.name" ng-click="selectProject(project)"></h3>
+       </div>
+       <div class="testcase-tree-component-list">
+           <div class="testcase-tree-component" ng-repeat="component in testTree">
+               <div class="testcase-tree-component-label"><div ng-bind="component.name"></div><hr /></div>
+               <div class="testcase-tree-feature" ng-show="component.testcases.length > 0">
+                   <div class="testcase-tree-feature-image">
+                       <img src="static/images/nofeature.png" />
+                   </div>
+                   <div class="testcase-tree-feature-tests">
+                       <div class="testcase-tree-feature-label">
+                           <div>No feature assigned</div>
+                       </div>
+                       <slick-list-header model="testcaseList[component.id]" search="off" pagination="on" default-sort="name">
+                           <slick-list-columns class="testcase-tree-list-column-container">
+                               <slick-list-column class="testcase-tree-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
+                               <slick-list-column class="testcase-tree-list-name-column" sortable="false">Name</slick-list-column>
+                           </slick-list-columns>
+                       </slick-list-header>
+                       <div class="testcase-tree-tests-container">
+                           <div class="testcase-tree-tests-half">
+                               <div class="testcase-tree-tests-row" ng-repeat="testcase in component.testcases |slickListFilter:testcaseList[component.id] |firstHalf">
+                                   <div class="testcase-tree-tests-row-name-column" ng-bind="testcase.name"></div>
+                               </div>
+                           </div>
+                           <div class="testcase-tree-tests-half">
+                               <div class="testcase-tree-tests-row" ng-repeat="testcase in component.testcases |slickListFilter:testcaseList[component.id] |lastHalf">
+                                   <div class="testcase-tree-tests-row-name-column" ng-bind="testcase.name"></div>
+                               </div>
+                           </div>
+                       </div>
+
+
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
