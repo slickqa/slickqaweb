@@ -22,6 +22,7 @@ class Testcase(Document):
     automationKey = StringField()
     automationConfiguration = StringField()
     stabilityRating = IntField()
+    importanceRating = IntField(min_value=0,max_value=5,default=0)
     tags = ListField(StringField())
     project = EmbeddedDocumentField(ProjectReference)
     component = EmbeddedDocumentField(ComponentReference)
