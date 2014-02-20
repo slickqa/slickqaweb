@@ -11,10 +11,13 @@ def serializable(func):
     func.__serialize__ = True
     return func
 
+plain_types = (types.StringTypes, types.IntType, types.LongType, types.FloatType, types.FloatType, types.DictionaryType, types.NoneType)
+document_types = (mongoengine.EmbeddedDocument, mongoengine.Document)
+epoch = datetime.datetime(1970, 1, 1)
 def document_to_plain(doc):
-    if isinstance(doc, mongoengine.QuerySet):
-        return [document_to_plain(item) for item in doc]
-    if isinstance(doc, mongoengine.Document) or isinstance(doc, mongoengine.EmbeddedDocument):
+    if isinstance(doc, plain_types):
+        return doc
+    if isinstance(doc, document_types):
         retval = dict()
         for fieldname in doc._fields.keys():
             value = getattr(doc, fieldname)
@@ -24,14 +27,14 @@ def document_to_plain(doc):
             for key, value in doc.dynamic_fields().items():
                 retval[key] = document_to_plain(value)
         return retval
-    if isinstance(doc, types.ListType):
-        return [document_to_plain(item) for item in doc]
-    if isinstance(doc, (types.StringTypes, types.IntType, types.LongType, types.FloatType, types.FloatType, types.DictionaryType, types.NoneType)):
-        return doc
-    if isinstance(doc, datetime.datetime):
-        return int((doc - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
     if isinstance(doc, bson.ObjectId):
         return str(doc)
+    if isinstance(doc, types.ListType):
+        return [document_to_plain(item) for item in doc]
+    if isinstance(doc, datetime.datetime):
+        return int((doc - epoch).total_seconds() * 1000)
+    if isinstance(doc, mongoengine.QuerySet):
+        return [document_to_plain(item) for item in doc]
     raise Exception("I don't know how to serialize %s: looks like %s" % (doc.__class__.__name__, repr(doc)))
 
 logger = logging.getLogger('slickqaweb.model.serialize')
