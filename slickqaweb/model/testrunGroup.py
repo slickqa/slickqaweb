@@ -14,7 +14,7 @@ class TestrunGroup(Document):
     def dynamic_fields(self):
         return {
             'state': self.state(),
-            'groupSummary': self.groupSummary
+            'groupSummary': self.groupSummary()
         }
 
     @serializable
