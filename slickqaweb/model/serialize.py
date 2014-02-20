@@ -20,9 +20,9 @@ def document_to_plain(doc):
             value = getattr(doc, fieldname)
             if value is not None:
                 retval[fieldname] = document_to_plain(value)
-        for name, method in inspect.getmembers(doc, inspect.ismethod):
-                if hasattr(method, '__serialize__') and method.__serialize__:
-                    retval[name] = document_to_plain(getattr(doc, name)())
+        if hasattr(doc, 'dynamic_fields'):
+            for key, value in doc.dynamic_fields().items():
+                retval[key] = document_to_plain(value)
         return retval
     if isinstance(doc, types.ListType):
         return [document_to_plain(item) for item in doc]

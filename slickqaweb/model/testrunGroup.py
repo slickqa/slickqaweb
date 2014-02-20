@@ -11,6 +11,12 @@ class TestrunGroup(Document):
     grouptype = StringField(default="PARALLEL", choices=["SERIAL", "PARALLEL"])
     meta = {'collection': 'testrungroups'}
 
+    def dynamic_fields(self):
+        return {
+            'state': self.state(),
+            'groupSummary': self.groupSummary
+        }
+
     @serializable
     def state(self):
         """The state of the testrun group is the "lowest" state of all it's testruns."""

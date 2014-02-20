@@ -28,6 +28,14 @@ class Testrun(Document):
     state = StringField()
     meta = {'collection': 'testruns'}
 
+    def dynamic_fields(self):
+        if self.testplanId is None:
+            return dict()
+        else:
+            return {
+                'testplan': self.testplan()
+            }
+
     @serializable
     def testplan(self):
         if self.testplanId is not None:
