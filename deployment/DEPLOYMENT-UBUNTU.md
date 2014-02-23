@@ -92,7 +92,7 @@ tested and confirmed to work.
      in the sites directory of apache and use.  If you are customizing where slick lives
      be sure to change this file!
 
-        cp /opt/slick/deployment/example.apache.config /etc/apache2/sites-available/slick.config
+        cp /opt/slick/deployment/example.apache.conf /etc/apache2/sites-available/slick.conf
         a2ensite slick
         service apache2 reload
 

@@ -23,6 +23,6 @@ cd /opt/slick
 su slick -s /bin/bash -c "/bin/bash -c 'cp deployment/prodserver.example.cfg prodserver.cfg'"
 su slick -s /bin/bash -c "/bin/bash -c 'cp deployment/slick.example.wsgi slick.wsgi'"
 
-cp /opt/slick/deployment/example.apache.config /etc/apache2/sites-available/slick.config
+cp /opt/slick/deployment/example.apache.conf /etc/apache2/sites-available/slick.conf
 a2ensite slick
 service apache2 reload
