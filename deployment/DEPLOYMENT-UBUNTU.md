@@ -69,25 +69,25 @@ tested and confirmed to work.
      command line.
 
         cd /opt
-        su slick -c "/bin/bash -c 'git clone http://github.com/slickqa/slickqaweb slick'"
+        su slick -s /bin/bash -c "/bin/bash -c 'git clone http://github.com/slickqa/slickqaweb slick'"
   3. Prepare the virtual python environment with everything we need.  This is the same as
      for getting a development environment ready.
         
         cd /opt/slick
-        su slick -c "/bin/bash -c './devenv.sh'"
+        su slick -s /bin/bash -c "/bin/bash -c './devenv.sh'"
   4. Get slick configuration setup.  There is an example production config in the deployment
      directory.  You can edit to your taste, but for this example, we will use it without
      any changes.
      
         cd /opt/slick
-        su slick -c "/bin/bash -c 'cp deployment/prodserver.example.cfg prodserver.cfg'"
+        su slick -s /bin/bash -c "/bin/bash -c 'cp deployment/prodserver.example.cfg prodserver.cfg'"
 
   5. Get the slick.wsgi file ready.  There is an example one, and generally it can be used,
      but you should check it to see if it is doing what you want.  If your following this
      tutorial without changing anything, then what is there will probably be fine.
 
         cd /opt/slick
-        su slick -c "/bin/bash -c 'cp deployment/slick.example.wsgi slick.wsgi'"
+        su slick -s /bin/bash -c "/bin/bash -c 'cp deployment/slick.example.wsgi slick.wsgi'"
   6. Configure Apache.  There is an example apache configuration file that we will put
      in the sites directory of apache and use.  If you are customizing where slick lives
      be sure to change this file!

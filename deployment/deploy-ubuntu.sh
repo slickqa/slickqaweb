@@ -14,14 +14,14 @@ npm install -g less
 adduser --system --home /opt/slick --disabled-password --disabled-login slick
 
 cd /opt
-su slick -c "/bin/bash -c 'git clone http://github.com/slickqa/slickqaweb slick'"
+su slick -s /bin/bash -c "/bin/bash -c 'git clone http://github.com/slickqa/slickqaweb slick'"
         
 cd /opt/slick
-su slick -c "/bin/bash -c './devenv.sh'"
+su slick -s /bin/bash -c "/bin/bash -c './devenv.sh'"
 
 cd /opt/slick
-su slick -c "/bin/bash -c 'cp deployment/prodserver.example.cfg prodserver.cfg'"
-su slick -c "/bin/bash -c 'cp deployment/slick.example.wsgi slick.wsgi'"
+su slick -s /bin/bash -c "/bin/bash -c 'cp deployment/prodserver.example.cfg prodserver.cfg'"
+su slick -s /bin/bash -c "/bin/bash -c 'cp deployment/slick.example.wsgi slick.wsgi'"
 
 cp /opt/slick/deployment/example.apache.config /etc/apache2/sites-available/slick.config
 a2ensite slick
