@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-get -y install python-software-properties
+apt-get -y install python3-software-properties software-properties-common
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
 echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' > /etc/apt/sources.list.d/mongodb.list
 add-apt-repository -y ppa:chris-lea/node.js
