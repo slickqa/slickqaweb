@@ -9,6 +9,8 @@ server:
 
         wget -q -O - https://raw.github.com/slickqa/slickqaweb/master/deployment/deploy-ubuntu.sh |sudo bash
 
+Do that and your done!  If you want to do it by hand, here are the steps the script follows.
+
 Prerequisites
 -------------
 
