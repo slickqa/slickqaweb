@@ -4,6 +4,11 @@ Ubuntu Deployment Documentation
 This document assumes that you are deploying on the newest version of Ubuntu,
 13.10 as of this writing.  A script is provided that follows these directions.
 
+To deploy on ubuntu run the following command on a freshly installed ubuntu
+server:
+
+        wget -O - https://raw.github.com/slickqa/slickqaweb/master/deployment/deploy-ubuntu.sh |sudo bash
+
 Prerequisites
 -------------
 
