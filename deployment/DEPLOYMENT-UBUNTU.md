@@ -30,6 +30,7 @@ is a list, and the shell commands (as root) that are needed to get it working.
         apt-get -y install python-setuptools python-pip python-virtualenv
   5. NodeJS interpreter, with npm tool
 
+        apt-get -y install python-software-properties
         add-apt-repository -y ppa:chris-lea/node.js
         apt-get -y update
         apt-get -y install nodejs
