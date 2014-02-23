@@ -7,7 +7,7 @@ This document assumes that you are deploying on the newest version of Ubuntu,
 To deploy on ubuntu run the following command on a freshly installed ubuntu
 server:
 
-        wget -O - https://raw.github.com/slickqa/slickqaweb/master/deployment/deploy-ubuntu.sh |sudo bash
+        wget -q -O - https://raw.github.com/slickqa/slickqaweb/master/deployment/deploy-ubuntu.sh |sudo bash
 
 Prerequisites
 -------------
