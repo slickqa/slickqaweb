@@ -32,7 +32,7 @@
                 <object type="{{fileToDisplay.mimetype}}" width="800" height="600" data="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}"></object>
             </div>
             <div class="testrun-summary-display-file-html5-video" ng-switch-when="html5-video">
-                <video ng-src="{{getUrlForFile(fileToDisplay)}}"></video>
+                <video ng-src="{{getUrlForFile(fileToDisplay)}}" preload="auto" controls style="width: 100%"></video>
             </div>
             <div class="testrun-summary-display-file-text" ng-switch-when="text">
                 <pre prettyprint code="fileToDisplay.text"></pre>
