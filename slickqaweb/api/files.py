@@ -109,19 +109,18 @@ def get_file_content(file_id, filename):
 
         logger.debug("Using range information {}-{}/{}, chunks {}:{}-{}:{}".format(byte1, byte2, stored_file.length - 1, start_chunk_number, start_index, end_chunk_number, end_index))
 
-        for chunk in FileChunk.objects(files_id=stored_file.id).order_by('+n'):
-            if chunk.n >= start_chunk_number and chunk.n <= end_chunk_number:
-                start = 0
-                end = stored_file.chunkSize
-                if chunk.n == start_chunk_number:
-                    start = start_index
-                if chunk.n == end_chunk_number:
-                    end = end_index
-                data.extend(chunk.data[start:end])
+        def write_chunks():
+            for chunk in FileChunk.objects(files_id=stored_file.id).order_by('+n'):
+                if chunk.n >= start_chunk_number and chunk.n <= end_chunk_number:
+                    start = 0
+                    end = stored_file.chunkSize
+                    if chunk.n == start_chunk_number:
+                        start = start_index
+                    if chunk.n == end_chunk_number:
+                        end = end_index
+                    yield chunk.data[start:end]
 
-        logger.debug("Ranged request length is {} bytes.".format(len(data)))
-
-        response = Response(data, 206, mimetype=stored_file.mimetype, direct_passthrough=True)
+        response = Response(write_chunks(), 206, mimetype=stored_file.mimetype, direct_passthrough=True)
         response.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(byte1, byte2, stored_file.length))
 
     response.headers.add('Accept-Ranges', 'bytes')
