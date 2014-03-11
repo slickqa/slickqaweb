@@ -2,9 +2,11 @@ __author__ = 'lhigginson'
 
 import datetime
 
+import bson
 from slickqaweb.app import app
 from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.testrun import Testrun
+from slickqaweb.model.testrunGroup import TestrunGroup
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
 from .project import get_project, get_release, get_build
@@ -64,4 +66,13 @@ def update_testrun(testrun_id):
         orig.runFinished = datetime.datetime.utcnow()
     orig.save()
     update_event.after(orig)
+    return JsonResponse(orig)
+
+@app.route('/api/testruns/<testrun_id>', methods=["DELETE"])
+def delete_testrun(testrun_id):
+    orig = Testrun.objects(id=testrun_id).first()
+    # delete the reference from any testrun groups
+    trdbref = bson.DBRef('testruns', bson.ObjectId("531e4d26ded43258823d9c3a"))
+    TestrunGroup.objects(__raw__={ 'testruns': { '$elemMatch': trdbref } }).update(pull__testruns=trdbref)
+    orig.delete()
     return JsonResponse(orig)
