@@ -7,6 +7,7 @@ from slickqaweb.model.serialize import deserialize_that
 from flask import Response, request
 from .standardResponses import JsonResponse, read_request
 from slickqaweb.model.query import queryFor
+from slickqaweb import events
 from bson import ObjectId
 import datetime
 import types
@@ -38,15 +39,18 @@ def add_project():
     new_project = deserialize_that(read_request(), Project())
     new_project.lastUpdated = datetime.datetime.utcnow()
     new_project.save()
+    events.CreateEvent(new_project)
     return JsonResponse(new_project)
 
 
 @app.route('/api/projects/<project_name>', methods=["PUT"])
 def update_project(project_name):
     orig = get_project(project_name)
+    update_event = events.UpdateEvent(orig)
     deserialize_that(read_request(), orig)
     orig.lastUpdated = datetime.datetime.utcnow()
     orig.save()
+    update_event.after(orig)
     return JsonResponse(orig)
 
 
@@ -54,6 +58,7 @@ def update_project(project_name):
 def delete_project(project_name):
     project = get_project(project_name)
     if project is not None:
+        events.DeleteEvent(project)
         project.delete()
 
 # ----------------- For backwards compatibility -----------------------------
