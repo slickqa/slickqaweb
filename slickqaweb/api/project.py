@@ -54,7 +54,7 @@ def update_project(project_name):
     return JsonResponse(orig)
 
 
-@app.route('/api/projects/<project_name>', methods=["DELTE"])
+@app.route('/api/projects/<project_name>', methods=["DELETE"])
 def delete_project(project_name):
     project = get_project(project_name)
     if project is not None:
