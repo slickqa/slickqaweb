@@ -5,8 +5,11 @@ from json import dumps
 
 from .app import app
 from .model.serialize import serialize_this
+from .model.slickLogEvent import SlickLogEvent, EventTypes
 
 from kombu import producers
+from flask import g
+import sys
 
 
 
@@ -19,6 +22,7 @@ class SlickEventError(Exception):
 class Event(object):
 
     def __init__(self, typename):
+        self.typename = typename
         self.logger = logging.getLogger("slickqaweb.events.Event")
         self.topic = "{}.{}".format(self.get_prefix(), typename)
         self.logger.debug("Initializing event for topic '%s'", self.topic)
@@ -47,10 +51,19 @@ class Event(object):
 class CreateEvent(Event):
 
     def __init__(self, created):
-        if not app.config['events']:
-            return
         super(CreateEvent, self).__init__(event_topic_mapping.get(created.__class__, created.__class__.__name__))
         self.created = dumps(serialize_this(created))
+        try:
+            logevent = SlickLogEvent(fieldType=self.typename, eventType=EventTypes.CREATED)
+            if hasattr(created, 'id'):
+                logevent.id = created.id
+            if hasattr(created, 'name'):
+                logevent.name = created.name
+            if g.user is not None:
+                logevent.user = g.user.full_name + " <" + g.user.email + ">"
+            logevent.save()
+        except:
+            self.logger.warn("Error saving slick log event: ", exc_info=sys.exc_info())
         self.send()
 
     def get_prefix(self):
@@ -63,8 +76,6 @@ class CreateEvent(Event):
 class UpdateEvent(Event):
 
     def __init__(self, before):
-        if not app.config['events']:
-            return
         super(UpdateEvent, self).__init__(event_topic_mapping.get(before.__class__, before.__class__.__name__))
         self.before = dumps(serialize_this(before))
 
@@ -72,6 +83,17 @@ class UpdateEvent(Event):
         if not app.config['events']:
             return
         self.after = dumps(serialize_this(after))
+        try:
+            logevent = SlickLogEvent(fieldType=self.typename, eventType=EventTypes.MODIFIED)
+            if hasattr(after, 'id'):
+                logevent.id = after.id
+            if hasattr(after, 'name'):
+                logevent.name = after.name
+            if g.user is not None:
+                logevent.user = g.user.full_name + " <" + g.user.email + ">"
+            logevent.save()
+        except:
+            self.logger.warn("Error saving slick log event: ", exc_info=sys.exc_info())
         self.send()
 
     def get_prefix(self):
@@ -86,10 +108,19 @@ class UpdateEvent(Event):
 class DeleteEvent(Event):
 
     def __init__(self, deleted):
-        if not app.config['events']:
-            return
         super(DeleteEvent, self).__init__(event_topic_mapping.get(deleted.__class__, deleted.__class__.__name__))
         self.deleted = dumps(serialize_this(deleted))
+        try:
+            logevent = SlickLogEvent(fieldType=self.typename, eventType=EventTypes.DELETED)
+            if hasattr(deleted, 'id'):
+                logevent.id = deleted.id
+            if hasattr(deleted, 'name'):
+                logevent.name = deleted.name
+            if g.user is not None:
+                logevent.user = g.user.full_name + " <" + g.user.email + ">"
+            logevent.save()
+        except:
+            self.logger.warn("Error saving slick log event: ", exc_info=sys.exc_info())
         self.send()
 
     def get_prefix(self):

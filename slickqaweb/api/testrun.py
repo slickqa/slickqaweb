@@ -54,7 +54,9 @@ def add_testrun():
             new_tr.info = build.description
 
     new_tr.save()
+    # add an event
     events.CreateEvent(new_tr)
+
     return JsonResponse(new_tr)
 
 @app.route('/api/testruns/<testrun_id>', methods=["PUT"])
@@ -71,8 +73,13 @@ def update_testrun(testrun_id):
 @app.route('/api/testruns/<testrun_id>', methods=["DELETE"])
 def delete_testrun(testrun_id):
     orig = Testrun.objects(id=testrun_id).first()
+
     # delete the reference from any testrun groups
     trdbref = bson.DBRef('testruns', bson.ObjectId("531e4d26ded43258823d9c3a"))
     TestrunGroup.objects(__raw__={ 'testruns': { '$elemMatch': trdbref } }).update(pull__testruns=trdbref)
+
+    # add an event
+    events.DeleteEvent(orig)
+
     orig.delete()
     return JsonResponse(orig)
