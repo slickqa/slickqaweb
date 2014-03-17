@@ -22,6 +22,6 @@ class SlickLogEvent(Document):
     fieldType = StringField()
     eventType = StringField(required=True, choices=EventTypes.types())
     user = StringField(required=True, default="Anonymous")
-    id = StringField()
+    targetid = StringField()
     name = StringField()
     message = StringField()

@@ -56,7 +56,7 @@ class CreateEvent(Event):
         try:
             logevent = SlickLogEvent(fieldType=self.typename, eventType=EventTypes.CREATED)
             if hasattr(created, 'id'):
-                logevent.id = created.id
+                logevent.targetid = str(created.id)
             if hasattr(created, 'name'):
                 logevent.name = created.name
             if g.user is not None:
@@ -86,7 +86,7 @@ class UpdateEvent(Event):
         try:
             logevent = SlickLogEvent(fieldType=self.typename, eventType=EventTypes.MODIFIED)
             if hasattr(after, 'id'):
-                logevent.id = after.id
+                logevent.targetid = str(after.id)
             if hasattr(after, 'name'):
                 logevent.name = after.name
             if g.user is not None:
@@ -113,7 +113,7 @@ class DeleteEvent(Event):
         try:
             logevent = SlickLogEvent(fieldType=self.typename, eventType=EventTypes.DELETED)
             if hasattr(deleted, 'id'):
-                logevent.id = deleted.id
+                logevent.targetid = str(deleted.id)
             if hasattr(deleted, 'name'):
                 logevent.name = deleted.name
             if g.user is not None:
