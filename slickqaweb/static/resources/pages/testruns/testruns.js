@@ -174,6 +174,7 @@ angular.module('slickApp')
                 if (emptyFilter) {
                     $scope.filter = {};
                 }
+                $scope.options.colors = [];
                 _.each(testrun.summary.statusListOrdered, function(status) {
                     $scope.data.addRow([status.replace("_", " "), testrun.summary.resultsByStatus[status]]);
                     $scope.options.colors.push(getStyle(status.replace("_", "") + "-element", "color"));
