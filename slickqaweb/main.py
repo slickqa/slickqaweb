@@ -78,12 +78,13 @@ if app.debug:
             mimetype = "in:{},out:{}".format(request.mimetype, response.mimetype)
         request_logger.debug("%s %s = %d (%s)", request.method, path, response.status_code, mimetype)
         if response.status_code == 400 or response.status_code == 500:
+            request_logger.warn("%s %s = %d (%s)", request.method, path, response.status_code, mimetype)
             data = request.data
             if not data:
-                request_logger.debug('data was empty, grabbing data from for keys')
+                request_logger.warn('data was empty, grabbing data from for keys')
                 data = request.form.keys()[0]
-            request_logger.debug("Request Data: %s", data)
-            request_logger.debug("Headers: %s", repr(request.headers))
+            request_logger.warn("Request Data: %s", data)
+            request_logger.warn("Headers: %s", repr(request.headers))
         return response
 
 
