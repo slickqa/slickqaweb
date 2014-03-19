@@ -79,6 +79,13 @@ def plain_to_document(plain, doctype):
                 return datetime.datetime.strptime(date_to_parse, "%Y:%m:%dT%H:%M:%S.%f")
             except:
                 pass
+            try:
+                date_to_parse = plain
+                if plain.endswith('Z'):
+                    date_to_parse = plain[:-2]
+                return datetime.datetime.strptime(date_to_parse, "%Y-%m-%dT%H:%M:%S.%f")
+            except:
+                pass
     if isinstance(plain, types.IntType):
         if isinstance(doctype, (mongoengine.IntField, mongoengine.LongField)):
             return plain
