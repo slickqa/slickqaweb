@@ -5,6 +5,7 @@
         <div class="testruns-list-filter-testplan">Testplan: <select ng-model="testplan" ng-options="t.name for t in testplans"></select></div>
     </div>
     <slick-list-header model="testrunList" search="on" pagination="on" default-sort="dateCreated" default-sort-reverse="true" default-page-size="25">
+        <span class="button" ng-show="!isEmpty(user)">Edit</span>
         <slick-list-columns class="testruns-list-column-container">
             <slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
             <slick-list-column class="testruns-list-results-column" sortable="false">Results</slick-list-column>

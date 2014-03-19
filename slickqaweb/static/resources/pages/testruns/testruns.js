@@ -121,6 +121,10 @@ angular.module('slickApp')
             }
             return retval;
         };
+
+        $scope.isEmpty = function(obj) {
+            return _.isEmpty(obj);
+        };
         window.scope = $scope;
 
     }])
