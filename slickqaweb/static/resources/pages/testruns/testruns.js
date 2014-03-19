@@ -95,7 +95,7 @@ angular.module('slickApp')
         if (testrunQuery.length > 1) {
             q = q + ")";
         }
-        if (!q) {
+        if (q == "") {
             rest.all('testruns').getList({orderby: '-dateCreated', limit: 25}).then(function(testruns) {
                 $scope.testruns = testruns;
                 rest.all('testruns').getList({orderby: '-dateCreated', limit: 500, skip: 25}).then(function(therest) {
