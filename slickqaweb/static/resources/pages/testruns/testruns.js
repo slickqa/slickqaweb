@@ -17,7 +17,7 @@ angular.module('slickApp')
             });
         nav.addLink('Reports', 'Testruns', 'testruns');
     }])
-    .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', '$location', function ($scope, rest, nav, $routeParams, $cookieStore, $location) {
+    .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', '$location', 'UserService', function ($scope, rest, nav, $routeParams, $cookieStore, $location, user) {
         $scope.project = null;
         $scope.release = null;
         $scope.testplan = null;
@@ -25,6 +25,8 @@ angular.module('slickApp')
         $scope.projects = [];
         $scope.releases = [];
         $scope.testplans = [];
+
+        $scope.user = user.currentUser;
 
 
         if (!$routeParams["project"] && $cookieStore.get('slick-last-project-used')) {
@@ -119,6 +121,7 @@ angular.module('slickApp')
             }
             return retval;
         };
+        window.scope = $scope;
 
     }])
     .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location) {
