@@ -42,8 +42,11 @@ def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = UserAccount.objects(openid=resp.identity_url).first()
     if user is None:
+        logger.debug("Creating user '%s' <%s>", resp.fullname, resp.email)
         user = UserAccount(openid=resp.identity_url, email=resp.email, full_name=resp.fullname, short_name=resp.nickname)
         user.save()
+    else:
+        logger.debug("Logged in user: '%s' <%s>", user.full_name, user.email)
     return redirect(oid.get_next_url())
 
 @app.route('/logout')
