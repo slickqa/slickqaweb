@@ -2,8 +2,54 @@
   .flex-container;
 }
 
+@keyframes to-one-inch-width {
+  from { width: 0; }
+  to { width: 1in; }
+}
+
+@-webkit-keyframes to-one-inch-width {
+  from { width: 0; }
+  to { width: 1in; }
+}
+
+@-moz-keyframes to-one-inch-width {
+  from { width: 0; }
+  to { width: 1in; }
+}
+
+@keyframes from-one-inch-width {
+  from { width: 1in; }
+  to { width: 0; }
+}
+
+@-webkit-keyframes from-one-inch-width {
+  from { width: 1in; }
+  to { width: 0; }
+}
+
+@-moz-keyframes from-one-inch-width {
+  from { width: 1in; }
+  to { width: 0; }
+}
+
 .testruns-list-edit-column {
   width: 1in;
+  overflow-x: hidden;
+}
+
+.testruns-list-edit-column.ng-hide-remove {
+  .animated;
+  animation-name: to-one-inch-width;
+  -webkit-animation-name: to-one-inch-width;
+  -moz-animation-name: to-one-inch-width;
+}
+
+.testruns-list-edit-column.ng-hide-add {
+  .animated;
+  animation-name: from-one-inch-width;
+  -webkit-animation-name: from-one-inch-width;
+  -moz-animation-name: from-one-inch-width;
+  display: block !important;
 }
 
 .testruns-list-name-column {
@@ -354,3 +400,5 @@
 .result-list-history-column img {
   width: .2in;
 }
+
+
