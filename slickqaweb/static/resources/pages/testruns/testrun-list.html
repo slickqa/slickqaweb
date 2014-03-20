@@ -1,12 +1,13 @@
 <div class="slickview">
     <div class="testruns-list-filter">
+        <div class="button" ng-show="!isEmpty(user)" ng-click="toggleEdit()">Edit</div>
         <div class="testruns-list-filter-project">Project: <select ng-model="project" ng-options="p.name for p in projects"></select></div>
         <div class="testruns-list-filter-release">Release: <select ng-model="release" ng-options="r.name for r in releases"></select></div>
         <div class="testruns-list-filter-testplan">Testplan: <select ng-model="testplan" ng-options="t.name for t in testplans"></select></div>
     </div>
     <slick-list-header model="testrunList" search="on" pagination="on" default-sort="dateCreated" default-sort-reverse="true" default-page-size="25">
-        <span class="button" ng-show="!isEmpty(user)">Edit</span>
         <slick-list-columns class="testruns-list-column-container">
+            <slick-list-column class="testruns-list-edit-column" sortable="false" ng-show="editOn">Edit</slick-list-column>
             <slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
             <slick-list-column class="testruns-list-results-column" sortable="false">Results</slick-list-column>
             <slick-list-column class="testruns-list-environment-column" sort-property-name="config.name" sortable="true">Environment</slick-list-column>
@@ -17,6 +18,7 @@
     <div class="testruns-list-row-container">
         <div ng-repeat="testrun in testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row">
             <div class="testruns-list-column-container">
+                <div class="testruns-list-edit-column" ng-show="editOn"><span class="button" ng-click="deleteTestrun(testrun)">Delete</span></div>
                 <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}">{{ getDisplayName(testrun) }}</a></div>
                 <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
                 <div class="testruns-list-environment-column">{{ testrun.config.name}}</div>

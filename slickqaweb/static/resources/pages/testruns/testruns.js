@@ -27,6 +27,7 @@ angular.module('slickApp')
         $scope.testplans = [];
 
         $scope.user = user.currentUser;
+        $scope.editOn = false;
 
 
         if (!$routeParams["project"] && $cookieStore.get('slick-last-project-used')) {
@@ -78,40 +79,58 @@ angular.module('slickApp')
             }
         });
 
-        var testrunQuery = [];
-        if ($routeParams["project"]) {
-            testrunQuery.push("eq(project.name,\"" + $routeParams["project"] + "\")");
-        }
-        if ($routeParams["release"]) {
-            testrunQuery.push("eq(release.name,\"" + $routeParams["release"] + "\")");
-        }
-        if ($routeParams["testplanid"]) {
-            testrunQuery.push("eq(testplanId,\"" + $routeParams["testplanid"] + "\")");
-        }
+        $scope.fetchTestruns = function(full) {
+            var testrunQuery = [];
+            if ($routeParams["project"]) {
+                testrunQuery.push("eq(project.name,\"" + $routeParams["project"] + "\")");
+            }
+            if ($routeParams["release"]) {
+                testrunQuery.push("eq(release.name,\"" + $routeParams["release"] + "\")");
+            }
+            if ($routeParams["testplanid"]) {
+                testrunQuery.push("eq(testplanId,\"" + $routeParams["testplanid"] + "\")");
+            }
 
-        var q = "";
-        if (testrunQuery.length > 1) {
-            q = "and(";
-        }
-        q = q + testrunQuery.join();
-        if (testrunQuery.length > 1) {
-            q = q + ")";
-        }
-        if (q == "") {
-            rest.all('testruns').getList({orderby: '-dateCreated', limit: 25}).then(function(testruns) {
-                $scope.testruns = testruns;
-                rest.all('testruns').getList({orderby: '-dateCreated', limit: 500, skip: 25}).then(function(therest) {
-                    _.each(therest, function(testrun) { $scope.testruns.push(testrun)});
-                });
-            });
-        } else {
-            rest.all('testruns').getList({q: q, limit: 25, orderby: '-dateCreated'}).then(function(testruns) {
-                $scope.testruns = testruns;
-                rest.all('testruns').getList({q: q, orderby: '-dateCreated', limit: 500, skip: 25}).then(function(therest) {
-                    _.each(therest, function(testrun) { $scope.testruns.push(testrun)});
-                });
-            });
-        }
+            var q = "";
+            if (testrunQuery.length > 1) {
+                q = "and(";
+            }
+            q = q + testrunQuery.join();
+            if (testrunQuery.length > 1) {
+                q = q + ")";
+            }
+            if (q == "") {
+                if(full) {
+                    rest.all('testruns').getList({orderby: '-dateCreated', limit: 525}).then(function(testruns) {
+                        $scope.testruns = testruns;
+                    });
+                } else {
+                    rest.all('testruns').getList({orderby: '-dateCreated', limit: 25}).then(function(testruns) {
+                        $scope.testruns = testruns;
+                        rest.all('testruns').getList({orderby: '-dateCreated', limit: 500, skip: 25}).then(function(therest) {
+                            _.each(therest, function(testrun) { $scope.testruns.push(testrun)});
+                        });
+                    });
+                }
+            } else {
+                if(full) {
+                    rest.all('testruns').getList({q: q, limit: 525, orderby: '-dateCreated'}).then(function (testruns) {
+                        $scope.testruns = testruns;
+                    });
+                } else {
+                    rest.all('testruns').getList({q: q, limit: 25, orderby: '-dateCreated'}).then(function (testruns) {
+                        $scope.testruns = testruns;
+                        rest.all('testruns').getList({q: q, orderby: '-dateCreated', limit: 500, skip: 25}).then(function (therest) {
+                            _.each(therest, function (testrun) {
+                                $scope.testruns.push(testrun)
+                            });
+                        });
+                    });
+                }
+            }
+        };
+        $scope.fetchTestruns(false);
+
         $scope.testrunList = {}; // Model for the list header and filter
 
         $scope.getDisplayName = function(testrun) {
@@ -125,6 +144,17 @@ angular.module('slickApp')
         $scope.isEmpty = function(obj) {
             return _.isEmpty(obj);
         };
+
+        $scope.toggleEdit = function() {
+            $scope.editOn = !$scope.editOn;
+        };
+
+        $scope.deleteTestrun = function(testrun) {
+            rest.one('testruns', testrun.id).remove().then(function() {
+                $scope.fetchTestruns(true);
+            })
+        };
+
         window.scope = $scope;
 
     }])
