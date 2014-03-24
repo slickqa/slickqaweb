@@ -76,7 +76,7 @@ def delete_testrun(testrun_id):
 
     # delete the reference from any testrun groups
     trdbref = bson.DBRef('testruns', bson.ObjectId("531e4d26ded43258823d9c3a"))
-    TestrunGroup.objects(__raw__={ 'testruns': { '$elemMatch': trdbref } }).update(pull__testruns=trdbref)
+    TestrunGroup.objects(__raw__={'testruns': {'$elemMatch': trdbref}}).update(pull__testruns=trdbref)
 
     # add an event
     events.DeleteEvent(orig)
