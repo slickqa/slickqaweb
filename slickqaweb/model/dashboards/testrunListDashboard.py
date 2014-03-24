@@ -31,6 +31,7 @@ class TestrunListDashboard(Document):
     dashboardType = StringField(required=True, default=TestrunListDashboardTypeName, choices=[TestrunListDashboardTypeName,])
     display = StringField(required=True, default="tall", choices=["tall", "columns"])
     configuration = ListField(EmbeddedDocumentField(OuterGroup))
+    staleWarning = IntField()
 
     @queryset_manager
     def objects(doc_cls, queryset):
