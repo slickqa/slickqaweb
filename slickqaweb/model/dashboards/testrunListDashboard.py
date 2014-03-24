@@ -2,9 +2,27 @@ __author__ = 'jcorbett'
 
 from mongoengine import *
 
+import datetime
+
 from .types import AllTypes
 
 TestrunListDashboardTypeName = "testrun-list-dashboard"
+
+
+class TestrunFinder(EmbeddedDocument):
+    name = StringField(required=True)
+    query = StringField(required=True)
+
+
+class InnerGroup(EmbeddedDocument):
+    name = StringField(required=True)
+    testruns = ListField(EmbeddedDocumentField(TestrunFinder))
+
+
+class OuterGroup(EmbeddedDocument):
+    name = StringField(required=True)
+    groups = ListField(EmbeddedDocumentField(InnerGroup))
+
 
 class TestrunListDashboard(Document):
     meta = {'collection': 'dashboards'}
@@ -18,17 +36,5 @@ class TestrunListDashboard(Document):
     def objects(doc_cls, queryset):
         """Custom QuerySet Manager that filters based on the dashboardType"""
         return queryset.filter(dashboardType=TestrunListDashboardTypeName)
-
-class OuterGroup(EmbeddedDocument):
-    name = StringField(required=True)
-    groups = ListField(EmbeddedDocumentField(InnerGroup))
-
-class InnerGroup(EmbeddedDocument):
-    name = StringField(required=True)
-    testruns = ListField(EmbeddedDocumentField(TestrunFinder))
-
-class TestrunFinder(EmbeddedDocument):
-    name = StringField(required=True)
-    query = StringField(required=True)
 
 AllTypes[TestrunListDashboardTypeName] = TestrunListDashboard
