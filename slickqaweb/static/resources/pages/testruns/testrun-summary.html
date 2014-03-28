@@ -104,6 +104,12 @@
                         <div class="testrun-summary-metadata-key">Run Time: </div>
                         <div class="testrun-summary-metadata-value" ng-bind="getTestrunDuration(testrun)"></div>
                     </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.files">
+                        <div class="testrun-summary-metadata-key">Files({{ testrun.files.length }}):</div>
+                        <div class="testrun-summary-metadata-value">
+                            <a ng-repeat="file in testrun.files" href="api/files/{{file.id}}/content/{{file.filename}}" ng-click="displayFile(file, $event)">{{file.filename}} </a>
+                        </div>
+                    </div>
                     <div ng-show="testrun.info">
                         <pre ng-bind="testrun.info"></pre>
                     </div>

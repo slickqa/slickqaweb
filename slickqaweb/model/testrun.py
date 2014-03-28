@@ -10,6 +10,7 @@ from .step import Step
 from .testrunSummary import TestrunSummary
 from .serialize import serializable
 from .testPlan import TestPlan
+from .storedFile import StoredFile
 
 
 class Testrun(Document):
@@ -25,6 +26,7 @@ class Testrun(Document):
     release = EmbeddedDocumentField(ReleaseReference)
     build = EmbeddedDocumentField(BuildReference)
     summary = EmbeddedDocumentField(TestrunSummary, default=TestrunSummary())
+    files = ListField(ReferenceField(StoredFile, dbref=True))
     state = StringField()
     meta = {'collection': 'testruns'}
 
