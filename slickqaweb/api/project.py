@@ -168,6 +168,11 @@ def get_build(release, build_id_or_name):
 def get_builds(project_id, release_id):
     project = get_project(project_id)
     release = get_release(project, release_id)
+    if release is None:
+        return JsonResponse(None)
+    if not hasattr(release, 'builds'):
+        release.builds = []
+        project.save()
     return JsonResponse(release.builds)
 
 @app.route('/api/projects/<project_id>/releases/<release_id>/builds', methods=["POST"])
