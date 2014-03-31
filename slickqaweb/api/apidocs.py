@@ -218,6 +218,20 @@ def add_swagger_model(resource, modeltype):
         elif isinstance(fieldtype, EmbeddedDocumentField):
             property.type = fieldtype.document_type.__name__
             add_swagger_model(resource, fieldtype.document_type)
+        elif isinstance(fieldtype, IntField):
+            property.type = "integer"
+            property.format = "int32"
+        elif isinstance(fieldtype, LongField):
+            property.type = "integer"
+            property.format = "int64"
+        elif isinstance(fieldtype, BooleanField):
+            property.type = "boolean"
+        elif isinstance(fieldtype, FloatField):
+            property.type = "number"
+            property.format = "float"
+        elif isinstance(fieldtype, ReferenceField):
+            property.type = fieldtype.document_type.__name__
+            add_swagger_model(resource, fieldtype.document_type)
         else:
             property = None
         if property is not None:
