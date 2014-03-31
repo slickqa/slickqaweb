@@ -11,7 +11,7 @@ def serializable(func):
     func.__serialize__ = True
     return func
 
-plain_types = (types.StringTypes, types.IntType, types.LongType, types.FloatType, types.FloatType, types.DictionaryType, types.NoneType)
+plain_types = (types.StringTypes, types.IntType, types.LongType, types.FloatType, types.FloatType, types.NoneType)
 document_types = (mongoengine.EmbeddedDocument, mongoengine.Document)
 epoch = datetime.datetime(1970, 1, 1)
 def document_to_plain(doc):
@@ -26,6 +26,11 @@ def document_to_plain(doc):
         if hasattr(doc, 'dynamic_fields'):
             for key, value in doc.dynamic_fields().items():
                 retval[key] = document_to_plain(value)
+        return retval
+    if isinstance(doc, types.DictType):
+        retval = dict()
+        for fieldname, fieldvalue in doc.iteritems():
+            retval[fieldname] = document_to_plain(fieldvalue)
         return retval
     if isinstance(doc, bson.ObjectId):
         return str(doc)

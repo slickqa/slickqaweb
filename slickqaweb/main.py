@@ -87,7 +87,12 @@ if app.debug:
             request_logger.warn("Headers: %s", repr(request.headers))
         return response
 
-
+@app.route('/apidocs')
+def api_docs():
+    base = app.config['APPLICATION_ROOT']
+    if base is None:
+        base = "/"
+    return render_template('apidocs.html', base=base)
 
 # initialize with other apis
 @app.route('/', defaults={'path': ''})

@@ -10,14 +10,22 @@ from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
+from .apidocs import add_resource, returns, argument_doc
 from bson import ObjectId
 
 from .project import get_project, get_release, get_build
 
 # TODO: add error handling. Not sure how to handle that yet.
 
+add_resource("/build-report", "Get build reports.")
+
 @app.route('/api/build-report/<project_name>/<release_name>/<build_name>')
+@returns(TestrunGroup)
+@argument_doc('project_name', 'The name of the project.')
+@argument_doc('release_name', 'The name of the release in the project.')
+@argument_doc('build_name', 'The name of the build in the release.')
 def get_build_report(project_name, release_name, build_name):
+    """Get all summary of all the testruns run against a particular build."""
     project = get_project(project_name)
     release = None
     build = None
