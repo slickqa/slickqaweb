@@ -195,13 +195,13 @@ def add_swagger_model(resource, modeltype):
     model.properties = dict()
     for fieldname, fieldtype in modeltype._fields.iteritems():
         property = SwaggerProperty()
+        if hasattr(fieldtype, 'help_text'):
+            property.description = fieldtype.help_text
         if isinstance(fieldtype, StringField):
             if fieldtype.choices is not None:
                 property.enum = []
                 property.enum = fieldtype.choices
             property.type = "string"
-            if hasattr(fieldtype, 'help_text'):
-                property.description = fieldtype.help_text
         elif isinstance(fieldtype, ObjectIdField):
             property.type = "string"
             property.description = "a BSON ObjectId String representation"
@@ -215,6 +215,9 @@ def add_swagger_model(resource, modeltype):
             if isinstance(fieldtype.field, (ReferenceField, EmbeddedDocumentField)):
                 property.items["$ref"] = fieldtype.field.document_type.__name__
                 add_swagger_model(resource, fieldtype.field.document_type)
+        elif isinstance(fieldtype, EmbeddedDocumentField):
+            property.type = fieldtype.document_type.__name__
+            add_swagger_model(resource, fieldtype.document_type)
         else:
             property = None
         if property is not None:
