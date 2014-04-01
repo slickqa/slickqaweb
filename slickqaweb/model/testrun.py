@@ -31,7 +31,7 @@ class Testrun(Document):
     meta = {'collection': 'testruns'}
 
     dynamic_types = {
-        'testplan': EmbeddedDocumentField(TestPlan)
+        'testplan': ReferenceField(TestPlan)
     }
 
     def dynamic_fields(self):
