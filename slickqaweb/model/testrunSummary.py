@@ -16,6 +16,11 @@ class TestrunSummary(EmbeddedDocument):
     totalTime = IntField(default=0)
     resultsByStatus = EmbeddedDocumentField(ResultsByStatus, default=ResultsByStatus())
 
+    dynamic_types = {
+        'statusListOrdered': ListField(StringField()),
+        'total': IntField()
+    }
+
     def dynamic_fields(self):
         return {
             'statusListOrdered': self.statusListOrdered(),

@@ -11,6 +11,11 @@ class TestrunGroup(Document):
     grouptype = StringField(default="PARALLEL", choices=["SERIAL", "PARALLEL"])
     meta = {'collection': 'testrungroups'}
 
+    dynamic_types = {
+        'state': StringField(choices=["TO_BE_RUN", "RUNNING", "FINISHED"]),
+        'groupSummary': EmbeddedDocumentField(TestrunSummary, help_text="A combined summary of all the testruns.")
+    }
+
     def dynamic_fields(self):
         return {
             'state': self.state(),

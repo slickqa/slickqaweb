@@ -30,6 +30,10 @@ class Testrun(Document):
     state = StringField()
     meta = {'collection': 'testruns'}
 
+    dynamic_types = {
+        'testplan': EmbeddedDocumentField(TestPlan)
+    }
+
     def dynamic_fields(self):
         if self.testplanId is None:
             return dict()

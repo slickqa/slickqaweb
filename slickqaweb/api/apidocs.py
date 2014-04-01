@@ -6,10 +6,32 @@ from .standardResponses import JsonResponse
 from mongoengine import *
 from flask import request
 import re
+import types
 
 
 #------------- For documenting other API endpoints ---------------------------
 resources = []
+
+def standard_query_parameters(f):
+    if not hasattr(f, 'argument_docs'):
+        f.argument_docs = {}
+    if not hasattr(f, 'argument_types'):
+        f.argument_types = {}
+    if not hasattr(f, 'argument_param_types'):
+        f.argument_param_types = {}
+    f.argument_docs['q'] = "Slick query string"
+    f.argument_docs['orderby'] = "Property to sort by.  Use - before property name to reverse sort order."
+    f.argument_docs['limit'] = "Limit the number of items to query."
+    f.argument_docs['skip'] = "Skip past a certain number of results."
+    f.argument_types['q'] = "string"
+    f.argument_types['orderby'] = "string"
+    f.argument_types['limit'] = "integer"
+    f.argument_types['skip'] = "integer"
+    f.argument_param_types['q'] = "query"
+    f.argument_param_types['orderby'] = "query"
+    f.argument_param_types['limit'] = "query"
+    f.argument_param_types['skip'] = "query"
+    return f
 
 
 def add_resource(path, description):
@@ -30,14 +52,17 @@ def accepts(datatype):
     return accepts_datatype
 
 
-def argument_doc(name, description, argtype="string"):
+def argument_doc(name, description, argtype="string", paramtype="path"):
     def argdoc(f):
         if not hasattr(f, 'argument_docs'):
             f.argument_docs = {}
         if not hasattr(f, 'argument_types'):
             f.argument_types = {}
+        if not hasattr(f, 'argument_param_types'):
+            f.argument_param_types = {}
         f.argument_docs[name] = description
         f.argument_types[name] = argtype
+        f.argument_param_types[name] = paramtype
         return f
     return argdoc
 
@@ -79,10 +104,12 @@ def get_endpoint_doc(resource):
                 function = app.view_functions[rule.endpoint]
                 operation.summary = function.__doc__
                 operation.parameters = []
-                for argument in rule.arguments:
+                arguments = set(rule.arguments)
+                if hasattr(function, 'argument_docs'):
+                    arguments = arguments.union(set(function.argument_docs.keys()))
+                for argument in arguments:
                     parameter = SwaggerParameter()
                     parameter.name = argument
-                    parameter.paramType = "path"
                     parameter.allowMultiple = False
                     if hasattr(function, 'argument_docs') and argument in function.argument_docs:
                         parameter.description = function.argument_docs[argument]
@@ -90,22 +117,94 @@ def get_endpoint_doc(resource):
                         parameter.type = function.argument_types[argument]
                     else:
                         parameter.type = "string"
+                    if hasattr(function, 'argument_param_types') and argument in function.argument_param_types:
+                        parameter.paramType = function.argument_param_types[argument]
+                    else:
+                        parameter.paramType = "path"
                     operation.parameters.append(parameter)
                 if hasattr(function, 'returns'):
-                    operation.type = function.returns.__name__
-                    add_swagger_model(retval, function.returns)
+                    add_type_properties(operation, function.returns, retval)
                 if hasattr(function, 'accepts'):
                     parameter = SwaggerParameter()
                     parameter.name = "body"
                     parameter.paramType = "body"
                     parameter.allowMultiple = False
-                    parameter.type = function.accepts.__name__
-                    add_swagger_model(retval, function.accepts)
+                    add_type_properties(parameter, function.accepts, retval)
                     operation.parameters.append(parameter)
                 endpoint.operations.append(operation)
         retval.apis.append(endpoint)
 
     return retval
+
+
+def get_type_name(from_type):
+    if isinstance(from_type, (type, types.ClassType)) and (issubclass(from_type, Document) or issubclass(from_type, EmbeddedDocument)):
+        return from_type.__name__
+    if isinstance(from_type, StringField):
+        return "string"
+    if isinstance(from_type, ListField):
+        return "array"
+    if isinstance(from_type, IntField):
+        return "integer"
+    if isinstance(from_type, LongField):
+        return "integer"
+    if isinstance(from_type, FloatField):
+        return "number"
+    if isinstance(from_type, BooleanField):
+        return "boolean"
+    if isinstance(from_type, DateTimeField):
+        return "integer"
+    if isinstance(from_type, ObjectIdField):
+        return "string"
+    if isinstance(from_type, (EmbeddedDocumentField, ReferenceField)):
+        return from_type.document_type.__name__
+
+
+def get_format_name(from_type):
+    if isinstance(from_type, IntField):
+        return "int32"
+    if isinstance(from_type, LongField):
+        return "int64"
+    if isinstance(from_type, FloatField):
+        return "float"
+    if isinstance(from_type, DateTimeField):
+        return "int64"
+
+
+def get_override_description(from_type):
+    if isinstance(from_type, ObjectIdField):
+        return "A String representation of a BSON ObjectId"
+    if isinstance(from_type, DateTimeField):
+        return "The number of milliseconds since EPOCH GMT"
+
+def add_type_properties(to, from_type, resource):
+    if hasattr(from_type, 'help_text'):
+        to.description = from_type.help_text
+    to.type = get_type_name(from_type)
+
+    format = get_format_name(from_type)
+    if format is not None:
+        to.format = format
+
+    description = get_override_description(from_type)
+    if description is not None:
+        to.description = description
+
+    if isinstance(from_type, (type, types.ClassType)) and (issubclass(from_type, Document) or issubclass(from_type, EmbeddedDocument)):
+        add_swagger_model(resource, from_type)
+    elif isinstance(from_type, StringField):
+        if hasattr(from_type, 'choices'):
+            to.enum = []
+            to.enum = from_type.choices
+    elif isinstance(from_type, ListField):
+        to.items = dict()
+        to.items['type'] = get_type_name(from_type.field)
+        if isinstance(from_type.field, (type, types.ClassType)) and (issubclass(from_type.field, Document) or issubclass(from_type.field, EmbeddedDocument)):
+            add_swagger_model(resource, from_type.field)
+        elif isinstance(from_type.field, (EmbeddedDocumentField, ReferenceField)):
+            add_swagger_model(resource, from_type.field.document_type)
+    elif isinstance(from_type, (EmbeddedDocumentField, ReferenceField)):
+        add_swagger_model(resource, from_type.document_type)
 
 class SwaggerInfo(EmbeddedDocument):
     contact = StringField(required=True, default="slick-users@googlegroups.com")
@@ -156,6 +255,9 @@ class SwaggerParameter(EmbeddedDocument):
     description = StringField()
     required = BooleanField()
     type = StringField()
+    format = StringField()
+    enum = ListField(StringField(), default=None)
+    items = MapField(StringField(), default=None)
     allowMultiple = BooleanField()
 
 
@@ -165,6 +267,9 @@ class SwaggerOperation(EmbeddedDocument):
     notes = StringField()
     summary = StringField()
     type = StringField()
+    format = StringField()
+    enum = ListField(StringField(), default=None)
+    items = MapField(StringField(), default=None)
     parameters = ListField(EmbeddedDocumentField(SwaggerParameter))
     produces = ListField(StringField(), default=["application/json"])
 
@@ -195,46 +300,18 @@ def add_swagger_model(resource, modeltype):
     model.properties = dict()
     for fieldname, fieldtype in modeltype._fields.iteritems():
         property = SwaggerProperty()
-        if hasattr(fieldtype, 'help_text'):
-            property.description = fieldtype.help_text
-        if isinstance(fieldtype, StringField):
-            if fieldtype.choices is not None:
-                property.enum = []
-                property.enum = fieldtype.choices
-            property.type = "string"
-        elif isinstance(fieldtype, ObjectIdField):
-            property.type = "string"
-            property.description = "a BSON ObjectId String representation"
-        elif isinstance(fieldtype, DateTimeField):
-            property.type = "integer"
-            property.format = "int64"
-            property.description = "The date and time in the milliseconds since UNIX Epoch GMT"
-        elif isinstance(fieldtype, ListField):
-            property.type = "array"
-            property.items = {}
-            if isinstance(fieldtype.field, (ReferenceField, EmbeddedDocumentField)):
-                property.items["$ref"] = fieldtype.field.document_type.__name__
-                add_swagger_model(resource, fieldtype.field.document_type)
-        elif isinstance(fieldtype, EmbeddedDocumentField):
-            property.type = fieldtype.document_type.__name__
-            add_swagger_model(resource, fieldtype.document_type)
-        elif isinstance(fieldtype, IntField):
-            property.type = "integer"
-            property.format = "int32"
-        elif isinstance(fieldtype, LongField):
-            property.type = "integer"
-            property.format = "int64"
-        elif isinstance(fieldtype, BooleanField):
-            property.type = "boolean"
-        elif isinstance(fieldtype, FloatField):
-            property.type = "number"
-            property.format = "float"
-        elif isinstance(fieldtype, ReferenceField):
-            property.type = fieldtype.document_type.__name__
-            add_swagger_model(resource, fieldtype.document_type)
-        else:
+        add_type_properties(property, fieldtype, resource)
+        if property.type is None:
             property = None
         if property is not None:
             model.properties[fieldname] = property
+    if hasattr(modeltype, 'dynamic_types'):
+        for fieldname, fieldtype in modeltype.dynamic_types.iteritems():
+            property = SwaggerProperty()
+            add_type_properties(property, fieldtype, resource)
+            if property.type is None:
+                property = None
+            if property is not None:
+                model.properties[fieldname] = property
 
     resource.models[model.id] = model
