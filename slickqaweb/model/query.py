@@ -9,13 +9,14 @@ __author__ = 'jcorbett'
 
 
 import pyparsing
-
+import datetime
 from mongoengine import Q
 from flask import request
 
 comparison_method_name = pyparsing.oneOf(['eq','ne','lt','lte','gt','gte', 'size', 'exists'])
 list_comparison_method_name = pyparsing.oneOf(['in', 'nin', 'all'])
 string_comparison_method_name = pyparsing.oneOf(['exact','iexact','contains','icontains','startswith','istartswith','endswith','iendswith'])
+date_comparison_method_name = pyparsing.oneOf(['laterthan', 'earlierthan'])
 open_paren = pyparsing.Suppress('(')
 close_paren = pyparsing.Suppress(')')
 
@@ -47,6 +48,11 @@ def parseInteger(s,l,t):
 
 integer_value = pyparsing.Word(pyparsing.nums).addParseAction(parseInteger)
 
+def parseDate(s,l,t):
+    return datetime.datetime.utcfromtimestamp(float(t[0]) / 1000)
+
+date_value = pyparsing.Word(pyparsing.nums).addParseAction(parseDate)
+
 def parseFloat(s,l,t):
     return float(t[0])
 
@@ -74,11 +80,18 @@ def simpleQuery(s,l,t):
     else:
         return Q(**{t[0][1] + '__' + t[0][0] : t[0][2]})
 
+def dateQuery(s,l,t):
+    if t[0][0] == 'ealierthan':
+        return Q(**{t[0][1] + '__' 'lt': t[0][2]})
+    else:
+        return Q(**{t[0][1] + '__' 'gt': t[0][2]})
+
+date_comparison = pyparsing.Group(date_comparison_method_name + open_paren + complex_identifier + pyparsing.Suppress(',') + date_value).setParseAction(dateQuery)
 string_comparison = pyparsing.Group(string_comparison_method_name + open_paren + complex_identifier + pyparsing.Suppress(',') + quoted_string + close_paren).setParseAction(simpleQuery)
 simple_comparison = pyparsing.Group(comparison_method_name + open_paren + complex_identifier + pyparsing.Suppress(',') + simple_value + close_paren).setParseAction(simpleQuery)
 list_comparison = pyparsing.Group(list_comparison_method_name + open_paren + complex_identifier + pyparsing.Suppress(',') + list_value + close_paren).setParseAction(simpleQuery)
 logical_operation = pyparsing.Forward()
-operation = (simple_comparison | string_comparison | list_comparison | logical_operation)
+operation = (simple_comparison | string_comparison | list_comparison | logical_operation | date_comparison)
 
 def notQuery(s,l,t):
     query_dict = {}
