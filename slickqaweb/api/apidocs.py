@@ -124,6 +124,8 @@ def get_endpoint_doc(resource):
                     operation.parameters.append(parameter)
                 if hasattr(function, 'returns'):
                     add_type_properties(operation, function.returns, retval)
+                else:
+                    operation.type = "void"
                 if hasattr(function, 'accepts'):
                     parameter = SwaggerParameter()
                     parameter.name = "body"
