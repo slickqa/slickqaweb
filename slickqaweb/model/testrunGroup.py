@@ -28,6 +28,7 @@ class TestrunGroup(Document):
         """The state of the testrun group is the "lowest" state of all it's testruns."""
         retval = "FINISHED"
         for testrun in self.testruns:
+            # we have to check for this because deleting testruns doesn't always delete them out of testrun groups
             if not isinstance(testrun, bson.DBRef):
                 assert isinstance(testrun, Testrun)
                 if testrun.state == "TO_BE_RUN":
@@ -42,6 +43,7 @@ class TestrunGroup(Document):
         retval = TestrunSummary()
         retval.resultsByStatus = ResultsByStatus()
         for run in self.testruns:
+            # we have to check for this because deleting testruns doesn't always delete them out of testrun groups
             if not isinstance(run, bson.DBRef):
                 for status in run.summary.statusListOrdered():
                     setattr(retval.resultsByStatus, status, getattr(retval.resultsByStatus, status) + getattr(run.summary.resultsByStatus, status))
