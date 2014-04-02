@@ -110,6 +110,9 @@ def get_results():
 
     return JsonResponse(queryFor(Result, args))
 
+@app.route('/api/results/count')
+def get_result_counts():
+    return JsonResponse(queryFor(Result).count())
 
 @app.route('/api/results/<result_id>')
 def get_result_by_id(result_id):
