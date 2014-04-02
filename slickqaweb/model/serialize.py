@@ -35,11 +35,18 @@ def document_to_plain(doc):
     if isinstance(doc, bson.ObjectId):
         return str(doc)
     if isinstance(doc, types.ListType):
-        return [document_to_plain(item) for item in doc]
+        retval = []
+        for item in doc:
+            plain_item = document_to_plain(item)
+            if plain_item is not None:
+                retval.append(plain_item)
+        return retval
     if isinstance(doc, datetime.datetime):
         return int((doc - epoch).total_seconds() * 1000)
     if isinstance(doc, mongoengine.QuerySet):
         return [document_to_plain(item) for item in doc]
+    if isinstance(doc, bson.DBRef):
+        return None
     raise Exception("I don't know how to serialize %s: looks like %s" % (doc.__class__.__name__, repr(doc)))
 
 logger = logging.getLogger('slickqaweb.model.serialize')

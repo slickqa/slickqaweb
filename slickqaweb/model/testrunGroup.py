@@ -2,6 +2,7 @@ from mongoengine import *
 from .testrun import Testrun
 from .testrunSummary import TestrunSummary, ResultsByStatus
 from .serialize import serializable
+import bson
 
 
 class TestrunGroup(Document):
@@ -27,11 +28,12 @@ class TestrunGroup(Document):
         """The state of the testrun group is the "lowest" state of all it's testruns."""
         retval = "FINISHED"
         for testrun in self.testruns:
-            assert isinstance(testrun, Testrun)
-            if testrun.state == "TO_BE_RUN":
-                return "TO_BE_RUN" # lowest possible state, return immediately
-            elif testrun.state == "RUNNING":
-                retval = "RUNNING" # we don't have to worry about overwriting lower state TO_BE_RUN
+            if not isinstance(testrun, bson.DBRef):
+                assert isinstance(testrun, Testrun)
+                if testrun.state == "TO_BE_RUN":
+                    return "TO_BE_RUN" # lowest possible state, return immediately
+                elif testrun.state == "RUNNING":
+                    retval = "RUNNING" # we don't have to worry about overwriting lower state TO_BE_RUN
         return retval
 
     @serializable
@@ -40,7 +42,8 @@ class TestrunGroup(Document):
         retval = TestrunSummary()
         retval.resultsByStatus = ResultsByStatus()
         for run in self.testruns:
-            for status in run.summary.statusListOrdered():
-                setattr(retval.resultsByStatus, status, getattr(retval.resultsByStatus, status) + getattr(run.summary.resultsByStatus, status))
+            if not isinstance(run, bson.DBRef):
+                for status in run.summary.statusListOrdered():
+                    setattr(retval.resultsByStatus, status, getattr(retval.resultsByStatus, status) + getattr(run.summary.resultsByStatus, status))
         return retval
 
