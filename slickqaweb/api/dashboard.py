@@ -8,10 +8,19 @@ from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
 from slickqaweb.utils import is_id
+from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, add_swagger_model
+from mongoengine import ListField, EmbeddedDocumentField, ReferenceField
 
+dashboard_resource = add_resource("/dashboards", "Create, modify, and delete dashboard configurations.")
+
+for dashboard_type in DashboardTypes.values():
+    dashboard_resource.additional_models.append(dashboard_type)
 
 @app.route('/api/dashboards')
+@standard_query_parameters
+@returns(ListField(ReferenceField(BaseDashboard), help_text="It's actually a subclass of BaseDashboard."))
 def get_dashboards():
+    """Query for a list of dashboards."""
     args = request.args
     type = BaseDashboard
     if args.has_key('config-type'):
@@ -38,12 +47,18 @@ def load_dashboard(id_or_name):
     return type.objects(**query).first()
 
 @app.route('/api/dashboards/<config_id>')
+@argument_doc('config_id', 'The string representation of the objectid for the dashboard.')
+@returns(BaseDashboard)
 def get_dashboard_by_id(config_id):
+    """Get a specific dashboard configuration"""
     dashboard = load_dashboard(config_id)
     return JsonResponse(dashboard)
 
 @app.route('/api/dashboards', methods=["POST"])
+@accepts(BaseDashboard)
+@returns(BaseDashboard)
 def add_dashboard():
+    """Add a new dashboard configuration"""
     data = read_request()
     if 'configurationType' not in data or data['configurationType'] not in DashboardTypes:
         return
@@ -52,7 +67,11 @@ def add_dashboard():
     return JsonResponse(value)
 
 @app.route('/api/dashboards/<config_id>', methods=["PUT"])
+@argument_doc('config_id', 'The string representation of the objectid for the dashboard.')
+@accepts(BaseDashboard)
+@returns(BaseDashboard)
 def update_dashboard(config_id):
+    """Update a dashboard configuration"""
     orig = load_dashboard(config_id)
     deserialize_that(read_request(), orig)
     orig.save()

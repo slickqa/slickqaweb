@@ -35,7 +35,9 @@ def standard_query_parameters(f):
 
 
 def add_resource(path, description):
-    resources.append(SwaggerApiDescription(path=path, description=description))
+    retval = SwaggerApiDescription(path=path, description=description)
+    resources.append(retval)
+    return retval
 
 
 def returns(datatype):
@@ -51,6 +53,11 @@ def accepts(datatype):
         return f
     return accepts_datatype
 
+def note(note_info):
+    def add_note(f):
+        f.note = note_info
+        return f
+    return add_note
 
 def argument_doc(name, description, argtype="string", paramtype="path"):
     def argdoc(f):
@@ -107,6 +114,8 @@ def get_endpoint_doc(resource):
                 arguments = set(rule.arguments)
                 if hasattr(function, 'argument_docs'):
                     arguments = arguments.union(set(function.argument_docs.keys()))
+                if hasattr(function, 'note'):
+                    operation.notes = function.note
                 for argument in arguments:
                     parameter = SwaggerParameter()
                     parameter.name = argument
@@ -135,7 +144,8 @@ def get_endpoint_doc(resource):
                     operation.parameters.append(parameter)
                 endpoint.operations.append(operation)
         retval.apis.append(endpoint)
-
+    for additional_model in resource.additional_models:
+        add_swagger_model(retval, additional_model)
     return retval
 
 
@@ -158,6 +168,8 @@ def get_type_name(from_type):
         return "integer"
     if isinstance(from_type, ObjectIdField):
         return "string"
+    if isinstance(from_type, BinaryField):
+        return "string"
     if isinstance(from_type, (EmbeddedDocumentField, ReferenceField)):
         return from_type.document_type.__name__
 
@@ -171,6 +183,8 @@ def get_format_name(from_type):
         return "float"
     if isinstance(from_type, DateTimeField):
         return "int64"
+    if isinstance(from_type, BinaryField):
+        return "byte"
 
 
 def get_override_description(from_type):
@@ -222,6 +236,10 @@ class SwaggerAuthorizations(EmbeddedDocument):
 class SwaggerApiDescription(EmbeddedDocument):
     description = StringField()
     path = StringField()
+
+    def __init__(self, *args, **kwargs):
+        super(SwaggerApiDescription, self).__init__(*args, **kwargs)
+        self.additional_models = []
 
 
 class SwaggerApiDocs(EmbeddedDocument):
