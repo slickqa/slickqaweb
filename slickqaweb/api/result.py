@@ -20,12 +20,16 @@ from slickqaweb.model.build import Build
 from slickqaweb.model.configuration import Configuration
 from slickqaweb.model.configurationReference import ConfigurationReference
 from slickqaweb import events
+from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField
 
 from bson import ObjectId
 import types
 import datetime
 from mongoengine import Q
 from flask import request, Response
+
+add_resource('/results', 'Add, Update or delete results.')
 
 def find_history(result):
     assert isinstance(result, Result)
@@ -95,7 +99,10 @@ def find_history(result):
 
 
 @app.route('/api/results')
+@standard_query_parameters
+@returns(ListField(ReferenceField(Result)))
 def get_results():
+    """Query for results."""
     args = request.args.to_dict()
     if args.has_key('testrunid'):
         args['testrun.testrunId'] = request.args['testrunid']
@@ -111,16 +118,29 @@ def get_results():
     return JsonResponse(queryFor(Result, args))
 
 @app.route('/api/results/count')
+@standard_query_parameters
+@returns(IntField(help_text="The number of results found from the query."))
+@note("Useful for gathering statistics.")
 def get_result_counts():
+    """Get the number of results for a query."""
     return JsonResponse(queryFor(Result).count())
 
 @app.route('/api/results/<result_id>')
+@argument_doc('result_id', 'The result id (a string representation of the result\'s ObjectId).')
+@returns(Result)
 def get_result_by_id(result_id):
+    """Get a result by id."""
     return JsonResponse(Result.objects(id=result_id).first())
 
 
 @app.route('/api/results', methods=["POST"])
+@accepts(Result)
+@returns(Result)
+@note("""For all the embedded types, if what you specify doesn't exist, this api will try to create them.
+If you do not specify a testrun, one will be created for you.  If you do not specify any testcase information,
+This will return an error.""")
 def add_result():
+    """Create a new result."""
     new_result = deserialize_that(read_request(), Result())
     assert isinstance(new_result, Result)
     # validate --------------------------------------------------------------
@@ -311,7 +331,12 @@ def add_result():
     return JsonResponse(new_result)
 
 @app.route('/api/results/<result_id>', methods=["PUT"])
+@argument_doc('result_id', 'The result id (a string representation of the result\'s ObjectId).')
+@accepts(Result)
+@returns(Result)
+@note("You only need to specify the items that have changed.")
 def update_result(result_id):
+    """Update an individual result."""
     orig = Result.objects(id=result_id).first()
     update_event = events.UpdateEvent(before=orig)
     update = read_request()
@@ -335,7 +360,11 @@ def update_result(result_id):
     return JsonResponse(orig)
 
 @app.route('/api/results/<result_id>/log', methods=["POST"])
+@argument_doc('result_id', 'The result id (a string representation of the result\'s ObjectId).')
+@accepts(ListField(EmbeddedDocumentField(LogEntry)))
+@returns(ListField(EmbeddedDocumentField(LogEntry)))
 def add_to_log(result_id):
+    """Append log entries to a result."""
     orig = Result.objects(id=result_id).first()
     if not hasattr(orig, 'log') or orig.log is None:
         orig.log = []
