@@ -7,14 +7,14 @@ from slickqaweb.model.query import queryFor
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
-from mongoengine import ListField
+from mongoengine import ListField, ReferenceField
 
 add_resource('/testplans', 'Add, update, and delete testplans.')
 
 
 @app.route('/api/testplans')
 @standard_query_parameters
-@returns(ListField(TestPlan))
+@returns(ListField(ReferenceField(TestPlan)))
 def get_testplans():
     """Query for existing testplans."""
     # for backwards compatibility

@@ -13,10 +13,17 @@ from .project import get_project, get_release, get_build
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from slickqaweb import events
+from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from mongoengine import ListField, ReferenceField
 
-# TODO: add error handling. Not sure how to handle that yet.
+add_resource('/testruns', 'Add, update, and delete testruns.')
+
+
 @app.route('/api/testruns')
+@standard_query_parameters
+@returns(ListField(ReferenceField(Testrun)))
 def get_testruns():
+    """Query for testruns."""
     args = request.args.to_dict()
     if args.has_key('releaseid'):
         args['release.releaseId'] = args['releaseid']
@@ -28,12 +35,20 @@ def get_testruns():
     return JsonResponse(queryFor(Testrun, args))
 
 @app.route('/api/testruns/<testrun_id>')
+@returns(Testrun)
+@argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
 def get_testrun_by_id(testrun_id):
+    """Retrieve a testrun using it's id."""
     return JsonResponse(Testrun.objects(id=testrun_id).first())
 
 
 @app.route('/api/testruns', methods=["POST"])
+@accepts(Testrun)
+@returns(Testrun)
+@note("""If you do not supply the date created, one will be inserted for you.  If you do not provide the 'info'"
+         property, but there is a description on the build, the info will be copied from the build.""")
 def add_testrun():
+    """Create a new testrun."""
     new_tr = deserialize_that(read_request(), Testrun())
     if is_not_provided(new_tr, 'dateCreated'):
         new_tr.dateCreated = datetime.datetime.utcnow()
@@ -60,7 +75,11 @@ def add_testrun():
     return JsonResponse(new_tr)
 
 @app.route('/api/testruns/<testrun_id>', methods=["PUT"])
+@argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
+@accepts(Testrun)
+@returns(Testrun)
 def update_testrun(testrun_id):
+    """Update the properties of a testrun."""
     orig = Testrun.objects(id=testrun_id).first()
     update_event = events.UpdateEvent(before=orig)
     deserialize_that(read_request(), orig)
@@ -71,7 +90,10 @@ def update_testrun(testrun_id):
     return JsonResponse(orig)
 
 @app.route('/api/testruns/<testrun_id>', methods=["DELETE"])
+@argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
+@returns(Testrun)
 def delete_testrun(testrun_id):
+    """Remove a testrun."""
     orig = Testrun.objects(id=testrun_id).first()
 
     # delete the reference from any testrun groups

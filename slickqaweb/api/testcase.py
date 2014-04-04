@@ -7,14 +7,14 @@ from slickqaweb.model.query import queryFor
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
-from mongoengine import ListField
+from mongoengine import ListField, ReferenceField
 
 add_resource('/testcases', 'Add, update, and delete testcases.')
 
 # TODO: add error handling. Not sure how to handle that yet.
 @app.route('/api/testcases')
 @standard_query_parameters
-@returns(ListField(Testcase))
+@returns(ListField(ReferenceField(Testcase)))
 def get_testcases():
     """Query for testcases."""
     args = request.args

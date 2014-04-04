@@ -20,7 +20,7 @@ for system_configuration_type in SystemConfigurationTypes.values():
 @standard_query_parameters
 @argument_doc('config-type', 'A shortcut for querying for the configuration type.', paramtype='query')
 @note("This method returns other types, but the values in BaseSystemConfiguration are guaranteed to be common.")
-@returns(ListField(BaseSystemConfiguration))
+@returns(ListField(ReferenceField(BaseSystemConfiguration)))
 def get_system_configurations():
     """Find various system configuration types."""
     args = request.args

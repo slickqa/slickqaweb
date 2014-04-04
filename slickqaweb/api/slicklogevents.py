@@ -6,7 +6,7 @@ from slickqaweb.app import app
 from slickqaweb.model.query import queryFor
 from slickqaweb.model.serialize import deserialize_that
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
-from mongoengine import ListField
+from mongoengine import ListField, ReferenceField
 
 from flask import g
 
@@ -15,7 +15,7 @@ add_resource("/slicklogevents", "Get slick audit log events.")
 
 @app.route("/api/slicklogevents")
 @standard_query_parameters
-@returns(ListField(SlickLogEvent))
+@returns(ListField(ReferenceField(SlickLogEvent)))
 def get_events():
     """Query for slick log events."""
     return JsonResponse(queryFor(SlickLogEvent))
