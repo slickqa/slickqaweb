@@ -144,8 +144,17 @@ def get_endpoint_doc(resource):
                     operation.parameters.append(parameter)
                 endpoint.operations.append(operation)
         retval.apis.append(endpoint)
-    for additional_model in resource.additional_models:
-        add_swagger_model(retval, additional_model)
+    for parent, subtypes in resource.subtypes.iteritems():
+        model = None
+        for potential_model in retval.models.values():
+            if parent.__name__ == potential_model.id:
+                model = potential_model
+                break
+        if model is not None:
+            model.subTypes = []
+            for subtype in subtypes:
+                model.subTypes.append(subtype.__name__)
+                add_swagger_model(retval, subtype)
     return retval
 
 
@@ -240,6 +249,7 @@ class SwaggerApiDescription(EmbeddedDocument):
     def __init__(self, *args, **kwargs):
         super(SwaggerApiDescription, self).__init__(*args, **kwargs)
         self.additional_models = []
+        self.subtypes = {}
 
 
 class SwaggerApiDocs(EmbeddedDocument):
@@ -267,6 +277,7 @@ class SwaggerModel(EmbeddedDocument):
     description = StringField()
     properties = MapField(EmbeddedDocumentField(SwaggerProperty))
     required = ListField(StringField())
+    subTypes = ListField(StringField(), default=None)
 
 
 class SwaggerParameter(EmbeddedDocument):

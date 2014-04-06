@@ -12,8 +12,9 @@ from mongoengine import ListField, EmbeddedDocumentField, ReferenceField
 
 sysconfig_resource = add_resource("/system-configuration", "Create, modify, and delete slick system configurations.")
 
+sysconfig_resource.subtypes[BaseSystemConfiguration] = []
 for system_configuration_type in SystemConfigurationTypes.values():
-    sysconfig_resource.additional_models.append(system_configuration_type)
+    sysconfig_resource.subtypes[BaseSystemConfiguration].append(system_configuration_type)
 
 
 @app.route('/api/system-configuration')
