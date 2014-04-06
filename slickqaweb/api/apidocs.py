@@ -155,6 +155,7 @@ def get_endpoint_doc(resource):
             for subtype in subtypes:
                 model.subTypes.append(subtype.__name__)
                 add_swagger_model(retval, subtype)
+            model.discriminator = 'typeName'
     return retval
 
 
@@ -248,7 +249,6 @@ class SwaggerApiDescription(EmbeddedDocument):
 
     def __init__(self, *args, **kwargs):
         super(SwaggerApiDescription, self).__init__(*args, **kwargs)
-        self.additional_models = []
         self.subtypes = {}
 
 
@@ -278,6 +278,7 @@ class SwaggerModel(EmbeddedDocument):
     properties = MapField(EmbeddedDocumentField(SwaggerProperty))
     required = ListField(StringField())
     subTypes = ListField(StringField(), default=None)
+    discriminator = StringField()
 
 
 class SwaggerParameter(EmbeddedDocument):
@@ -344,5 +345,9 @@ def add_swagger_model(resource, modeltype):
                 property = None
             if property is not None:
                 model.properties[fieldname] = property
+            if fieldname == 'typeName':
+                if model.required is None:
+                    model.required = []
+                model.required.append(fieldname)
 
     resource.models[model.id] = model

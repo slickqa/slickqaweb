@@ -28,6 +28,10 @@ class BaseSystemConfiguration(mongoengine.Document):
     meta = {'collection': 'system-configurations'}
     configurationType = mongoengine.StringField()
 
+    dynamic_types = {
+        'typeName': mongoengine.StringField()
+    }
+
 
 def load_system_configuration_type(id):
     assert isinstance(id, bson.ObjectId)
