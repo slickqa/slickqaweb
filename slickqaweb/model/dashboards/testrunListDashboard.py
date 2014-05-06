@@ -6,7 +6,7 @@ import datetime
 
 from .types import AllTypes
 
-TestrunListDashboardTypeName = "testrun-list-dashboard"
+TestrunListDashboardTypeName = "TestrunListDashboard"
 
 
 class TestrunFinder(EmbeddedDocument):
@@ -32,6 +32,15 @@ class TestrunListDashboard(Document):
     display = StringField(required=True, default="tall", choices=["tall", "columns"])
     configuration = ListField(EmbeddedDocumentField(OuterGroup))
     staleWarning = IntField()
+
+    dynamic_types = {
+        'typeName': StringField()
+    }
+
+    def dynamic_fields(self):
+        return {
+            'typeName': 'TestrunListDashboard'
+        }
 
     @queryset_manager
     def objects(doc_cls, queryset):

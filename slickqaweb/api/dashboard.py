@@ -12,9 +12,10 @@ from apidocs import add_resource, accepts, returns, argument_doc, standard_query
 from mongoengine import ListField, EmbeddedDocumentField, ReferenceField
 
 dashboard_resource = add_resource("/dashboards", "Create, modify, and delete dashboard configurations.")
-
+dashboard_resource.subtypes[BaseDashboard] = []
 for dashboard_type in DashboardTypes.values():
-    dashboard_resource.additional_models.append(dashboard_type)
+    dashboard_resource.subtypes[BaseDashboard].append(dashboard_type)
+
 
 @app.route('/api/dashboards')
 @standard_query_parameters

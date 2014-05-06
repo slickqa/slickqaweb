@@ -22,6 +22,15 @@ class AMQPSystemConfiguration(Document):
     configurationType = StringField(required=True, default=AMQPSystemConfigurationType, choices=[AMQPSystemConfigurationType,])
     className = StringField(required=True, default=AMQPSystemConfigurationClassName, choices=[AMQPSystemConfigurationClassName,])
 
+    dynamic_types = {
+        'typeName': StringField()
+    }
+
+    def dynamic_fields(self):
+        return {
+            'typeName': 'AMQPSystemConfiguration'
+        }
+
     @queryset_manager
     def objects(doc_cls, queryset):
         """Custom QuerySet Manager that filters based on the configurationType"""

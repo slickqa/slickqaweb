@@ -23,6 +23,15 @@ class EmailSystemConfiguration(Document):
     configurationType = StringField(required=True, default=EmailSystemConfigurationType, choices=[EmailSystemConfigurationType,])
     className = StringField(required=True, default=EmailSystemConfigurationClassName, choices=[EmailSystemConfigurationClassName,])
 
+    dynamic_types = {
+        'typeName': StringField()
+    }
+
+    def dynamic_fields(self):
+        return {
+            'typeName': 'EmailSystemConfiguration'
+        }
+
     @queryset_manager
     def objects(doc_cls, queryset):
         """Custom QuerySet Manager that filters based on the configurationType"""

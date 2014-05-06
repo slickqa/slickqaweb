@@ -30,6 +30,9 @@ class BaseDashboard(mongoengine.Document):
     name = mongoengine.StringField(required=True, unique=True)
     lastUpdated = mongoengine.DateTimeField(required=True, default=datetime.datetime.now)
     dashboardType = mongoengine.StringField()
+    dynamic_types = {
+        'typeName': mongoengine.StringField()
+    }
 
 
 def load_dashboard_type(id):
