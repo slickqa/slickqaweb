@@ -12,6 +12,7 @@ import pyparsing
 import datetime
 from mongoengine import Q
 from flask import request
+from slickqaweb.utils import log_error
 
 comparison_method_name = pyparsing.oneOf(['eq','ne','lt','lte','gt','gte', 'size', 'exists'])
 list_comparison_method_name = pyparsing.oneOf(['in', 'nin', 'all'])
@@ -165,15 +166,19 @@ def queryFor(model, args=None):
         if skip > 0:
             limit += skip
         del args['limit']
-    if orderby is None:
-        if limit is None:
-            return model.objects(buildQueryFromRequest(args))[skip:]
+    try:
+        if orderby is None:
+            if limit is None:
+                return model.objects(buildQueryFromRequest(args))[skip:]
+            else:
+                return model.objects(buildQueryFromRequest(args))[skip:limit]
         else:
-            return model.objects(buildQueryFromRequest(args))[skip:limit]
-    else:
-        if limit is None:
-            return model.objects(buildQueryFromRequest(args)).order_by(orderby)[skip:]
-        else:
-            return model.objects(buildQueryFromRequest(args)).order_by(orderby)[skip:limit]
+            if limit is None:
+                return model.objects(buildQueryFromRequest(args)).order_by(orderby)[skip:]
+            else:
+                return model.objects(buildQueryFromRequest(args)).order_by(orderby)[skip:limit]
+    except:
+        log_error()
+        return []
 
 
