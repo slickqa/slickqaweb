@@ -326,12 +326,13 @@ angular.module('slickApp')
         $scope.addNoteDialogButtonClicked = function(buttonName) {
             if (buttonName == "Add") {
                 var result = $scope.note.result;
+                var note = $scope.note;
                 var logEntry = {
                     entryTime: new Date().getTime(),
                     level: "WARN",
                     loggerName: "slick.note",
-                    message: $scope.note.message,
-                    exceptionMessage: $scope.note.externalLink
+                    message: note.message,
+                    exceptionMessage: note.externalLink
                 };
                 rest.one('results', result.id).post('log',logEntry).then(function(numOfLogEntries) {
                     if (!result.log) {
@@ -339,6 +340,25 @@ angular.module('slickApp')
                     }
                     result.log.push(logEntry);
                 });
+                if (note.recurring) {
+                    rest.one('testcases', result.testcase.testcaseId).get().then(function(testcase) {
+                        if (! testcase.activeNotes) {
+                            testcase.activeNotes = []
+                        }
+                        var recurringNote = {message: note.message};
+                        if (note.url) {
+                            recurringNote.url = note.url;
+                        }
+                        if (note.matchRelease) {
+                            recurringNote.release = result.release;
+                        }
+                        if (note.matchEnvironment) {
+                            recurringNote.environment = result.config;
+                        }
+                        testcase.activeNotes.push(recurringNote);
+                        testcase.put();
+                    });
+                }
             }
             $scope.showAddNote = false;
             $scope.note = {

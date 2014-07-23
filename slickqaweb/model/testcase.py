@@ -4,6 +4,7 @@ from mongoengine import *
 from .componentReference import ComponentReference
 from .projectReference import ProjectReference
 from .featureReference import FeatureReference
+from .recurringNote import RecurringNote
 from .step import Step
 
 
@@ -28,4 +29,6 @@ class Testcase(Document):
     component = EmbeddedDocumentField(ComponentReference)
     feature = EmbeddedDocumentField(FeatureReference)
     deleted = BooleanField()
+    activeNotes = ListField(EmbeddedDocumentField(RecurringNote))
+    inactiveNotes = ListField(EmbeddedDocumentField(RecurringNote))
 
