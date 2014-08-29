@@ -95,7 +95,15 @@ def find_history(result):
     return history
 
 
+def apply_triage_notes(result, testcase=None):
+    """This function checks to see if a result should have triage notes, and adds them if need be.
+    If the result's status is a non-final result, then it will be ignored.
 
+    You can optionally pass in a testcase (if you have already looked one up), if you do not, it will be looked up.
+
+    :param result: The result to check
+    :type result: slickqa.model.result.Result
+    """
 
 
 @app.route('/api/results')
@@ -117,6 +125,7 @@ def get_results():
 
     return JsonResponse(queryFor(Result, args))
 
+
 @app.route('/api/results/count')
 @standard_query_parameters
 @returns(IntField(help_text="The number of results found from the query."))
@@ -124,6 +133,7 @@ def get_results():
 def get_result_counts():
     """Get the number of results for a query."""
     return JsonResponse(queryFor(Result).count())
+
 
 @app.route('/api/results/<result_id>')
 @argument_doc('result_id', 'The result id (a string representation of the result\'s ObjectId).')
