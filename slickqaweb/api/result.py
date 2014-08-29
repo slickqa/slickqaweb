@@ -4,7 +4,7 @@ from .standardResponses import JsonResponse, read_request
 from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.query import queryFor
 from slickqaweb.app import app
-from slickqaweb.model.result import Result
+from slickqaweb.model.result import Result, NON_FINAL_STATUS
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.resultReference import ResultReference
 from slickqaweb.model.logEntry import LogEntry
@@ -103,7 +103,29 @@ def apply_triage_notes(result, testcase=None):
 
     :param result: The result to check
     :type result: slickqa.model.result.Result
+    :param testcase: A testcase that has been looked up from the database.
+    :type testcase: slickqa.model.testcase.Testcase
+    :returns: Nothing
     """
+    # if the test isn't finished yet just return
+    if result.status in NON_FINAL_STATUS:
+        return
+
+    # if the test is finished, but they didn't pass in the testcase, find it
+    if testcase is None:
+        testcase = find_testcase_by_reference(result.testcase)
+
+    # if we still don't know the testcase we can't apply any triage notes
+    if testcase is None:
+        return
+
+    assert isinstance(testcase, Testcase)
+
+    # if there are no active notes on the testcase, move on
+    if is_not_provided(testcase, 'activeNotes'):
+        return
+
+
 
 
 @app.route('/api/results')
@@ -334,6 +356,7 @@ def add_result():
         status_name = "inc__summary__resultsByStatus__" + new_result.status
         Testrun.objects(id=testrun.id).update_one(**{status_name: 1})
 
+    apply_triage_notes(new_result, testcase)
     new_result.history = find_history(new_result)
     new_result.save()
 
@@ -365,6 +388,7 @@ def update_result(result_id):
             testrun.reload()
             update_testrun_event.after(testrun)
     deserialize_that(update, orig)
+    apply_triage_notes(orig)
     orig.save()
     update_event.after(orig)
     return JsonResponse(orig)
