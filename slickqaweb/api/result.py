@@ -14,6 +14,7 @@ from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
 from slickqaweb.model.testcase import Testcase
+from slickqaweb.model.recurringNote import RecurringNote
 from slickqaweb.model.component import Component
 from slickqaweb.model.release import Release
 from slickqaweb.model.build import Build
@@ -124,6 +125,55 @@ def apply_triage_notes(result, testcase=None):
     # if there are no active notes on the testcase, move on
     if is_not_provided(testcase, 'activeNotes'):
         return
+
+    # go through each active triage note, check to see if it matches
+    notes_to_remove = []
+    for activeNote in testcase.activeNotes:
+        assert isinstance(activeNote, RecurringNote)
+        # check to see if the environment matches
+        if is_provided(activeNote, 'environment'):
+            if is_not_provided(result, 'config') or is_not_provided(result.config, 'configId') or \
+               activeNote.environment.configId != result.config.configId:
+                continue
+
+        # check to see if the release matches
+        if is_provided(activeNote, 'release'):
+            if is_not_provided(result, 'release') or is_not_provided(result.release, 'releaseId') or \
+               activeNote.release.releaseId != result.release.releaseId:
+                continue
+
+        # at this point it matches
+        if result.status == 'PASS':
+            # update the note to be inactive
+            notes_to_remove.append(activeNote)
+        else:
+            # apply the triage note
+            if is_not_provided(result, 'log'):
+                result.log = []
+            logentry = LogEntry()
+            logentry.entryTime = datetime.datetime.now()
+            logentry.level = 'WARN'
+            logentry.loggerName = 'slick.note'
+            logentry.message = activeNote.message
+            if is_provided(activeNote, 'url'):
+                logentry.exceptionMessage = activeNote.url
+            result.log.append(logentry)
+
+    # move any notes that are no longer active (because the test passed) to the inactiveNotes section
+    if len(notes_to_remove) > 0:
+        # if we are modifying the testcase we need to generate an event
+        update_event = events.UpdateEvent(before=testcase)
+        for note in notes_to_remove:
+            # remove from activeNotes and put in inactiveNotes
+            testcase.activeNotes.remove(note)
+            if is_not_provided(testcase, 'inactiveNotes'):
+                testcase.inactiveNotes = []
+            testcase.inactiveNotes.append(note)
+            # set the inactivatedBy field to this result
+            note.inactivatedBy = create_result_reference(result)
+        update_event.after(testcase)
+        testcase.save()
+
 
 
 
