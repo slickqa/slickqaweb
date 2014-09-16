@@ -4,7 +4,7 @@ from .standardResponses import JsonResponse, read_request
 from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.query import queryFor
 from slickqaweb.app import app
-from slickqaweb.model.result import Result
+from slickqaweb.model.result import Result, NON_FINAL_STATUS
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.resultReference import ResultReference
 from slickqaweb.model.logEntry import LogEntry
@@ -14,6 +14,7 @@ from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
 from slickqaweb.model.testcase import Testcase
+from slickqaweb.model.recurringNote import RecurringNote
 from slickqaweb.model.component import Component
 from slickqaweb.model.release import Release
 from slickqaweb.model.build import Build
@@ -103,7 +104,78 @@ def apply_triage_notes(result, testcase=None):
 
     :param result: The result to check
     :type result: slickqa.model.result.Result
+    :param testcase: A testcase that has been looked up from the database.
+    :type testcase: slickqa.model.testcase.Testcase
+    :returns: Nothing
     """
+    # if the test isn't finished yet just return
+    if result.status in NON_FINAL_STATUS:
+        return
+
+    # if the test is finished, but they didn't pass in the testcase, find it
+    if testcase is None:
+        testcase = find_testcase_by_reference(result.testcase)
+
+    # if we still don't know the testcase we can't apply any triage notes
+    if testcase is None:
+        return
+
+    assert isinstance(testcase, Testcase)
+
+    # if there are no active notes on the testcase, move on
+    if is_not_provided(testcase, 'activeNotes'):
+        return
+
+    # go through each active triage note, check to see if it matches
+    notes_to_remove = []
+    for activeNote in testcase.activeNotes:
+        assert isinstance(activeNote, RecurringNote)
+        # check to see if the environment matches
+        if is_provided(activeNote, 'environment'):
+            if is_not_provided(result, 'config') or is_not_provided(result.config, 'configId') or \
+               activeNote.environment.configId != result.config.configId:
+                continue
+
+        # check to see if the release matches
+        if is_provided(activeNote, 'release'):
+            if is_not_provided(result, 'release') or is_not_provided(result.release, 'releaseId') or \
+               activeNote.release.releaseId != result.release.releaseId:
+                continue
+
+        # at this point it matches
+        if result.status == 'PASS':
+            # update the note to be inactive
+            notes_to_remove.append(activeNote)
+        else:
+            # apply the triage note
+            if is_not_provided(result, 'log'):
+                result.log = []
+            logentry = LogEntry()
+            logentry.entryTime = datetime.datetime.now()
+            logentry.level = 'WARN'
+            logentry.loggerName = 'slick.note'
+            logentry.message = activeNote.message
+            if is_provided(activeNote, 'url'):
+                logentry.exceptionMessage = activeNote.url
+            result.log.append(logentry)
+
+    # move any notes that are no longer active (because the test passed) to the inactiveNotes section
+    if len(notes_to_remove) > 0:
+        # if we are modifying the testcase we need to generate an event
+        update_event = events.UpdateEvent(before=testcase)
+        for note in notes_to_remove:
+            # remove from activeNotes and put in inactiveNotes
+            testcase.activeNotes.remove(note)
+            if is_not_provided(testcase, 'inactiveNotes'):
+                testcase.inactiveNotes = []
+            testcase.inactiveNotes.append(note)
+            # set the inactivatedBy field to this result
+            note.inactivatedBy = create_result_reference(result)
+        update_event.after(testcase)
+        testcase.save()
+
+
+
 
 
 @app.route('/api/results')
@@ -334,6 +406,7 @@ def add_result():
         status_name = "inc__summary__resultsByStatus__" + new_result.status
         Testrun.objects(id=testrun.id).update_one(**{status_name: 1})
 
+    apply_triage_notes(new_result, testcase)
     new_result.history = find_history(new_result)
     new_result.save()
 
@@ -365,6 +438,7 @@ def update_result(result_id):
             testrun.reload()
             update_testrun_event.after(testrun)
     deserialize_that(update, orig)
+    apply_triage_notes(orig)
     orig.save()
     update_event.after(orig)
     return JsonResponse(orig)
