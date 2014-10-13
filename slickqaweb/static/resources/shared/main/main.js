@@ -48,7 +48,11 @@ angular.module('slickApp')
                 });
 
                 buildList = _.sortBy(buildList, function(build) {
-                    return build.build.built;
+                    if(build.build.built) {
+                        return build.build.built;
+                    } else {
+                        return 0;
+                    }
                 });
                 buildList.reverse();
 
