@@ -181,6 +181,7 @@ angular.module('slickApp')
         $scope.selectedProjectName = null;
         $scope.testTree = [];
         $scope.testcaseList = {};
+        window.testTree = $scope.testTree;
 
 
         // determine if we have a pre-selected project
@@ -206,6 +207,12 @@ angular.module('slickApp')
                 $scope.testTree.push(copy);
                 rest.all('testcases').getList({q: 'and(eq(project.id,"' + $scope.project.id + '"),eq(component.id,"' + copy.id + '"),not(exists(feature,true)))'}).then(function(testcases) {
                     copy.testcases = testcases;
+                });
+                _.each(copy.features, function(feature) {
+                    $scope.testcaseList[feature.id] = {};
+                    rest.all('testcases').getList({q: 'and(eq(project.id,"' + $scope.project.id + '"),eq(component.id,"' + copy.id + '"),eq(feature.id,"' + feature.id + '"))'}).then(function(testcases) {
+                        feature.testcases = testcases;
+                    });
                 });
             })
         });
