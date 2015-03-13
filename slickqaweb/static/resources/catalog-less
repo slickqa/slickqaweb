@@ -22,3 +22,4 @@ pages/testrungroup/testcases.less
 pages/testrungroup/testrungroup.less
 shared/testrungroup-stats/stats.less
 shared/main/landing.less
+pages/email/email.less

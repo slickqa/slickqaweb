@@ -1,0 +1,38 @@
+<div class="slickview">
+    <form name="smtpsettingsForm">
+        <div class="data-view">
+            <div class="data-view-item">
+                <div class="data-view-property-name">SMTP Server</div>
+                <div class="data-view-property-value" ng-model="smtpsettings.smtpHostname" name="smtpHostname" contenteditable="true"></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">SMTP Port</div>
+                <div class="data-view-property-value" ng-model="smtpsettings.smtpPort" name="smtpPort" contenteditable="true"></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">SMTP Username</div>
+                <div class="data-view-property-value" ng-model="smtpsettings.smtpUsername" name="smtpUsername" contenteditable="true"></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">SMTP Password</div>
+                <div class="data-view-property-value" ng-model="smtpsettings.smtpPassword" name="smtpPassword" contenteditable="true"></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">Use SSL?</div>
+                <div class="data-view-property-value"><input type="checkbox" ng-model="smtpsettings.ssl" name="ssl" /></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">Enabled?</div>
+                <div class="data-view-property-value"><input type="checkbox" ng-model="smtpsettings.enabled" name="enabled" /></div>
+            </div>
+            <div class="data-view-item">
+                <div class="data-view-property-name">Sender</div>
+                <div class="data-view-property-value" ng-model="smtpsettings.sender" name="sender" contenteditable="true"></div>
+            </div>
+            <div class="data-view-item data-view-item-save-button-row" ng-show="smtpsettingsForm.$dirty">
+                <div class="data-view-property-name">&nbsp;</div>
+                <div class="data-view-save"><span class="button" ng-click="save()">Save</span> <span class="button" ng-click="revert()">Revert</span></div>
+            </div>
+        </div>
+    </form>
+</div>
