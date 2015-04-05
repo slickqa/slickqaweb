@@ -37,11 +37,11 @@ def find_testcase_by_reference(ref):
     if hasattr(ref, 'testcaseId') and ref.testcaseId is not None:
         testcase = Testcase.objects(id=ref.testcaseId).first()
     if testcase is None and hasattr(ref, 'automationId') and ref.automationId is not None and ref.automationId != '':
-        testcase = Testcase.objects(automationId=ref.automationId)
+        testcase = Testcase.objects(automationId=ref.automationId).first()
     if testcase is None and hasattr(ref, 'automationKey') and ref.automationKey is not None and ref.automationKey != '':
-        testcase = Testcase.objects(automationKey=ref.automationKey)
+        testcase = Testcase.objects(automationKey=ref.automationKey).first()
     if testcase is None and hasattr(ref, 'name') and ref.name is not None and ref.name != '':
-        testcase = Testcase.objects(name=ref.name)
+        testcase = Testcase.objects(name=ref.name).first()
 
     return testcase
 
