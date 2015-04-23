@@ -5,6 +5,10 @@
                 <h3 class="testcase-tree-project" ng-repeat="project in projects track by project.id" ng-class="{'testcase-tree-project-selected': project.name == selectedProjectName}" ng-bind="project.name" ng-click="selectProject(project)"></h3>
             </div>
             <div class="testcase-tree-component-list">
+                <h3>Whole Project</h3>
+                <div>
+                    <span class="button" ng-click="addProjectSubscription(project)">Add Subscription</span> For all results file for Project {{ project.name }}.
+                </div>
                 <h3>Subscriptions for Releases:</h3>
                 <div ng-repeat="release in project.releases">
                     <span class="button" ng-click="addReleaseSubscription(release)">Add Subscription</span> For all results for Release <span ng-bind="release.name"></span>

@@ -185,6 +185,16 @@ angular.module('slickApp')
             $scope.toggleShowAddSubscription();
         };
 
+        $scope.addProjectSubscription = function(project) {
+            var subscription = {
+                subscriptionType: "Project",
+                subscriptionValue: project.id
+            };
+            $scope.subscription.subscriptions.push(subscription);
+            $scope.subscriptions.$setDirty();
+            $scope.toggleShowAddSubscription();
+        };
+
         $scope.removeSubscription = function(rule) {
             $scope.subscription.subscriptions = _.without($scope.subscription.subscriptions, rule);
             $scope.subscriptions.$setDirty();
@@ -196,6 +206,7 @@ angular.module('slickApp')
                 $scope.subscriptions.$setPristine();
             });
         };
+
 
         window.scope = $scope;
 
