@@ -24,7 +24,7 @@ from .types import AllTypes as SystemConfigurationTypes
 import mongoengine
 import bson
 
-class BaseSystemConfiguration(mongoengine.Document):
+class BaseSystemConfiguration(mongoengine.DynamicDocument):
     meta = {'collection': 'system-configurations'}
     configurationType = mongoengine.StringField()
 

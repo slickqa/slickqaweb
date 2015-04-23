@@ -1,0 +1,45 @@
+<div class="slickview">
+    <slick-dialog size="large" show="showAddSubscription" title="Add Subscription" buttons="Cancel" button-callback="toggleShowAddSubscription()">
+        <div class="testcase-tree">
+            <div class="testcase-tree-project-list">
+                <h3 class="testcase-tree-project" ng-repeat="project in projects track by project.id" ng-class="{'testcase-tree-project-selected': project.name == selectedProjectName}" ng-bind="project.name" ng-click="selectProject(project)"></h3>
+            </div>
+            <div class="testcase-tree-component-list">
+                <h3>Subscriptions for Releases:</h3>
+                <div ng-repeat="release in project.releases">
+                    <span class="button" ng-click="addReleaseSubscription(release)">Add Subscription</span> For all results for Release <span ng-bind="release.name"></span>
+                </div>
+                <h3>Subscriptions for Testplans:</h3>
+                <div ng-repeat="testplan in testplansByProjectId[project.id]">
+                    <span class="button" ng-click="addTestplanSubscription(testplan)">Add Subscription</span> For all results for Testplan <span ng-bind="testplan.name"></span>
+                </div>
+            </div>
+        </div>
+
+    </slick-dialog>
+    <div class="center-text" ng-hide="subscriptionsFor">
+        <form name="email-subscription-for">
+            <label for="settings-email-subscription-for">Enter Email Address:</label>
+            <input type="email" ng-model="emailAddress" />
+            <div class="button" ng-click="editSubscriptions()">Edit Subscriptions</div>
+        </form>
+    </div>
+    <div ng-show="subscriptionsFor">
+        <h2>Subscriptions</h2>
+        <form name="subscriptions">
+            <input name="enabled" type="checkbox" ng-model="subscription.enabled" /><label for="enabled">Enabled</label>
+            <!-- Global isn't working yet
+                <input name="global" type="checkbox" ng-model="subscription.globalSubscription" /><label for="global">Global (Email me for every result on every project)</label>
+            -->
+            <span class="button" ng-click="toggleShowAddSubscription()">Add Subscription</span>
+            <span ng-show="subscriptions.$dirty" class="button" ng-click="save()">Save</span>
+            <hr />
+            <h3>Email me every time there is a result for:</h3>
+            <div class="email-subscription-no-subscriptions" ng-show="subscription.subscriptions.length == 0">No Current Subscriptions</div>
+            <div class="email-subscription-subscription-info" ng-repeat="rule in subscription.subscriptions">
+                <span class="button" ng-click="removeSubscription(rule)">Remove</span><span class="email-subscription-subscription-name" ng-bind="getName(rule.subscriptionType, rule.subscriptionValue)"></span>
+            </div>
+        </form>
+
+    </div>
+</div>

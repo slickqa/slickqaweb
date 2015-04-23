@@ -16,6 +16,7 @@ class EmailSubscriptionSystemConfiguration(Document):
     name = StringField()
     subscriptions = ListField(EmbeddedDocumentField(SubscriptionInfo))
     enabled = BooleanField()
+    globalSubscription = BooleanField()
     configurationType = StringField(required=True, default=EmailSubscriptionSystemConfigurationType, choices=[EmailSubscriptionSystemConfigurationType,])
     className = StringField(required=True, default=EmailSubscriptionSystemConfigurationClassName, choices=[EmailSubscriptionSystemConfigurationClassName,])
 
