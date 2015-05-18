@@ -114,11 +114,13 @@ angular.module('slickApp')
                 });
                 rest.all("testplans").getList().then(function(testplans) {
                     _.each(testplans, function(testplan) {
-                        if(!$scope.testplansByProjectId[testplan.project.id]) {
-                            $scope.testplansByProjectId[testplan.project.id] = []
-                        }
-                        $scope.testplansByProjectId[testplan.project.id].push(testplan);
-                        $scope.testplansById[testplan.id] = testplan;
+			if(testplan.project && testplan.project.id) {
+                            if(!$scope.testplansByProjectId[testplan.project.id]) {
+                                $scope.testplansByProjectId[testplan.project.id] = []
+                            }
+                            $scope.testplansByProjectId[testplan.project.id].push(testplan);
+                            $scope.testplansById[testplan.id] = testplan;
+	    		}
                     });
                     $scope.fetchSubscriptions();
                 });
