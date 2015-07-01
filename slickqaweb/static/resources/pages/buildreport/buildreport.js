@@ -11,7 +11,7 @@ angular.module('slickApp')
                 controller: 'ViewBuildReportCtrl'
             });
     }])
-    .controller('ViewBuildReportCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', function ($scope, rest, nav, $routeParams) {
+    .controller('ViewBuildReportCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', function ($scope, rest, nav, $routeParams, $timeout) {
         $scope.testrungroup = {};
         $scope.testrunList = {};
 
@@ -46,36 +46,61 @@ angular.module('slickApp')
             colors: []
         };
 
+        $scope.getBuildReportData = function() {
+            rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).get().then(function (buildreport) {
+                $scope.summaryChartOptions = {
+                    chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
+                    backgroundColor: "#000000",
+                    pieSliceBorderColor: "#000000",
+                    legend: 'none',
+                    colors: []
+                };
 
-        rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).get().then(function(buildreport) {
-            $scope.testrungroup = buildreport;
-            var testrungroup = buildreport;
-            nav.setTitle(buildreport.name);
+                $scope.individualChartOptions = {
+                    chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
+                    backgroundColor: "#000000",
+                    isStacked: true,
+                    legend: 'none',
+                    hAxis: {
+                        textStyle: {
+                            color: '#ffffff'
+                        },
+                        slantedText: true
+                    },
+                    colors: []
+                };
+                $scope.testrungroup = buildreport;
+                var testrungroup = buildreport;
+                nav.setTitle(buildreport.name);
 
-            $scope.parallelSummaryData = new google.visualization.DataTable();
-            $scope.parallelSummaryData.addColumn('string', 'Status');
-            $scope.parallelSummaryData.addColumn('number', 'Results');
+                $scope.parallelSummaryData = new google.visualization.DataTable();
+                $scope.parallelSummaryData.addColumn('string', 'Status');
+                $scope.parallelSummaryData.addColumn('number', 'Results');
 
-            $scope.parallelIndividualData = new google.visualization.DataTable();
-            $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
+                $scope.parallelIndividualData = new google.visualization.DataTable();
+                $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
 
+                if (testrungroup.state !== "FINISHED") {
+                    $scope.refresh_promise = $timeout($scope.getBuildReportData, 3000);
+                }
+                _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                    $scope.parallelSummaryData.addRow([status.replace("_", " "), testrungroup.groupSummary.resultsByStatus[status]]);
+                    var color = getStyle(status.replace("_", "") + "-element", "color");
+                    $scope.summaryChartOptions.colors.push(color);
+                    $scope.individualChartOptions.colors.push(color);
 
-            _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
-                $scope.parallelSummaryData.addRow([status.replace("_", " "), testrungroup.groupSummary.resultsByStatus[status]]);
-                var color = getStyle(status.replace("_", "") + "-element", "color");
-                $scope.summaryChartOptions.colors.push(color);
-                $scope.individualChartOptions.colors.push(color);
-
-                $scope.parallelIndividualData.addColumn('number', status.replace("_", " "))
-            });
-
-            _.each(testrungroup.testruns, function(testrun) {
-                var row = [testrun.project.name + " - " + testrun.name];
-                _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
-                    row.push(testrun.summary.resultsByStatus[status]);
+                    $scope.parallelIndividualData.addColumn('number', status.replace("_", " "))
                 });
-                $scope.parallelIndividualData.addRow(row);
-            });
 
-        });
+                _.each(testrungroup.testruns, function (testrun) {
+                    var row = [testrun.project.name + " - " + testrun.name];
+                    _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                        row.push(testrun.summary.resultsByStatus[status]);
+                    });
+                    $scope.parallelIndividualData.addRow(row);
+                });
+
+            });
+        };
+        $scope.getBuildReportData();
     }]);
