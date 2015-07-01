@@ -28,7 +28,7 @@ angular.module("slickApp")
                     scope.summaryName = "summary";
                 }
 
-                scope.summary = scope.testrun[summaryName];
+                scope.summary = scope.testrun[scope.summaryName];
                 _.each(scope.summary.statusListOrdered, function(statusName) {
                     scope.stats.push({name: statusName,
                                       width: ((scope.summary.resultsByStatus[statusName] / scope.summary.total) * 100).toFixed(0)});
