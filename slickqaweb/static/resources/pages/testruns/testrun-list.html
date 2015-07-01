@@ -20,7 +20,7 @@
             <div class="testruns-list-column-container">
                 <div class="testruns-list-edit-column" ng-show="editOn"><span class="button" ng-click="deleteTestrun(testrun)">Delete</span></div>
                 <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}">{{ getDisplayName(testrun) }}</a></div>
-                <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
+                <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar testrun="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
                 <div class="testruns-list-environment-column">{{ testrun.config.name}}</div>
                 <div class="testruns-list-build-column">{{ testrun.release.name }}-{{ testrun.build.name }}</div>
                 <div class="testruns-list-created-column">{{ testrun.dateCreated | date:'MMM d, y h:mm:ss a'}}</div>
