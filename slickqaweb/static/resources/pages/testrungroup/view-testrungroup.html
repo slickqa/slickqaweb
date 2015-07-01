@@ -27,7 +27,7 @@
             </slick-list-columns>
         </slick-list-header>
         <div class="testruns-list-row-container">
-            <div ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList" class="testruns-list-row">
+            <div ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row">
                 <div class="testruns-list-column-container">
                     <div class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></div>
                     <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a></div>
