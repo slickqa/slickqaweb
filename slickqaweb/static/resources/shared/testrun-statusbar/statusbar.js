@@ -21,11 +21,19 @@ angular.module("slickApp")
                 if (scope.size != "large" && scope.size != "normal") {
                     scope.size = "normal";
                 }
-                scope.stats = [];
+                scope.setStats = function () {
+                    scope.stats = [];
 
-                _.each(scope.summary.statusListOrdered, function(statusName) {
-                    scope.stats.push({name: statusName,
-                                      width: ((scope.summary.resultsByStatus[statusName] / scope.summary.total) * 100).toFixed(0)});
+                    _.each(scope.summary.statusListOrdered, function(statusName) {
+                        scope.stats.push({name: statusName,
+                            width: ((scope.summary.resultsByStatus[statusName] / scope.summary.total) * 100).toFixed(0)});
+                    });
+                };
+                scope.setStats();
+                scope.$watch('summary', function(newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        scope.setStats();
+                    }
                 });
             }
 
