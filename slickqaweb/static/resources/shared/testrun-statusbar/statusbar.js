@@ -13,8 +13,7 @@ angular.module("slickApp")
             replace: true,
             templateUrl: "static/resources/shared/testrun-statusbar/statusbar.html",
             scope: {
-                testrun: "=",
-                summaryName: "@",
+                summary: "=",
                 size: "@"
             },
 
@@ -24,11 +23,6 @@ angular.module("slickApp")
                 }
                 scope.stats = [];
 
-                if (! scope.summaryName ) {
-                    scope.summaryName = "summary";
-                }
-
-                scope.summary = scope.testrun[scope.summaryName];
                 _.each(scope.summary.statusListOrdered, function(statusName) {
                     scope.stats.push({name: statusName,
                                       width: ((scope.summary.resultsByStatus[statusName] / scope.summary.total) * 100).toFixed(0)});

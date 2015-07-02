@@ -31,7 +31,7 @@
                 <div class="testruns-list-column-container">
                     <div class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></div>
                     <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a></div>
-                    <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar testrun="testrun" size="normal"></slick-testrun-statusbar></div></div>
+                    <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
                     <div class="testruns-list-environment-column" ng-bind="testrun.config.name"></div>
                     <div class="testruns-list-build-column">{{testrun.release.name}} Build {{ testrun.build.name }}</div>
                     <div class="testruns-list-created-column" ng-bind="testrun.dateCreated | date:'medium'"></div>

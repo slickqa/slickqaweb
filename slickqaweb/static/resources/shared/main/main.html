@@ -19,7 +19,7 @@
                         <div class="landing-testrun-project-column"><a href="projects/{{testrun.project.name}}" ng-bind="testrun.project.name"></a></div>
                         <div class="landing-testrun-name-column"><a href="testruns/{{testrun.id}}" ng-bind="testrun.name"></a></div>
                         <div class="landing-testrun-build-column">{{testrun.release.name}} Build {{testrun.build.name}}</div>
-                        <div class="landing-testrun-results-column"><slick-testrun-statusbar testrun="testrun" size="normal"></slick-testrun-statusbar></div>
+                        <div class="landing-testrun-results-column"><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div>
                     </div>
                 </div>
                 <div class="landing-recent-info-table2-box">
@@ -35,7 +35,7 @@
                         <div class="landing-testrun-project-column"><a href="projects/{{testrun.project.name}}" ng-bind="testrun.project.name"></a></div>
                         <div class="landing-testrun-name-column"><a href="testruns/{{testrun.id}}" ng-bind="testrun.name"></a></div>
                         <div class="landing-testrun-build-column">{{testrun.release.name}} Build {{testrun.build.name}}</div>
-                        <div class="landing-testrun-results-column"><slick-testrun-statusbar testrun="testrun" size="normal"></slick-testrun-statusbar></div>
+                        <div class="landing-testrun-results-column"><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                         <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
                         <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
                         <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
-                        <div class="landing-build-results-column"><div ng-if="build.report.groupSummary"><slick-testrun-statusbar testrun="build.report" summary-name="groupSummary" size="normal"></slick-testrun-statusbar></div></div>
+                        <div class="landing-build-results-column"><div ng-if="build.report.groupSummary"><slick-testrun-statusbar summary="build.report.groupSummary" size="normal"></slick-testrun-statusbar></div></div>
                     </div>
                 </div>
                 <div class="landing-recent-info-table2-box">
@@ -77,7 +77,7 @@
                         <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
                         <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
                         <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
-                        <div class="landing-build-results-column"><div ng-if="build.report.groupSummary"><slick-testrun-statusbar testrun="build.report" summary-name="groupSummary" size="normal"></slick-testrun-statusbar></div></div>
+                        <div class="landing-build-results-column"><div ng-if="build.report.groupSummary"><slick-testrun-statusbar summary="build.report.groupSummary" size="normal"></slick-testrun-statusbar></div></div>
                     </div>
                 </div>
             </div>
@@ -101,7 +101,7 @@
                     <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListOne |slickListFilter:testrungroupTableOne">
                         <div class="landing-testrungroup-name-column"><a href="testrungroup/{{testrungroup.id}}" ng-bind="testrungroup.name"></a></div>
                         <div class="landing-testrungroup-testruns-column" ng-bind="testrungroup.testruns.length"></div>
-                        <div class="landing-testrungroup-results-column"><slick-testrun-statusbar testrun="testrungroup" summary-name="groupSummary" size="normal"></slick-testrun-statusbar></div>
+                        <div class="landing-testrungroup-results-column"><slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar></div>
                     </div>
                 </div>
                 <div class="landing-recent-info-table2-box">
@@ -115,7 +115,7 @@
                     <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListTwo |slickListFilter:testrungroupTableTwo">
                         <div class="landing-testrungroup-name-column"><a href="testrungroup/{{testrungroup.id}}" ng-bind="testrungroup.name"></a></div>
                         <div class="landing-testrungroup-testruns-column" ng-bind="testrungroup.testruns.length"></div>
-                        <div class="landing-testrungroup-results-column"><slick-testrun-statusbar testrun="testrungroup" summary-name="groupSummary" size="normal"></slick-testrun-statusbar></div>
+                        <div class="landing-testrungroup-results-column"><slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar></div>
                     </div>
                 </div>
             </div>

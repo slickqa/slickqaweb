@@ -28,7 +28,7 @@
                 <div class="testrungroups-list-created-column" ng-bind="trgroup.created | date:'medium'"></div>
             </div>
             <div class="testrungroups-list-status-bar" ng-show="trgroup.testruns.length > 0">
-                <slick-testrun-statusbar testrun="trgroup" summary-name="groupSummary" size="thin"></slick-testrun-statusbar>
+                <slick-testrun-statusbar summary="trgroup.groupSummary" size="thin"></slick-testrun-statusbar>
             </div>
         </div>
     </div>
