@@ -8,7 +8,7 @@ angular.module('slickApp')
         controller: 'MainCtrl'
       });
   }])
-  .controller('MainCtrl', ['$scope', 'Restangular', function ($scope, rest) {
+  .controller('MainCtrl', ['$scope', 'Restangular', '$interval', function ($scope, rest, $interval) {
         $scope.testrunTableOne = {};
         $scope.testrunTableTwo = {};
         $scope.testrunListOne = [];
@@ -24,6 +24,7 @@ angular.module('slickApp')
         $scope.buildListOne = [];
         $scope.buildListTwo = [];
 
+        var stop;
 
         $scope.fetchData = function() {
             rest.all('testruns').getList({orderby: '-dateCreated', limit: 10}).then(function(testruns) {
@@ -70,6 +71,18 @@ angular.module('slickApp')
             });
         };
 
+        $scope.stopRefresh = function() {
+            if (angular.isDefined(stop)) {
+                $interval.cancel(stop);
+                stop = undefined;
+            }
+        };
+
+        $scope.$on('$destroy', function() {
+            $scope.stopRefresh();
+        });
+
         $scope.fetchData();
+        stop = $interval($scope.fetchData, 3000);
         window.scope = $scope;
   }]);
