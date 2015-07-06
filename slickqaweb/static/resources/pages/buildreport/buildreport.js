@@ -46,6 +46,8 @@ angular.module('slickApp')
             colors: []
         };
 
+        var refresh_promise;
+
         $scope.getBuildReportData = function() {
             rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).get().then(function (buildreport) {
                 $scope.summaryChartOptions = {
@@ -81,7 +83,7 @@ angular.module('slickApp')
                 $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
 
                 if (testrungroup.state !== "FINISHED") {
-                    $scope.refresh_promise = $timeout($scope.getBuildReportData, 3000);
+                    refresh_promise = $timeout($scope.getBuildReportData, 3000);
                 }
                 _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
                     $scope.parallelSummaryData.addRow([status.replace("_", " "), testrungroup.groupSummary.resultsByStatus[status]]);
@@ -102,5 +104,18 @@ angular.module('slickApp')
 
             });
         };
+
+        $scope.stopRefresh = function() {
+            if (angular.isDefined(refresh_promise)) {
+                $timeout.cancel(refresh_promise);
+                refresh_promise = undefined;
+            }
+        };
         $scope.getBuildReportData();
+
+
+
+        $scope.$on('$destroy', function() {
+            $scope.stopRefresh();
+        });
     }]);
