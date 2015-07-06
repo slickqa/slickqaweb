@@ -57,7 +57,7 @@
                             <slick-list-column class="landing-build-results-column" sortable="false">Results</slick-list-column>
                         </slick-list-columns>
                     </slick-list-header>
-                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListOne |slickListFilter:buildTableOne track by build.id">
+                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListOne |slickListFilter:buildTableOne track by build.build.id">
                         <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
                         <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
                         <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
@@ -73,7 +73,7 @@
                             <slick-list-column class="landing-build-results-column" sortable="false">Results</slick-list-column>
                         </slick-list-columns>
                     </slick-list-header>
-                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListTwo |slickListFilter:buildTableTwo track by build.id">
+                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListTwo |slickListFilter:buildTableTwo track by build.build.id">
                         <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
                         <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
                         <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
