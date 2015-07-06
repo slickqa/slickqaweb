@@ -15,7 +15,7 @@
                             <slick-list-column class="landing-testrun-results-column" sortable="false">Results</slick-list-column>
                         </slick-list-columns>
                     </slick-list-header>
-                    <div class="landing-testrun-column-container landing-testrun-row" ng-repeat="testrun in testrunListOne |slickListFilter:testrunTableOne">
+                    <div class="landing-testrun-column-container landing-testrun-row" ng-repeat="testrun in testrunListOne |slickListFilter:testrunTableOne track by testrun.id">
                         <div class="landing-testrun-project-column"><a href="projects/{{testrun.project.name}}" ng-bind="testrun.project.name"></a></div>
                         <div class="landing-testrun-name-column"><a href="testruns/{{testrun.id}}" ng-bind="testrun.name"></a></div>
                         <div class="landing-testrun-build-column">{{testrun.release.name}} Build {{testrun.build.name}}</div>
@@ -31,7 +31,7 @@
                             <slick-list-column class="landing-testrun-results-column" sortable="false">Results</slick-list-column>
                         </slick-list-columns>
                     </slick-list-header>
-                    <div class="landing-testrun-column-container landing-testrun-row" ng-repeat="testrun in testrunListTwo |slickListFilter:testrunTableTwo">
+                    <div class="landing-testrun-column-container landing-testrun-row" ng-repeat="testrun in testrunListTwo |slickListFilter:testrunTableTwo track by testrun.id">
                         <div class="landing-testrun-project-column"><a href="projects/{{testrun.project.name}}" ng-bind="testrun.project.name"></a></div>
                         <div class="landing-testrun-name-column"><a href="testruns/{{testrun.id}}" ng-bind="testrun.name"></a></div>
                         <div class="landing-testrun-build-column">{{testrun.release.name}} Build {{testrun.build.name}}</div>
@@ -57,7 +57,7 @@
                             <slick-list-column class="landing-build-results-column" sortable="false">Results</slick-list-column>
                         </slick-list-columns>
                     </slick-list-header>
-                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListOne |slickListFilter:buildTableOne">
+                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListOne |slickListFilter:buildTableOne track by build.id">
                         <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
                         <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
                         <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
@@ -73,7 +73,7 @@
                             <slick-list-column class="landing-build-results-column" sortable="false">Results</slick-list-column>
                         </slick-list-columns>
                     </slick-list-header>
-                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListTwo |slickListFilter:buildTableTwo">
+                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListTwo |slickListFilter:buildTableTwo track by build.id">
                         <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
                         <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
                         <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
@@ -98,7 +98,7 @@
                             <slick-list-column class="landing-testrungroup-results-column" sortable="false">Results</slick-list-column>
                         </slick-list-columns>
                     </slick-list-header>
-                    <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListOne |slickListFilter:testrungroupTableOne">
+                    <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListOne |slickListFilter:testrungroupTableOne track by testrungroup.id">
                         <div class="landing-testrungroup-name-column"><a href="testrungroup/{{testrungroup.id}}" ng-bind="testrungroup.name"></a></div>
                         <div class="landing-testrungroup-testruns-column" ng-bind="testrungroup.testruns.length"></div>
                         <div class="landing-testrungroup-results-column"><slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar></div>
@@ -112,7 +112,7 @@
                             <slick-list-column class="landing-testrungroup-results-column" sortable="false">Results</slick-list-column>
                         </slick-list-columns>
                     </slick-list-header>
-                    <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListTwo |slickListFilter:testrungroupTableTwo">
+                    <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListTwo |slickListFilter:testrungroupTableTwo track by testrungroup.id">
                         <div class="landing-testrungroup-name-column"><a href="testrungroup/{{testrungroup.id}}" ng-bind="testrungroup.name"></a></div>
                         <div class="landing-testrungroup-testruns-column" ng-bind="testrungroup.testruns.length"></div>
                         <div class="landing-testrungroup-results-column"><slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar></div>
