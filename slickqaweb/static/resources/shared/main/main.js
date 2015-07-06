@@ -61,12 +61,12 @@ angular.module('slickApp')
                 _.each(buildList.slice(0, 10), function(buildInfo, index) {
                     rest.one('build-report', buildInfo.project.name).one(buildInfo.release.name, buildInfo.build.name).get().then(function(buildReport) {
                         buildInfo.report = buildReport;
+                        if (index < 5) {
+                            $scope.buildListOne[index] = buildInfo;
+                        } else {
+                            $scope.buildListTwo[index - 5] = buildInfo;
+                        }
                     });
-                    if (index < 5) {
-                        $scope.buildListOne[index] = buildInfo;
-                    } else {
-                        $scope.buildListTwo[index - 5] = buildInfo;
-                    }
                 });
             });
         };
