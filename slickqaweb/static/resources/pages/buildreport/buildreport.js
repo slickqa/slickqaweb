@@ -102,6 +102,8 @@ angular.module('slickApp')
                     $scope.parallelIndividualData.addRow(row);
                 });
 
+            }, function errorCallback() {
+                refresh_promise = $timeout($scope.getBuildReportData, 3000);
             });
         };
 
