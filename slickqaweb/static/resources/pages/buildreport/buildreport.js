@@ -82,9 +82,7 @@ angular.module('slickApp')
                 $scope.parallelIndividualData = new google.visualization.DataTable();
                 $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
 
-                if (testrungroup.state !== "FINISHED") {
-                    refresh_promise = $timeout($scope.getBuildReportData, 3000);
-                }
+                refresh_promise = $timeout($scope.getBuildReportData, 3000);
                 _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
                     $scope.parallelSummaryData.addRow([status.replace("_", " "), testrungroup.groupSummary.resultsByStatus[status]]);
                     var color = getStyle(status.replace("_", "") + "-element", "color");
