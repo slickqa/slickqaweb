@@ -19,7 +19,7 @@ from .project import get_project, get_release, get_build
 
 add_resource("/build-report", "Get build reports.")
 
-@app.route('/api/build-report/<project_name>/<release_name>/<build_name>')
+@app.route('/api/build-report/<project_name>/<release_name>/<path:build_name>')
 @returns(TestrunGroup)
 @argument_doc('project_name', 'The name of the project.')
 @argument_doc('release_name', 'The name of the release in the project.')

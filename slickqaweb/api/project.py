@@ -280,8 +280,8 @@ def get_default_build(project_id, release_id):
     return JsonResponse(get_build(release, release.defaultBuild))
 
 
-@app.route('/api/projects/<project_id>/releases/<release_id>/builds/<build_id>')
-@app.route('/api/projects/<project_id>/releases/<release_id>/builds/byname/<build_id>')
+@app.route('/api/projects/<project_id>/releases/<release_id>/builds/<path:build_id>')
+@app.route('/api/projects/<project_id>/releases/<release_id>/builds/byname/<path:build_id>')
 @argument_doc('project_id', "The name or id of the project to get the build from.")
 @argument_doc('release_id', "The name or id of the release to get the build from.")
 @argument_doc('build_id', "The name or id of the build to get.")
@@ -291,7 +291,7 @@ def get_specific_build(project_id, release_id, build_id):
     return JsonResponse(get_build(get_release(get_project(project_id), release_id), build_id))
 
 
-@app.route('/api/projects/<project_id>/releases/<release_id>/builds/setdefaultbuild/<build_id>')
+@app.route('/api/projects/<project_id>/releases/<release_id>/builds/setdefaultbuild/<path:build_id>')
 @argument_doc('project_id', "The name or id of the project to get the build from.")
 @argument_doc('release_id', "The name or id of the release to get the build from.")
 @argument_doc('build_id', "The name or id of the build to set as default.")
@@ -310,7 +310,7 @@ def set_default_build(project_id, release_id, build_id):
                 return JsonResponse(project)
 
 
-@app.route('/api/projects/<project_id>/releases/<release_id>/builds/<build_id>', methods=["PUT"])
+@app.route('/api/projects/<project_id>/releases/<release_id>/builds/<path:build_id>', methods=["PUT"])
 @argument_doc('project_id', "The name or id of the project to update the build from.")
 @argument_doc('release_id', "The name or id of the release to update the build from.")
 @argument_doc('build_id', "The name or id of the build to update.")
@@ -326,7 +326,7 @@ def update_build(project_id, release_id, build_id):
     return JsonResponse(build)
 
 
-@app.route('/api/projects/<project_id>/releases/<release_id>/builds/<build_id>', methods=["DELETE"])
+@app.route('/api/projects/<project_id>/releases/<release_id>/builds/<path:build_id>', methods=["DELETE"])
 @argument_doc('project_id', "The name or id of the project to delete the build from.")
 @argument_doc('release_id', "The name or id of the release to delete the build from.")
 @argument_doc('build_id', "The name or id of the build to delete.")

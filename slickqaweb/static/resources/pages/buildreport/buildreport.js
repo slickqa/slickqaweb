@@ -6,7 +6,7 @@
 angular.module('slickApp')
     .config(['$routeProvider', 'NavigationServiceProvider', function ($routeProvider, nav) {
         $routeProvider
-            .when('/build-report/:project/:release/:build', {
+            .when('/build-report/:project/:release/:build*', {
                 templateUrl: 'static/resources/pages/testrungroup/view-testrungroup.html',
                 controller: 'ViewBuildReportCtrl'
             });
