@@ -143,7 +143,7 @@
     </slick-list-header>
     <div class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id">
         <div class="result-list-column-container">
-            <div class="result-list-name-column" ng-bind="result.testcase.name"></div>
+            <div class="result-list-name-column"><a href="testcases/{{ result.testcase.id }}" ng-bind="result.testcase.name"></a></div>
             <div class="result-list-component-column" ng-bind="result.component.name"></div>
             <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'"></div>
             <div class="result-list-duration-column" ng-bind="getResultDuration(result)"></div>
