@@ -46,7 +46,7 @@
     <slick-dialog title="Logs" size="large" show="showDisplayLogs" buttons="Ok" button-callback="displayLogsDialogButtonClicked(buttonName)">
         <slick-log-viewer logs="logs"></slick-log-viewer>
     </slick-dialog>
-    <slick-dialog title="Testcase" size="large" show="showTestcaseDialog" buttons="Ok" button-callback="displayTestcaseDialogButtonClicked(buttonName)">
+    <slick-dialog title="{{ testcase.name }}" size="large" show="showTestcaseDialog" buttons="Ok" button-callback="displayTestcaseDialogButtonClicked(buttonName)">
         <ng-include src="'static/resources/pages/testcase/testcase-dataview.html'">
         </ng-include>
     </slick-dialog>
