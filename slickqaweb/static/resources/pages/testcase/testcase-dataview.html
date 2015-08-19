@@ -1,0 +1,35 @@
+<div class="data-view">
+    <div class="data-view-item">
+        <div class="data-view-property-name">Purpose</div>
+        <div class="data-view-property-value" ng-model="testcase.purpose" name="purpose" contenteditable="true"></div>
+    </div>
+    <div class="data-view-item">
+        <div class="data-view-property-name">Automation ID</div>
+        <div class="data-view-property-value" ng-model="testcase.automationId" name="automationId" contenteditable="true"></div>
+    </div>
+    <div class="data-view-item">
+        <div class="data-view-property-name">Tags</div>
+        <div class="data-view-property-value"><slick-tag-list model="testcase.tags" editable="yes"></slick-tag-list></div>
+    </div>
+    <div class="data-view-item">
+        <div class="data-view-property-name">Component</div>
+        <div class="data-view-property-value" ng-model="testcase.component.name" name="componentname" contenteditable="false">></div>
+    </div>
+
+    <div class="data-view-item">
+        <div class="data-view-property-name">Steps<br /><span class="button" ng-click="toggleAddStep()" ng-show="testcaseEditable">Add</span></div>
+        <div class="data-view-property-value">
+            <div class="testcase-step" ng-repeat="step in testcase.steps">
+                <div class="testcase-step-number">{{$index + 1}}</div>
+                <div class="testcase-step-content">
+                    <div class="testcase-step-row"><span ng-model="step.name" contenteditable="true"></span></div>
+                    <div class="expected-result-row"><span class="testcase-step-label">Expected Result: </span><span ng-model="step.expectedResult" contenteditable="true"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="data-view-item data-view-item-save-button-row" ng-show="testcaseForm.$dirty">
+        <div class="data-view-property-name">&nbsp;</div>
+        <div class="data-view-save"><span class="button" ng-click="save()">Save</span> <span class="button" ng-click="revert()">Revert</span></div>
+    </div>
+</div>

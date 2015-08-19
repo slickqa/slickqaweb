@@ -46,6 +46,10 @@
     <slick-dialog title="Logs" size="large" show="showDisplayLogs" buttons="Ok" button-callback="displayLogsDialogButtonClicked(buttonName)">
         <slick-log-viewer logs="logs"></slick-log-viewer>
     </slick-dialog>
+    <slick-dialog title="Testcase" size="large" show="showTestcaseDialog" buttons="Ok" button-callback="displayTestcaseDialogButtonClicked(buttonName)">
+        <ng-include src="'static/resources/pages/testcase/testcase-dataview.html'">
+        </ng-include>
+    </slick-dialog>
     <div class="testrun-summary-outer">
         <div class="testrun-summary-inner">
             <div class="testrun-summary-container">
@@ -143,7 +147,7 @@
     </slick-list-header>
     <div class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id">
         <div class="result-list-column-container">
-            <div class="result-list-name-column"><a href="testcases/{{ result.testcase.testcaseId }}" ng-bind="result.testcase.name"></a></div>
+            <div class="result-list-name-column"><a href="testcases/{{ result.testcase.testcaseId }}" ng-click="showTestcase(result.testcase.testcaseId, $event)" ng-bind="result.testcase.name"></a></div>
             <div class="result-list-component-column" ng-bind="result.component.name"></div>
             <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'"></div>
             <div class="result-list-duration-column" ng-bind="getResultDuration(result)"></div>

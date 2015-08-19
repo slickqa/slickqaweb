@@ -193,6 +193,14 @@ angular.module('slickApp')
             colors: []
         };
 
+        $scope.testcase = {
+            name: "",
+            purpose: ""
+        };
+
+        $scope.showTestcase = false;
+        $scope.showAddStep = false;
+
         if ($routeParams.only) {
             $scope.filter[$routeParams.only] = true;
         }
@@ -405,6 +413,14 @@ angular.module('slickApp')
             }
         };
 
+        $scope.showTestcase = function(testcaseId, $event) {
+            $event.preventDefault();
+            rest.one('testcases', testcaseId).get().then(function(testcase) {
+                $scope.testcase = testcase;
+                $scope.showTestcaseDialog = true;
+            });
+        };
+
         $scope.getUrlForFile = function(file) {
             return "api/files/" + file.id + "/content/" + file.filename;
         };
@@ -434,6 +450,14 @@ angular.module('slickApp')
         $scope.displayLogsDialogButtonClicked = function(buttonName) {
             $scope.logs = [];
             $scope.showDisplayLogs = false;
+        };
+
+        $scope.displayTestcaseDialogButtonClicked = function(buttonName) {
+            $scope.showTestcaseDialog = false;
+            $scope.testcase = {
+                name: "",
+                purpose: ""
+            };
         };
 
         $scope.onHistoryClick = function(history) {

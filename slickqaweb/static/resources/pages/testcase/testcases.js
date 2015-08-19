@@ -19,6 +19,8 @@ angular.module('slickApp')
             purpose: ""
         };
 
+        $scope.testcaseEditable = true;
+
         $scope.stepsList = {};
 
         $scope.showAddStep = false;
