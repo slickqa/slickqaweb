@@ -159,6 +159,7 @@ angular.module('slickApp')
 
     }])
     .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location) {
+        $scope.replaceOnStatus = replaceOnStatus;
         $scope.testrun = {};
         $scope.results = [];
         $scope.filter = {};

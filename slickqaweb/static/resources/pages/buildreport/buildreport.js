@@ -12,6 +12,7 @@ angular.module('slickApp')
             });
     }])
     .controller('ViewBuildReportCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', function ($scope, rest, nav, $routeParams, $timeout) {
+        $scope.replaceOnStatus = replaceOnStatus;
         $scope.testrungroup = {};
         $scope.testrunList = {};
 

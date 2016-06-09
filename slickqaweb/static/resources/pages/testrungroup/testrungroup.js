@@ -27,6 +27,7 @@ angular.module('slickApp')
         nav.addLink('Reports', 'Testrun Groups', 'testrungroups/latest');
     }])
     .controller('ViewTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', function ($scope, rest, nav, $routeParams, $timeout) {
+        $scope.replaceOnStatus = replaceOnStatus;
         $scope.testrungroup = {};
         $scope.testrunList = {};
 
