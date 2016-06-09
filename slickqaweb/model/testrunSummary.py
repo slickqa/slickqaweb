@@ -10,6 +10,7 @@ class ResultsByStatus(EmbeddedDocument):
     NOT_TESTED = IntField(default=0)
     SKIPPED = IntField(default=0)
     NO_RESULT = IntField(default=0)
+    PASSED_ON_RETRY = IntField(default=0)
 
 
 class TestrunSummary(EmbeddedDocument):
@@ -30,7 +31,7 @@ class TestrunSummary(EmbeddedDocument):
     @serializable
     def statusListOrdered(self):
         retval = []
-        for status in ["PASS", "FAIL", "BROKEN_TEST", "NOT_TESTED", "SKIPPED", "NO_RESULT"]:
+        for status in ["PASS", "FAIL", "BROKEN_TEST", "NOT_TESTED", "SKIPPED", "NO_RESULT", "PASSED_ON_RETRY"]:
             if hasattr(self.resultsByStatus, status) and getattr(self.resultsByStatus, status) > 0:
                 retval.append(status)
         return retval
@@ -38,7 +39,7 @@ class TestrunSummary(EmbeddedDocument):
     @serializable
     def total(self):
         retval = 0
-        for status in ["PASS", "FAIL", "BROKEN_TEST", "NOT_TESTED", "SKIPPED", "NO_RESULT"]:
+        for status in ["PASS", "FAIL", "BROKEN_TEST", "NOT_TESTED", "SKIPPED", "NO_RESULT", "PASSED_ON_RETRY"]:
             if hasattr(self.resultsByStatus, status) and getattr(self.resultsByStatus, status) > 0:
                 retval += getattr(self.resultsByStatus, status)
         return retval
