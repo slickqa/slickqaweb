@@ -221,8 +221,8 @@ angular.module('slickApp')
                 }
                 $scope.options.colors = [];
                 _.each(testrun.summary.statusListOrdered, function(status) {
-                    $scope.data.addRow([status.replace(new RegExp("_", "g"), " "), testrun.summary.resultsByStatus[status]]);
-                    $scope.options.colors.push(getStyle(status.replace(new RegExp("_", "g"), "") + "-element", "color"));
+                    $scope.data.addRow([replaceOnStatus(status, " "), testrun.summary.resultsByStatus[status]]);
+                    $scope.options.colors.push(getStyle(replaceOnStatus(status, "") + "-element", "color"));
                     if (emptyFilter) {
                         $scope.filter[status] = status != "PASS";
                         if ($routeParams.all) {

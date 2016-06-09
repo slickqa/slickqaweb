@@ -84,12 +84,12 @@ angular.module('slickApp')
 
                 refresh_promise = $timeout($scope.getBuildReportData, 3000);
                 _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                    $scope.parallelSummaryData.addRow([status.replace(new RegExp("_", "g"), " "), testrungroup.groupSummary.resultsByStatus[status]]);
-                    var color = getStyle(status.replace(new RegExp("_", g), "") + "-element", "color");
+                    $scope.parallelSummaryData.addRow([replaceOnStatus(status, " "), testrungroup.groupSummary.resultsByStatus[status]]);
+                    var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                     $scope.summaryChartOptions.colors.push(color);
                     $scope.individualChartOptions.colors.push(color);
 
-                    $scope.parallelIndividualData.addColumn('number', status.replace(new RegExp("_", g), " "))
+                    $scope.parallelIndividualData.addColumn('number', replaceOnStatus(status, " "))
                 });
 
                 _.each(testrungroup.testruns, function (testrun) {

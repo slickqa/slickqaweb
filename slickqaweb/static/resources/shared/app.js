@@ -1,5 +1,11 @@
 'use strict';
 
+var _replace_underscore_regexp = new RegExp('_', 'g')
+
+function replaceOnStatus(status, replace_with) {
+    return status.replace(_replace_underscore_regexp, replace_with)
+}
+
 angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'restangular', 'ngSanitize' ])
   .config(['$locationProvider', 'RestangularProvider', function ($locationProvider, RestangularProvider) {
     $locationProvider.html5Mode(true);
