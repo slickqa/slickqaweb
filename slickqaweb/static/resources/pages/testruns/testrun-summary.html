@@ -56,8 +56,8 @@
                 <google-pie-chart class="testrun-summary-chart" data="data" options="options"></google-pie-chart>
                 <div class="testrun-summary-data">
                     <div class="testrun-summary-data-container">
-                        <div class="testrun-summary-data-row result-status-{{status.replace('_','')}}" ng-repeat="status in testrun.summary.statusListOrdered">
-                            <div class="testrun-summary-data-status clickable-text" ng-bind="status.replace('_',' ')" ng-click="toggleFilter(status)"></div>
+                        <div class="testrun-summary-data-row result-status-{{status.replace(new RegExp('_', 'g'),'')}}" ng-repeat="status in testrun.summary.statusListOrdered">
+                            <div class="testrun-summary-data-status clickable-text" ng-bind="status.replace(new Regexp('_', 'g'),' ')" ng-click="toggleFilter(status)"></div>
                             <div class="testrun-summary-data-number" ng-bind="testrun.summary.resultsByStatus[status]"></div>
                             <div class="testrun-summary-data-percent" ng-bind="'' + (((testrun.summary.resultsByStatus[status] * 1.0)/testrun.summary.total) * 100).toFixed(1) + '%'"></div>
                         </div>
@@ -125,8 +125,8 @@
         <div class="testrun-summary-inner testrun-summary-filter-container">
             <form class="testrun-summary-filter-form" name="statusFilter">
                 Include:
-                <span ng-repeat="status in testrun.summary.statusListOrdered" class="testrun-summary-filter result-status-{{status.replace('_','')}}">
-                    <input type="checkbox" ng-model="filter[status]">{{status.replace("_"," ")}}
+                <span ng-repeat="status in testrun.summary.statusListOrdered" class="testrun-summary-filter result-status-{{status.replace(new RegExp('_', 'g'),'')}}">
+                    <input type="checkbox" ng-model="filter[status]">{{status.replace(new RegExp("_", 'g')," ")}}
                 </span>
                 <span class="testrun-summary-filter">
                     <input type="checkbox" ng-model="moreDetail">More Detail
@@ -153,7 +153,7 @@
             <div class="result-list-duration-column" ng-bind="getResultDuration(result)"></div>
             <div class="result-list-hostname-column" ng-bind="result.hostname"></div>
             <div class="result-list-history-column"><img class="clickable" ng-repeat="hres in result.history | reverse track by hres.resultId" ng-src="static/images/status-{{hres.status}}.png" ng-click="onHistoryClick(hres)"/></div>
-            <div class="result-list-status-column result-status-{{result.status.replace('_','')}}" ng-bind="result.status.replace('_',' ')"></div>
+            <div class="result-list-status-column result-status-{{result.status.replace(new RegExp('_', 'g'),'')}}" ng-bind="result.status.replace(new RegExp('_', 'g'),' ')"></div>
         </div>
         <div class="result-list-second-part">
             <div class="result-list-log-column"><a href="results/{{result.id}}/log" ng-show="result.log" ng-click="displayLogs(result, $event)">Log Entries ({{result.log.length}})</a></div>

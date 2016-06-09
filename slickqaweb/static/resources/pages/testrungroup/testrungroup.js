@@ -305,12 +305,12 @@ angular.module('slickApp')
 
 
                 _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
-                    $scope.parallelSummaryData.addRow([status.replace("_", " "), testrungroup.groupSummary.resultsByStatus[status]]);
-                    var color = getStyle(status.replace("_", "") + "-element", "color");
+                    $scope.parallelSummaryData.addRow([status.replace(new RegExp("_", "g"), " "), testrungroup.groupSummary.resultsByStatus[status]]);
+                    var color = getStyle(status.replace(new RegExp("_", "g"), "") + "-element", "color");
                     $scope.summaryChartOptions.colors.push(color);
                     $scope.individualChartOptions.colors.push(color);
 
-                    $scope.parallelIndividualData.addColumn('number', status.replace("_", " "))
+                    $scope.parallelIndividualData.addColumn('number', status.replace(new RegExp("_", "g"), " "))
                 });
 
                 _.each(testrungroup.testruns, function(testrun) {
