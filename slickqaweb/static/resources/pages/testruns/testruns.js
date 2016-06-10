@@ -471,6 +471,15 @@ angular.module('slickApp')
                 }
             });
         };
+        
+        $scope.rescheduleStatus = function(status_name) {
+            rest.one('testruns', $scope.testrun.id).one('reschedule', status_name).get();
+        };
+        
+        $scope.rescheduleResult = function(result_id) {
+            alert('Rescheduling...');
+            rest.one('results', result_id).one('reschedule').get();
+        };
 
         window.scope = $scope;
     }]);

@@ -57,6 +57,7 @@
                 <div class="testrun-summary-data">
                     <div class="testrun-summary-data-container">
                         <div class="testrun-summary-data-row result-status-{{ replaceOnStatus(status, '')}}" ng-repeat="status in testrun.summary.statusListOrdered">
+                            <div class="reschedule-button" ng-show="testrun.attributes && testrun.attributes.scheduled" ng-click="rescheduleStatus(status)"> </div>
                             <div class="testrun-summary-data-status clickable-text" ng-bind="replaceOnStatus(status, ' ')" ng-click="toggleFilter(status)"></div>
                             <div class="testrun-summary-data-number" ng-bind="testrun.summary.resultsByStatus[status]"></div>
                             <div class="testrun-summary-data-percent" ng-bind="'' + (((testrun.summary.resultsByStatus[status] * 1.0)/testrun.summary.total) * 100).toFixed(1) + '%'"></div>
@@ -171,6 +172,9 @@
                 <span class="button" ng-click="addNote(result)">Add Note</span>
                 <span class="button" ng-hide="moreDetail || moreDetailForResult[result.id]" ng-click="addMoreDetail(result)">More Detail</span>
                 <span class="button" ng-show="moreDetail || moreDetailForResult[result.id]" ng-click="removeDetail(result)">Less Detail</span>
+            </div>
+            <div class="result-reschedule-column">
+                <div class="reschedule-button reschedule-button-result" ng-show="result.attributes && result.attributes.scheduled" ng-click="rescheduleResult(result.id)"> </div>
             </div>
         </div>
         <div class="result-list-notes-part">

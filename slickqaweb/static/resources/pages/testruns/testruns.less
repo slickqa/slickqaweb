@@ -153,6 +153,36 @@
   .flex-container;
 }
 
+.reschedule-button {
+  min-width: .45in;
+  min-height: .45in;
+  max-width: .45in;
+  max-height: .45in;
+  background-image: url("static/images/rerun_blank.png");
+  background-size: .44in;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center center;
+  margin-right:.1in;
+}
+
+.reschedule-button:hover {
+  background-image: url("static/images/rerun_hover.png");
+}
+
+.reschedule-button:active {
+  background-image: url("static/images/rerun_clicked.png");
+}
+
+.reschedule-button.reschedule-button-result {
+  min-width: .25in;
+  min-height: .25in;
+  max-width: .25in;
+  max-height: .25in;
+  background-size: .24in;
+  margin-left: .1in;
+}
+
 .testrun-summary-data-status {
   width: 3in;
 }
