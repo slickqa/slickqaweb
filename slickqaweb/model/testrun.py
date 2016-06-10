@@ -28,6 +28,7 @@ class Testrun(Document):
     summary = EmbeddedDocumentField(TestrunSummary, default=TestrunSummary())
     files = ListField(ReferenceField(StoredFile, dbref=True))
     state = StringField()
+    attributes = MapField(StringField())
     meta = {'collection': 'testruns'}
 
     dynamic_types = {

@@ -1,6 +1,7 @@
 __author__ = 'jcorbett'
 
 from .standardResponses import JsonResponse, read_request
+from .project import get_project
 from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.query import queryFor
 from slickqaweb.app import app
@@ -22,7 +23,7 @@ from slickqaweb.model.configuration import Configuration
 from slickqaweb.model.configurationReference import ConfigurationReference
 from slickqaweb import events
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
-from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField
+from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField, Q
 
 from bson import ObjectId
 import types
@@ -463,3 +464,19 @@ def add_to_log(result_id):
     return JsonResponse(len(orig.log))
 
 
+@app.route('/api/results/scheduledfor/<project>/<hostname>')
+@argument_doc('project', 'The name or id of the project against which to look for scheduled results')
+@argument_doc('hostname', 'The hostname of the machine wanting scheduled tests')
+@returns(ListField(Result))
+def get_scheduled_results(project, hostname):
+    """Get scheduled tests and assign to a hostname."""
+    proj = get_project(project)
+    args = request.args.to_dict()
+    limit = 10
+    orderby = 'recorded'
+    if 'limit' in args:
+        limit = int(args['limit'])
+    if 'orderby' in args:
+        orderby = args['orderby']
+    Result.objects(project__id=proj.id, runstatus='SCHEDULED').order_by(orderby).limit(limit).update(runstatus='TO_BE_RUN', hostname=hostname)
+    return JsonResponse(Result.objects(project__id=proj.id, runstatus='TO_BE_RUN', hostname=hostname).order_by(orderby))
