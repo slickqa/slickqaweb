@@ -1,5 +1,3 @@
-__author__ = 'jcorbett'
-
 from .standardResponses import JsonResponse, read_request
 from .project import get_project
 from slickqaweb.utils import is_provided, is_not_provided
@@ -24,6 +22,8 @@ from slickqaweb.model.configurationReference import ConfigurationReference
 from slickqaweb import events
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField, Q
+import logging
+import sys
 
 from bson import ObjectId
 import types
@@ -31,69 +31,37 @@ import datetime
 from mongoengine import Q
 from flask import request, Response
 
+__author__ = 'jcorbett'
+
 add_resource('/results', 'Add, Update or delete results.')
+
 
 def find_history(result):
     assert isinstance(result, Result)
     history = []
-    results_found = []
 
-    # other results with the same Test, Environment, Release
-    # other results with the same Test and Environment (different release)
-    # other results with the same Test and Release, but different Environment
-    # other results with the same Test, in order of when they were recorded
+    # other results with the same Test, Testplan, Environment, Release
     try:
-        for hresult in Result.objects(testcase__testcaseId=result.testcase.testcaseId,
-                                      config__configId=result.config.configId,
-                                      release__releaseId=result.release.releaseId,
-                                      recorded__lt=result.recorded).order_by('-recorded'):
-            if len(history) < 10:
-                history.append(create_result_reference(hresult))
-                results_found.append(hresult.id)
-            else:
-                break
+        query = {"testcase__testcaseId": result.testcase.testcaseId,
+                 "recorded__lt":result.recorded}
+        if hasattr(result, 'config') and result.config is not None:
+            query['config__configId'] = result.config.configId
+        else:
+            query['config__exists'] = False
+        if hasattr(result, 'release') and result.release is not None:
+            query['release__releaseId'] = result.release.releaseId
+        else:
+            query['release__exists'] = False
+        if hasattr(result.testrun, 'testplanId') and result.testrun.testplanId is not None:
+            query['testrun__testplanId'] = result.testrun.testplanId
+        else:
+            query['testrun__testplanId__exists'] = False
+
+        for hresult in Result.objects(**query).order_by('-recorded').limit(10):
+            history.append(create_result_reference(hresult))
     except:
-        pass
-    if len(history) >= 10:
-        return history
-    try:
-        for hresult in Result.objects(testcase__testcaseId=result.testcase.testcaseId,
-                                      config__configId=result.config.configId,
-                                      id__nin=results_found,
-                                      recorded__lt=result.recorded).order_by('-recorded'):
-            if len(history) < 10:
-                history.append(create_result_reference(hresult))
-                results_found.append(hresult.id)
-            else:
-                break
-    except:
-        pass
-    if len(history) >= 10:
-        return history
-    try:
-        for hresult in Result.objects(testcase__testcaseId=result.testcase.testcaseId,
-                                      id__nin=results_found,
-                                      release__releaseId=result.release.releaseId,
-                                      recorded__lt=result.recorded).order_by('-recorded'):
-            if len(history) < 10:
-                history.append(create_result_reference(hresult))
-                results_found.append(hresult.id)
-            else:
-                break
-    except:
-        pass
-    if len(history) >= 10:
-        return history
-    try:
-        for hresult in Result.objects(testcase__testcaseId=result.testcase.testcaseId,
-                                      id__nin=results_found,
-                                      recorded__lt=result.recorded).order_by('-recorded'):
-            if len(history) < 10:
-                history.append(create_result_reference(hresult))
-            else:
-                break
-    except:
-        pass
+        logger = logging.getLogger('slickqaweb.api.result.find_history')
+        logger.error("Error in finding history", exc_info=sys.exc_info())
     return history
 
 

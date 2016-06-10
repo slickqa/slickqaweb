@@ -134,6 +134,7 @@ def create_testrun_reference(testrun):
     retval = TestrunReference()
     retval.testrunId = testrun.id
     retval.name = testrun.name
+    retval.testplanId = testrun.testplanId
     return retval
 
 def create_result_reference(result):
