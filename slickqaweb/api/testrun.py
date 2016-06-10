@@ -9,6 +9,7 @@ from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.testrunGroup import TestrunGroup
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
+from slickqaweb.model.result import Result
 from .project import get_project, get_release, get_build
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
@@ -33,6 +34,7 @@ def get_testruns():
         del args['testplanid']
 
     return JsonResponse(queryFor(Testrun, args))
+
 
 @app.route('/api/testruns/<testrun_id>')
 @returns(Testrun)
@@ -74,6 +76,7 @@ def add_testrun():
 
     return JsonResponse(new_tr)
 
+
 @app.route('/api/testruns/<testrun_id>', methods=["PUT"])
 @argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
 @accepts(Testrun)
@@ -88,6 +91,7 @@ def update_testrun(testrun_id):
     orig.save()
     update_event.after(orig)
     return JsonResponse(orig)
+
 
 @app.route('/api/testruns/<testrun_id>', methods=["DELETE"])
 @argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
@@ -105,3 +109,20 @@ def delete_testrun(testrun_id):
 
     orig.delete()
     return JsonResponse(orig)
+
+
+@app.route('/api/testruns/<testrun_id>/reschedule/<status>')
+@argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
+@returns(ListField(Result))
+def reschedule_results_with_status_on_testrun(testrun_id, status):
+    """Reschedule all results with a particular status for a testrun."""
+    testrun = Testrun.objects(id=testrun_id).first()
+
+    how_many = Result.objects(testrun__testrunId=testrun.id, status=status).update(log=[], files=[], runstatus="SCHEDULED",
+                                                                                   status="NO_RESULT", unset__hostname=True,
+                                                                                   unset__started=True, unset__finished=True,
+                                                                                   unset__runlength=True)
+    setattr(testrun.summary.resultsByStatus, status, getattr(testrun.summary.resultsByStatus, status) - how_many)
+    testrun.summary.resultsByStatus.NO_RESULT += how_many
+    testrun.save()
+    return JsonResponse(Result.objects(testrun__testrunId=testrun.id, status="NO_RESULT", runstatus="SCHEDULED"))

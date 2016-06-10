@@ -144,9 +144,6 @@ def apply_triage_notes(result, testcase=None):
         testcase.save()
 
 
-
-
-
 @app.route('/api/results')
 @standard_query_parameters
 @returns(ListField(ReferenceField(Result)))
@@ -382,6 +379,7 @@ def add_result():
     events.CreateEvent(new_result)
     return JsonResponse(new_result)
 
+
 @app.route('/api/results/<result_id>', methods=["PUT"])
 @argument_doc('result_id', 'The result id (a string representation of the result\'s ObjectId).')
 @accepts(Result)
@@ -412,6 +410,7 @@ def update_result(result_id):
     update_event.after(orig)
     return JsonResponse(orig)
 
+
 @app.route('/api/results/<result_id>/log', methods=["POST"])
 @argument_doc('result_id', 'The result id (a string representation of the result\'s ObjectId).')
 @accepts(ListField(EmbeddedDocumentField(LogEntry)))
@@ -430,6 +429,23 @@ def add_to_log(result_id):
         orig.log.append(deserialize_that(list_of_log_entries, LogEntry()))
     orig.save()
     return JsonResponse(len(orig.log))
+
+
+@app.route('/api/results/<result_id>/reschedule')
+@argument_doc('result_id', 'the result id (a string representation of the result\'s ObjectId).')
+@returns(Result)
+def reschedule_individual_result(result_id):
+    """Reschedule a single result, only works on a result that was originally scheduled."""
+    orig = Result.objects(id=result_id).first()
+    orig_status = orig.status
+    Result.objects(id=result_id).update(log=[], files=[], runstatus="SCHEDULED", status="NO_RESULT",
+                                        unset__hostname=True, unset__started=True, unset__finished=True,
+                                        unset__runlength=True)
+    decrement_orig_status_by = "dec__summary__resultsByStatus__" + orig_status
+    increment_noresult_status_by = "inc__summary__resultsByStatus__NO_RESULT"
+    Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_noresult_status_by: 1})
+    orig.reload()
+    return JsonResponse(orig)
 
 
 @app.route('/api/results/scheduledfor/<project>/<hostname>')
