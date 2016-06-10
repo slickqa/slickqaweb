@@ -1,5 +1,3 @@
-__author__ = 'lhigginson'
-
 import datetime
 
 import bson
@@ -19,6 +17,8 @@ from mongoengine import ListField, ReferenceField
 
 add_resource('/testruns', 'Add, update, and delete testruns.')
 
+__author__ = 'lhigginson'
+
 
 @app.route('/api/testruns')
 @standard_query_parameters
@@ -26,10 +26,10 @@ add_resource('/testruns', 'Add, update, and delete testruns.')
 def get_testruns():
     """Query for testruns."""
     args = request.args.to_dict()
-    if args.has_key('releaseid'):
+    if 'releaseid' in args:
         args['release.releaseId'] = args['releaseid']
         del args['releaseid']
-    if args.has_key('testplanid'):
+    if 'testplanid' in args:
         args['testplanId'] = args['testplanid']
         del args['testplanid']
 
@@ -54,7 +54,8 @@ def add_testrun():
     new_tr = deserialize_that(read_request(), Testrun())
     if is_not_provided(new_tr, 'dateCreated'):
         new_tr.dateCreated = datetime.datetime.utcnow()
-    if is_not_provided(new_tr, 'info') and is_provided(new_tr, 'build') and is_provided(new_tr, 'project') and is_provided(new_tr, 'release'):
+    if is_not_provided(new_tr, 'info') and is_provided(new_tr, 'build') and \
+       is_provided(new_tr, 'project') and is_provided(new_tr, 'release'):
         project = get_project(new_tr.project.name)
         build = None
         if project is None:
@@ -118,9 +119,12 @@ def reschedule_results_with_status_on_testrun(testrun_id, status):
     """Reschedule all results with a particular status for a testrun."""
     testrun = Testrun.objects(id=testrun_id).first()
 
-    how_many = Result.objects(testrun__testrunId=testrun.id, status=status).update(log=[], files=[], runstatus="SCHEDULED",
-                                                                                   status="NO_RESULT", unset__hostname=True,
-                                                                                   unset__started=True, unset__finished=True,
+    how_many = Result.objects(testrun__testrunId=testrun.id, status=status).update(log=[], files=[],
+                                                                                   runstatus="SCHEDULED",
+                                                                                   status="NO_RESULT",
+                                                                                   unset__hostname=True,
+                                                                                   unset__started=True,
+                                                                                   unset__finished=True,
                                                                                    unset__runlength=True)
     setattr(testrun.summary.resultsByStatus, status, getattr(testrun.summary.resultsByStatus, status) - how_many)
     testrun.summary.resultsByStatus.NO_RESULT += how_many
