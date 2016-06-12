@@ -269,7 +269,14 @@ angular.module('slickApp')
             }
             if (oldQuery != $scope.resultQuery.q || $scope.recentlyFetchedTestrun) {
                 rest.all('results').getList($scope.resultQuery).then(function(results) {
-                    $scope.results = results;
+                    $scope.results = [];
+                    //$scope.results = results;
+                    _.each(results, function(result) {
+                        if(result.started) {
+                           result.recorded = result.started;
+                           $scope.results.push(result);
+                        }
+                    });
                     $scope.recentlyFetchedTestrun = false;
                 });
             }
