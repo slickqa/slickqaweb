@@ -477,7 +477,6 @@ angular.module('slickApp')
         };
         
         $scope.rescheduleResult = function(result_id) {
-            alert('Rescheduling...');
             rest.one('results', result_id).one('reschedule').get();
         };
 
