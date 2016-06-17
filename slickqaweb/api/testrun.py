@@ -11,6 +11,7 @@ from slickqaweb.model.result import Result
 from .project import get_project, get_release, get_build
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
+from .result import get_results, reschedule_individual_result
 from slickqaweb import events
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
@@ -118,15 +119,19 @@ def delete_testrun(testrun_id):
 def reschedule_results_with_status_on_testrun(testrun_id, status):
     """Reschedule all results with a particular status for a testrun."""
     testrun = Testrun.objects(id=testrun_id).first()
+    results_to_reschedule = Result.objects(testrun__testrunId=testrun.id, status=status)
+    for result in results_to_reschedule:
+        reschedule_individual_result(result.id)
 
-    how_many = Result.objects(testrun__testrunId=testrun.id, status=status).update(log=[], files=[],
-                                                                                   runstatus="SCHEDULED",
-                                                                                   status="NO_RESULT",
-                                                                                   unset__hostname=True,
-                                                                                   unset__started=True,
-                                                                                   unset__finished=True,
-                                                                                   unset__runlength=True)
-    setattr(testrun.summary.resultsByStatus, status, getattr(testrun.summary.resultsByStatus, status) - how_many)
-    testrun.summary.resultsByStatus.NO_RESULT += how_many
-    testrun.save()
+    # how_many = Result.objects(testrun__testrunId=testrun.id, status=status).update(log=[], files=[],
+    #                                                                                runstatus="SCHEDULED",
+    #                                                                                status="NO_RESULT",
+    #                                                                                unset__hostname=True,
+    #                                                                                unset__started=True,
+    #                                                                                unset__finished=True,
+    #                                                                                unset__runlength=True,
+    #                                                                                unset__reason=True)
+    # setattr(testrun.summary.resultsByStatus, status, getattr(testrun.summary.resultsByStatus, status) - how_many)
+    # testrun.summary.resultsByStatus.NO_RESULT += how_many
+    # testrun.save()
     return JsonResponse(Result.objects(testrun__testrunId=testrun.id, status="NO_RESULT", runstatus="SCHEDULED"))
