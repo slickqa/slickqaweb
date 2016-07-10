@@ -438,9 +438,10 @@ def reschedule_individual_result(result_id):
     """Reschedule a single result, only works on a result that was originally scheduled."""
     orig = Result.objects(id=result_id).first()
     orig_status = orig.status
-    decrement_orig_status_by = "dec__summary__resultsByStatus__" + orig_status
-    increment_noresult_status_by = "inc__summary__resultsByStatus__NO_RESULT"
-    Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_noresult_status_by: 1})
+    if orig_status != "NO_RESULT":
+        decrement_orig_status_by = "dec__summary__resultsByStatus__" + orig_status
+        increment_noresult_status_by = "inc__summary__resultsByStatus__NO_RESULT"
+        Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_noresult_status_by: 1})
     Result.objects(id=result_id).update(log=[], files=[], runstatus="SCHEDULED", status="NO_RESULT",
                                         unset__hostname=True, unset__started=True, unset__finished=True,
                                         unset__runlength=True, unset__reason=True)
