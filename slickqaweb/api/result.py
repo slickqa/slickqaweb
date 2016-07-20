@@ -464,4 +464,4 @@ def get_scheduled_results(project, hostname):
     if 'orderby' in args:
         orderby = args['orderby']
     Result.objects(project__id=proj.id, runstatus='SCHEDULED').order_by(orderby).limit(limit).update(runstatus='TO_BE_RUN', hostname=hostname)
-    return JsonResponse(Result.objects(project__id=proj.id, runstatus='TO_BE_RUN', hostname=hostname).order_by(orderby))
+    return JsonResponse(Result.objects(project__id=proj.id, status='NO_RESULT', runstatus='TO_BE_RUN', hostname=hostname).order_by(orderby))
