@@ -465,3 +465,30 @@ def get_scheduled_results(project, hostname):
         orderby = args['orderby']
     Result.objects(project__id=proj.id, runstatus='SCHEDULED').order_by(orderby).limit(limit).update(runstatus='TO_BE_RUN', hostname=hostname)
     return JsonResponse(Result.objects(project__id=proj.id, status='NO_RESULT', runstatus='TO_BE_RUN', hostname=hostname).order_by(orderby))
+
+
+@app.route('/api/results/schedulemorefor/<project>/<hostname>')
+@argument_doc('project', 'The name or id of the project against which to look for scheduled results')
+@argument_doc('hostname', 'The hostname of the machine wanting scheduled tests')
+@returns(ListField(Result))
+def schedule_more_results(project, hostname):
+    """Mark tests as scheduled for a particular hostname, only return those tests."""
+    proj = get_project(project)
+    args = request.args.to_dict()
+    limit = 10
+    orderby = 'recorded'
+    if 'limit' in args:
+        limit = int(args['limit'])
+    if 'orderby' in args:
+        orderby = args['orderby']
+    results_to_schedule = Result.objects(project__id=proj.id, runstatus='SCHEDULED').order_by(orderby).limit(limit)
+    scheduled_results = []
+    for result in results_to_schedule:
+        assert isinstance(result, Result)
+        result_id = result.id
+        number_of_updated = Result.objects(id=result_id, runstatus='SCHEDULED').update(runstatus='TO_BE_RUN', hostname=hostname)
+        if number_of_updated > 0:
+            result.reload()
+            scheduled_results.append(result)
+    return JsonResponse(scheduled_results)
+
