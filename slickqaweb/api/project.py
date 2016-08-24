@@ -151,6 +151,8 @@ def add_release_for_project(project_id):
         rel.id = ObjectId()
     if not hasattr(project, 'releases'):
         project.releases = []
+    if not hasattr(rel, 'builds'):
+        rel.builds = []
     project.releases.append(rel)
     project.save()
     return JsonResponse(rel)
