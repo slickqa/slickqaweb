@@ -266,7 +266,7 @@ def add_build(project_id, release_id):
         build.id = ObjectId()
     if not hasattr(release, 'builds'):
         release.builds = []
-    release.builds.append(build)
+    release.builds = release.builds + [build,]
     project.save()
     return JsonResponse(build)
 
