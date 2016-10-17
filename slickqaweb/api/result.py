@@ -22,7 +22,7 @@ from slickqaweb.model.configuration import Configuration
 from slickqaweb.model.configurationReference import ConfigurationReference
 from slickqaweb import events
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
-from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField, Q
+from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField, Q, connection
 import logging
 import sys
 
@@ -550,4 +550,11 @@ def get_single_scheduled_result(hostname):
     rawquery['requirements'] = {'$not': {'$elemMatch': {'$nin': provides}}}
     Result.objects(__raw__=rawquery).order_by('recorded').update_one(**update)
     return JsonResponse(Result.objects(runstatus='TO_BE_RUN', hostname=hostname).order_by('recorded').first())
+
+
+@app.route('/api/results/queue/statistics')
+def get_queue_statistics():
+    conn = connection.get_connection()
+    result = conn['slickdev']['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'count': {'$sum': 1}}}])
+    return JsonResponse(result['result'])
 
