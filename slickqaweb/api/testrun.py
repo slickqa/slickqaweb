@@ -11,7 +11,7 @@ from slickqaweb.model.result import Result
 from .project import get_project, get_release, get_build
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
-from .result import get_results, reschedule_individual_result
+from .result import get_results, reschedule_individual_result, cancel_individual_result
 from slickqaweb import events
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
@@ -135,3 +135,17 @@ def reschedule_results_with_status_on_testrun(testrun_id, status):
     # testrun.summary.resultsByStatus.NO_RESULT += how_many
     # testrun.save()
     return JsonResponse(Result.objects(testrun__testrunId=testrun.id, status="NO_RESULT", runstatus="SCHEDULED"))
+
+
+@app.route('/api/testruns/<testrun_id>/cancel')
+@argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
+@returns(ListField(Result))
+def cancel_results_from_testrun(testrun_id):
+    """Cancel all results that are scheduled for this testrun."""
+    testrun = Testrun.objects(id=testrun_id).first()
+    results_to_cancel = Result.objects(testrun__testrunId=testrun.id, status='NO_RESULT', runstatus='SCHEDULED')
+    for result in results_to_cancel:
+        cancel_individual_result(result.id)
+    return JsonResponse(Result.objects(testrun__testrunId=testrun.id, status="FINISHED", runstatus="SKIPPED"))
+
+

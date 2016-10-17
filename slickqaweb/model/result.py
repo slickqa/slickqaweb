@@ -34,6 +34,7 @@ class Result(Document):
     runlength = IntField()
     history = ListField(EmbeddedDocumentField(ResultReference))
     hostname = StringField()
+    requirements = ListField(StringField())
     meta = {'collection': 'results'}
 
 # These are the result statuses that are "non final" meaning we are expecting updates

@@ -274,8 +274,8 @@ angular.module('slickApp')
                     _.each(results, function(result) {
                         if(result.started) {
                            result.recorded = result.started;
-                           $scope.results.push(result);
                         }
+                        $scope.results.push(result);
                     });
                     $scope.recentlyFetchedTestrun = false;
                 });
@@ -477,6 +477,10 @@ angular.module('slickApp')
                     $location.search({result: result.id});
                 }
             });
+        };
+
+        $scope.cancelResults = function () {
+            rest.one('testruns', $scope.testrun.id).one('cancel').get();
         };
         
         $scope.rescheduleStatus = function(status_name) {

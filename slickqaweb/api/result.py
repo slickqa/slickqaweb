@@ -3,6 +3,7 @@ from .project import get_project
 from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.query import queryFor
 from slickqaweb.app import app
+from slickqaweb.api.project import get_release, get_build
 from slickqaweb.model.result import Result, NON_FINAL_STATUS
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.resultReference import ResultReference
@@ -449,6 +450,22 @@ def reschedule_individual_result(result_id):
     return JsonResponse(orig)
 
 
+@app.route('/api/results/<result_id>/cancel')
+@argument_doc('result_id', 'the result id (a string representation of the result\'s ObjectId).')
+@returns(Result)
+def cancel_individual_result(result_id):
+    """Reschedule a single result, only works on a result that was originally scheduled."""
+    orig = Result.objects(id=result_id).first()
+    orig_status = orig.status
+    if orig_status == "NO_RESULT":
+        decrement_orig_status_by = "dec__summary__resultsByStatus__" + orig_status
+        increment_skipped_status_by = "inc__summary__resultsByStatus__SKIPPED"
+        Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_skipped_status_by: 1})
+    Result.objects(id=result_id).update(runstatus="FINISHED", status="SKIPPED", reason="Run cancelled from slick.")
+    orig.reload()
+    return JsonResponse(orig)
+
+
 @app.route('/api/results/scheduledfor/<project>/<hostname>')
 @argument_doc('project', 'The name or id of the project against which to look for scheduled results')
 @argument_doc('hostname', 'The hostname of the machine wanting scheduled tests')
@@ -491,4 +508,46 @@ def schedule_more_results(project, hostname):
             result.reload()
             scheduled_results.append(result)
     return JsonResponse(scheduled_results)
+
+
+@app.route('/api/results/queue/<hostname>', methods=["POST"])
+def get_single_scheduled_result(hostname):
+    parameters = read_request()
+    """:type : dict"""
+    rawquery = {'runstatus': 'SCHEDULED',
+                'status': 'NO_RESULT'}
+    update = {'set__runstatus': 'TO_BE_RUN',
+              'set__hostname': hostname}
+
+    project = None
+    release = None
+    build = None
+
+    if 'project' in parameters:
+        project = get_project(parameters["project"])
+        if project is not None:
+            rawquery['project.id'] = project.id
+        else:
+            rawquery['project.name'] = parameters["project"]
+    if 'release' in parameters:
+        if project is not None:
+            release = get_release(project, parameters['release'])
+        if release is not None:
+            rawquery['release.releaseId'] = release.id
+        else:
+            rawquery['release.name'] = parameters['release']
+    if 'build' in parameters:
+        if release is not None:
+            build = get_build(release, parameters['build'])
+        if build is not None:
+            rawquery['build.buildId'] = build.id
+        else:
+            rawquery['build.name'] = parameters['build']
+    provides = []
+    if 'provides' in parameters:
+        provides = parameters['provides']
+    # from http://stackoverflow.com/questions/22518867/mongodb-querying-array-field-with-exclusion
+    rawquery['requirements'] = {'$not': {'$elemMatch': {'$nin': provides}}}
+    Result.objects(__raw__=rawquery).order_by('recorded').update_one(**update)
+    return JsonResponse(Result.objects(runstatus='TO_BE_RUN', hostname=hostname).order_by('recorded').first())
 

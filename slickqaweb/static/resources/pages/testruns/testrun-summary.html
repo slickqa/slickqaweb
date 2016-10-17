@@ -57,6 +57,8 @@
                 <div class="testrun-summary-data">
                     <div class="testrun-summary-data-container">
                         <div class="testrun-summary-data-row result-status-{{ replaceOnStatus(status, '')}}" ng-repeat="status in testrun.summary.statusListOrdered">
+                            <div class="cancel-button" ng-show="testrun.attributes && testrun.attributes.scheduled && status === 'NO_RESULT'" ng-click="cancelResults()"> </div>
+                            <div class="cancel-button-empty" ng-show="testrun.attributes && testrun.attributes.scheduled && status !== 'NO_RESULT'"> </div>
                             <div class="reschedule-button" ng-show="testrun.attributes && testrun.attributes.scheduled" ng-click="rescheduleStatus(status)"> </div>
                             <div class="testrun-summary-data-status clickable-text" ng-bind="replaceOnStatus(status, ' ')" ng-click="toggleFilter(status)"></div>
                             <div class="testrun-summary-data-number" ng-bind="testrun.summary.resultsByStatus[status]"></div>
