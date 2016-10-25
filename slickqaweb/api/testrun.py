@@ -143,7 +143,7 @@ def reschedule_results_with_status_on_testrun(testrun_id, status):
 def cancel_results_from_testrun(testrun_id):
     """Cancel all results that are scheduled for this testrun."""
     testrun = Testrun.objects(id=testrun_id).first()
-    results_to_cancel = Result.objects(testrun__testrunId=testrun.id, status='NO_RESULT', runstatus='SCHEDULED')
+    results_to_cancel = Result.objects(testrun__testrunId=testrun.id, status='NO_RESULT', runstatus__in=['SCHEDULED', 'TO_BE_RUN'])
     for result in results_to_cancel:
         cancel_individual_result(result.id)
     return JsonResponse(Result.objects(testrun__testrunId=testrun.id, status="FINISHED", runstatus="SKIPPED"))
