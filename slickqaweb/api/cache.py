@@ -28,8 +28,8 @@ def get_project_release_build_ids(project_name, release_name, build_name):
 
     if release_name is None:
         retval.append(None)
-    elif project_name is not None:
-        cache_key = "project-{}-release-{}".format(project_name, release_name)
+    else:
+        cache_key = "release-{}".format(release_name)
         if cache.has(cache_key):
             retval.append(cache.get(cache_key))
         else:
@@ -40,14 +40,11 @@ def get_project_release_build_ids(project_name, release_name, build_name):
                 cache.set(cache_key, release.id)
             else:
                 retval.append(None)
-    else:
-        # if there is no project, there is no way to look up a release
-        retval.append(None)
 
     if build_name is None:
         retval.append(None)
-    elif project_name is not None and release_name is not None:
-        cache_key = "project-{}-release-{}-build-{}".format(project_name, release_name, build_name)
+    else:
+        cache_key = "build-{}".format(build_name)
         if cache.has(cache_key):
             retval.append(cache.get(cache_key))
         else:
@@ -58,7 +55,5 @@ def get_project_release_build_ids(project_name, release_name, build_name):
                 cache.set(cache_key, build.id)
             else:
                 retval.append(None)
-    else:
-        retval.append(None)
 
     return retval
