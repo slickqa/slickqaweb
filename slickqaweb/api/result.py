@@ -21,12 +21,12 @@ from slickqaweb.model.build import Build
 from slickqaweb.model.configuration import Configuration
 from slickqaweb.model.configurationReference import ConfigurationReference
 from slickqaweb import events
+from .cache import get_project_release_build_ids
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField, Q, connection
 import logging
 import sys
 
-from werkzeug.contrib.cache import SimpleCache
 
 from bson import ObjectId
 import types
@@ -35,8 +35,6 @@ from mongoengine import Q
 from flask import request, Response
 
 __author__ = 'jcorbett'
-
-cache = SimpleCache()
 
 add_resource('/results', 'Add, Update or delete results.')
 
@@ -527,41 +525,25 @@ def get_single_scheduled_result(hostname):
     release = None
     build = None
 
-    if 'project' in parameters:
-        cache_key = "project-{}".format(parameters["project"])
-        if cache.has(cache_key):
-            rawquery['project.id'] = cache.get(cache_key)
-        else:
-            project = get_project(parameters["project"])
-            if project is not None:
-                rawquery['project.id'] = project.id
-                cache.set(cache_key, project.id, 5 * 60)
-            else:
-                rawquery['project.name'] = parameters["project"]
-    if 'release' in parameters:
-        cache_key = "release-{}".format(parameters["release"])
-        if cache.has(cache_key):
-            rawquery['release.releaseId'] = cache.get(cache_key)
-        else:
-            if project is not None:
-                release = get_release(project, parameters['release'])
-            if release is not None:
-                rawquery['release.releaseId'] = release.id
-                cache.set(cache_key, release.id, 5 * 60)
-            else:
-                rawquery['release.name'] = parameters['release']
-    if 'build' in parameters:
-        cache_key = "build-{}".format(parameters["build"])
-        if cache.has(cache_key):
-            rawquery['build.buildId'] = cache.get(cache_key)
-        else:
-            if release is not None:
-                build = get_build(release, parameters['build'])
-            if build is not None:
-                rawquery['build.buildId'] = build.id
-                cache.set(cache_key, build.id, 5 * 60)
-            else:
-                rawquery['build.name'] = parameters['build']
+    project_id, release_id, build_id = get_project_release_build_ids(parameters.get("project"),
+                                                                     parameters.get("release"),
+                                                                     parameters.get("build"))
+
+    if project_id is not None:
+        rawquery['project.id'] = project_id
+    elif parameters.get("project") is not None:
+        rawquery['project.name'] = parameters.get("project")
+
+    if release_id is not None:
+        rawquery['release.id'] = release_id
+    elif parameters.get("release") is not None:
+        rawquery['release.name'] = parameters.get("release")
+
+    if build_id is not None:
+        rawquery['build.id'] = build_id
+    elif parameters.get("build") is not None:
+        rawquery['build.name'] = parameters.get("build")
+
     provides = []
     if 'provides' in parameters:
         provides = parameters['provides']
