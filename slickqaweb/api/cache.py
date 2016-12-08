@@ -22,7 +22,7 @@ def get_project_release_build_ids(project_name, release_name, build_name):
             project = get_project(project_name)
             if project is not None:
                 retval.append(project.id)
-                cache.set(cache_key, project.id, 5 * 60)
+                cache.set(cache_key, project.id)
             else:
                 retval.append(None)
 
@@ -37,7 +37,7 @@ def get_project_release_build_ids(project_name, release_name, build_name):
                 release = get_release(project, release_name)
             if release is not None:
                 retval.append(release.id)
-                cache.set(cache_key, release.id, 5 * 60)
+                cache.set(cache_key, release.id)
             else:
                 retval.append(None)
     else:
@@ -55,7 +55,7 @@ def get_project_release_build_ids(project_name, release_name, build_name):
                 build = get_build(release, build_name)
             if build is not None:
                 retval.append(build.id)
-                cache.set(cache_key, build.id, 5 * 60)
+                cache.set(cache_key, build.id)
             else:
                 retval.append(None)
     else:
