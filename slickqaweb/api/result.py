@@ -549,7 +549,15 @@ def get_single_scheduled_result(hostname):
     # from http://stackoverflow.com/questions/22518867/mongodb-querying-array-field-with-exclusion
     rawquery['requirements'] = {'$not': {'$elemMatch': {'$nin': provides}}}
     Result.objects(__raw__=rawquery).order_by('recorded').update_one(**update)
-    return JsonResponse(Result.objects(runstatus='TO_BE_RUN', hostname=hostname).order_by('recorded').first())
+    query = {}
+    if 'project' in parameters:
+        query['project__name'] = parameters['project']
+    if 'release' in parameters:
+        query['release__name'] = parameters['release']
+    if 'build' in parameters:
+        query['build__name'] = parameters['build']
+
+    return JsonResponse(Result.objects(runstatus='TO_BE_RUN', hostname=hostname, **query).order_by('recorded').first())
 
 
 @app.route('/api/results/queue/statistics')
