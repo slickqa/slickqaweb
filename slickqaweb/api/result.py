@@ -548,7 +548,7 @@ def get_single_scheduled_result(hostname):
         provides = parameters['provides']
     # from http://stackoverflow.com/questions/22518867/mongodb-querying-array-field-with-exclusion
     rawquery['requirements'] = {'$not': {'$elemMatch': {'$nin': provides}}}
-    Result.objects(__raw__=rawquery).order_by('recorded').update_one(**update)
+    Result.objects(__raw__=rawquery).order_by('-recorded').update_one(**update)
     query = {}
     if 'project' in parameters:
         query['project__name'] = parameters['project']
