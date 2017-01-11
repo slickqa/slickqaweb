@@ -519,30 +519,42 @@ def get_single_scheduled_result(hostname):
     update = {'set__runstatus': 'TO_BE_RUN',
               'set__hostname': hostname}
 
-    project = None
-    release = None
-    build = None
+    project_id, release_id, build_id = Project.lookup_project_release_build_ids(parameters.get('project', None),
+                                                                                parameters.get('release', None),
+                                                                                parameters.get('build', None))
+    if project_id is not None:
+        rawquery['project.id'] = project_id
+    else:
+        rawquery['project.name'] = parameters.get('project', None)
+    if release_id is not None:
+        rawquery['release.releaseId'] = release_id
+    else:
+        rawquery['release.name'] = parameters.get('project', None)
+    if build_id is not None:
+        rawquery['build.buildId'] = build_id
+    else:
+        rawquery['build.name'] = parameters.get('project', None)
 
-    if 'project' in parameters:
-        project = get_project(parameters["project"])
-        if project is not None:
-            rawquery['project.id'] = project.id
-        else:
-            rawquery['project.name'] = parameters["project"]
-    if 'release' in parameters:
-        if project is not None:
-            release = get_release(project, parameters['release'])
-        if release is not None:
-            rawquery['release.releaseId'] = release.id
-        else:
-            rawquery['release.name'] = parameters['release']
-    if 'build' in parameters:
-        if release is not None:
-            build = get_build(release, parameters['build'])
-        if build is not None:
-            rawquery['build.buildId'] = build.id
-        else:
-            rawquery['build.name'] = parameters['build']
+    # if 'project' in parameters:
+    #     project = get_project(parameters["project"])
+    #     if project is not None:
+    #         rawquery['project.id'] = project.id
+    #     else:
+    #         rawquery['project.name'] = parameters["project"]
+    # if 'release' in parameters:
+    #     if project is not None:
+    #         release = get_release(project, parameters['release'])
+    #     if release is not None:
+    #         rawquery['release.releaseId'] = release.id
+    #     else:
+    #         rawquery['release.name'] = parameters['release']
+    # if 'build' in parameters:
+    #     if release is not None:
+    #         build = get_build(release, parameters['build'])
+    #     if build is not None:
+    #         rawquery['build.buildId'] = build.id
+    #     else:
+    #         rawquery['build.name'] = parameters['build']
     provides = []
     if 'provides' in parameters:
         provides = parameters['provides']
