@@ -26,27 +26,14 @@ add_resource("/build-report", "Get build reports.")
 @argument_doc('build_name', 'The name of the build in the release.')
 def get_build_report(project_name, release_name, build_name):
     """Get all summary of all the testruns run against a particular build."""
-    project = get_project(project_name)
-    release = None
-    build = None
-    if project is not None:
-        release = get_release(project, release_name)
-        if release is not None:
-            build = get_build(release, build_name)
-    if project is None or release is None or build is None:
-        return JsonResponse(None)
-
-    assert isinstance(project, Project)
-    assert isinstance(release, Release)
-    assert isinstance(build, Build)
+    project_id, release_id, build_id = Project.lookup_project_release_build_ids(project_name, release_name, build_name)
 
     report = TestrunGroup()
-    report.name = "Build Report for {} {} Build {}".format(project.name, release.name, build.name)
+    report.name = "Build Report for {} {} Build {}".format(project_name, release_name, build_name)
     report.grouptype = "PARALLEL"
-    report.created = build.built
     report.testruns = []
     testplans = []
-    for testrun in Testrun.objects(build__buildId=build.id).order_by("-dateCreated"):
+    for testrun in Testrun.objects(build__buildId=build_id).order_by("-dateCreated"):
         assert isinstance(testrun, Testrun)
         if testrun.testplanId not in testplans:
             report.testruns.append(testrun)
