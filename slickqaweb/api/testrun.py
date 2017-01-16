@@ -8,6 +8,9 @@ from slickqaweb.model.testrunGroup import TestrunGroup
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
 from slickqaweb.model.result import Result
+from slickqaweb.model.project import Project
+from slickqaweb.model.testPlan import TestPlan
+from slickqaweb.model.projectReference import ProjectReference
 from .project import get_project, get_release, get_build
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
@@ -52,7 +55,52 @@ def get_testrun_by_id(testrun_id):
          property, but there is a description on the build, the info will be copied from the build.""")
 def add_testrun():
     """Create a new testrun."""
-    new_tr = deserialize_that(read_request(), Testrun())
+    project_name = None
+    release_name = None
+    build_name = None
+    raw = read_request()
+    new_tr = deserialize_that(raw, Testrun())
+    proj_id = None
+
+    # resolve project, release and build, create if necessary
+    if is_provided(new_tr, 'project'):
+        project_name = new_tr.project.name
+    if is_provided(new_tr, 'release'):
+        release_name = new_tr.release.name
+    if is_provided(new_tr, 'build'):
+        build_name = new_tr.build.name
+
+    if project_name is not None or release_name is not None or build_name is not None:
+        # we have something to lookup / create
+        proj_id, rel_id, bld_id = Project.lookup_project_release_build_ids(project_name, release_name, build_name,
+                                                                           create_if_missing=True)
+        if proj_id is not None:
+            new_tr.project.id = proj_id
+        if rel_id is not None:
+            new_tr.release.releaseId = rel_id
+        if bld_id is not None:
+            new_tr.build.buildId = bld_id
+
+    # if testplanId not provided, but testplan object is, resolve creating if necessary
+    if is_not_provided(new_tr, 'testplanId') and 'testplan' in raw:
+        tplan = TestPlan()
+        tplan = deserialize_that(raw['testplan'], tplan)
+        """:type : TestPlan"""
+
+        query = {'name': tplan.name}
+        if proj_id is not None:
+            query['project__id'] = proj_id
+        existing_plan = TestPlan.objects(**query).first()
+        if existing_plan is not None:
+            new_tr.testplanId = existing_plan.id
+        else:
+            if proj_id is not None:
+                tplan.project = ProjectReference()
+                tplan.project.id = proj_id
+                tplan.project.name = new_tr.project.name
+                tplan.save()
+                new_tr.testplanId = tplan.id
+
     if is_not_provided(new_tr, 'dateCreated'):
         new_tr.dateCreated = datetime.datetime.utcnow()
     if is_not_provided(new_tr, 'info') and is_provided(new_tr, 'build') and \

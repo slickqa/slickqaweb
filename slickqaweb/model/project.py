@@ -52,10 +52,10 @@ class Project(Document):
                                                                               'releases.id': 1,
                                                                               'releases.builds.name': 1,
                                                                               'releases.builds.id': 1}}).next()
-            # the above would have generated a StopIteration if any item wasn't found
-            project_id = quick_lookup_answer['_id']
-            release_id = quick_lookup_answer['releases']['id']
-            build_id = quick_lookup_answer['releases']['builds']['id']
+                # the above would have generated a StopIteration if any item wasn't found
+                project_id = quick_lookup_answer['_id']
+                release_id = quick_lookup_answer['releases']['id']
+                build_id = quick_lookup_answer['releases']['builds']['id']
         except StopIteration:
             pass
         if (project_id is None or release_id is None or build_id is None) and project_name is not None:
@@ -68,20 +68,22 @@ class Project(Document):
                 project = Project()
                 project.name = project_name
                 project.releases = []
-                release = Release()
-                release.name = release_name
-                release.id = bson.ObjectId()
-                release.builds = []
-                build = Build()
-                build.built = datetime.datetime.utcnow()
-                build.name = build_name
-                build.id = bson.ObjectId()
-                release.builds.append(build)
-                project.releases.append(release)
+                if release_name is not None:
+                    release = Release()
+                    release.name = release_name
+                    release.id = bson.ObjectId()
+                    release_id = release.id
+                    release.builds = []
+                    if build_name is not None:
+                        build = Build()
+                        build.built = datetime.datetime.utcnow()
+                        build.name = build_name
+                        build.id = bson.ObjectId()
+                        build_id = build.id
+                        release.builds.append(build)
+                    project.releases.append(release)
                 project.save()
                 project_id = project.id
-                release_id = release.id
-                build_id = build.id
             else:
                 if project is not None:
                     project_id = project.id
