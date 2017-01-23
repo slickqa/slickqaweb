@@ -14,11 +14,13 @@ from slickqaweb.model.testrun import Testrun
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
 from slickqaweb.model.testcase import Testcase
+from slickqaweb.model.step import Step
 from slickqaweb.model.recurringNote import RecurringNote
 from slickqaweb.model.component import Component
 from slickqaweb.model.release import Release
 from slickqaweb.model.build import Build
 from slickqaweb.model.configuration import Configuration
+from slickqaweb.model.storedFile import StoredFile
 from slickqaweb.model.configurationReference import ConfigurationReference
 from slickqaweb import events
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
@@ -183,15 +185,18 @@ def get_result_by_id(result_id):
 
 
 @app.route('/api/results', methods=["POST"])
+@app.route('/api/testruns/<testrun_id>/results', methods=["POST"])
 @accepts(Result)
 @returns(Result)
 @note("""For all the embedded types, if what you specify doesn't exist, this api will try to create them.
 If you do not specify a testrun, one will be created for you.  If you do not specify any testcase information,
 This will return an error.""")
-def add_result():
+def add_result(testrun_id=None):
     """Create a new result."""
-    new_result = deserialize_that(read_request(), Result())
+    raw = read_request()
+    new_result = deserialize_that(raw, Result())
     assert isinstance(new_result, Result)
+
     # validate --------------------------------------------------------------
     # you must have a testcase reference (some info about the testcase) and a
     # status for the result.  Otherwise it's not really a result.
@@ -226,12 +231,17 @@ def add_result():
     component = None
     configuration = None
 
+    if testrun_id is not None:
+        testrun = Testrun.objects(id=testrun_id).first()
+        if testrun is not None:
+            new_result.testrun = create_testrun_reference(testrun)
+
     # the order in this section is important.  We try to find information any way we can,
     # so if it's not provided in the result, we look at the testrun, if it's not in the testrun,
     # but it is in the testcase we get it from there.
 
     # first lookup the testrun and resolve it if we can
-    if is_provided(new_result, 'testrun'):
+    if is_provided(new_result, 'testrun') and testrun is None:
         testrun = find_testrun_by_reference(new_result.testrun)
         # don't create a new testrun if it's null, we'll do that later after we resolve the other
         # pieces of information
@@ -298,7 +308,23 @@ def add_result():
             testcase.project = create_project_reference(project)
         if component is not None:
             testcase.component = create_component_reference(component)
-        testcase.tags = ['created-from-result',]
+        testcase.save()
+    testcase_changed = False
+    if 'steps' in raw['testcase']:
+        testcase.steps = []
+        for raw_step in raw['testcase']['steps']:
+            step = deserialize_that(raw_step, Step())
+            testcase.steps.append(step)
+        testcase_changed = True
+    if 'purpose' in raw['testcase']:
+        testcase.purpose = raw['testcase']['purpose']
+        testcase_changed = True
+    if 'requirements' in raw['testcase']:
+        testcase.requirements = raw['testcase']['requirements']
+        testcase_changed = True
+    # TODO: feature and automationTool
+
+    if testcase_changed:
         testcase.save()
 
     # no matter what testcase should not be None at this point, but just in case I made a mistake
@@ -579,4 +605,20 @@ def get_queue_statistics():
     conn = connection.get_connection()
     result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'count': {'$sum': 1}}}])
     return JsonResponse(result['result'])
+
+
+@app.route('/api/results/<result_id>/files', methods=['POST'])
+@accepts(StoredFile)
+@returns(StoredFile)
+@note("The chunkSize will be set by the server for you, even if you provide it.  Make sure you supply a valid mimetype.")
+def add_stored_file_to_result(result_id):
+    new_stored_file = deserialize_that(read_request(), StoredFile())
+    new_stored_file.chunkSize = 262144
+    new_stored_file.save()
+    orig = Result.objects(id=result_id).first()
+    if not hasattr(orig, 'files') or orig.files is None:
+        orig.files = []
+    orig.files.append(new_stored_file)
+    orig.save()
+    return JsonResponse(new_stored_file)
 

@@ -68,10 +68,11 @@ def set_file_content(file_id):
     return JsonResponse(stored_file)
 
 @app.route("/api/files/<file_id>/addchunk", methods=["POST"])
+@app.route("/api/results/<result_id>/files/<file_id>/addchunk", methods=["POST"])
 @argument_doc('file_id', 'The id (string representation of the ObjectID) of the stored file.')
 @accepts(BinaryField(help_text="binary data of the chunk."))
 @returns(StoredFile)
-def add_chunk_to_file(file_id):
+def add_chunk_to_file(file_id, result_id=None):
     """Add content to a file (chunk by chunk)."""
     stored_file = StoredFile.objects(id=ObjectId(file_id)).first()
     num_of_chunks = len(FileChunk.objects(files_id=stored_file.id))
