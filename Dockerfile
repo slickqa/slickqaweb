@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 LABEL maintainer "Jaron Jones"
 
 # Install
-RUN apt-get update; apt-get -y dist-upgrade; apt-get install -y python-dev python-pip build-essential python-setuptools python-virtualenv nodejs npm apache2 libapache2-mod-wsgi git
+RUN apt-get update; apt-get -y dist-upgrade; apt-get install -y python-dev python-pip build-essential python-setuptools python-virtualenv nodejs npm apache2 libapache2-mod-wsgi
 RUN adduser --system --home /opt/slick --disabled-password --disabled-login slick
 
 # get slick and dependencies
