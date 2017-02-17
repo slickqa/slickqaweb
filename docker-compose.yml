@@ -1,0 +1,8 @@
+  mongo:
+    image: mongo:3.4
+  web:
+    build: ./slickqaweb-master
+    ports:
+      - "80:80"
+    links:
+      - mongo
