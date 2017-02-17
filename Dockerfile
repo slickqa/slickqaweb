@@ -7,7 +7,7 @@ RUN adduser --system --home /opt/slick --disabled-password --disabled-login slic
 
 # get slick and dependencies
 COPY . /opt/slick/
-RUN python -c 'import uuid; print uuid.uuid4();' > /opt/slick/secret_key.txt; chown -R slick /opt/slick; npm install -g less; pip install --upgrade pip; pip install -r /opt/slick/requirements.txt; ln -sf /dev/stdout /var/log/apache2/error.log
+RUN chown -R slick /opt/slick; npm install -g less; pip install --upgrade pip; pip install -r /opt/slick/requirements.txt
 
 #set the slick configs in place and kick the apache HTTP service
 RUN cp -a /opt/slick/docker-files/* /opt/slick/; ln -s /opt/slick/apache.conf /etc/apache2/sites-available/slick.conf; a2ensite slick; rm -f /usr/bin/node; ln -s /usr/bin/nodejs /usr/bin/node
