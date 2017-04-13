@@ -417,6 +417,8 @@ def update_result(result_id):
     orig = Result.objects(id=result_id).first()
     update_event = events.UpdateEvent(before=orig)
     update = read_request()
+    print(repr(update))
+    
     if 'status' in update and update['status'] != orig.status:
         atomic_update = {
             'dec__summary__resultsByStatus__' + orig.status: 1,
@@ -554,12 +556,12 @@ def get_single_scheduled_result(hostname):
         rawquery['project.name'] = parameters.get('project', None)
     if release_id is not None:
         rawquery['release.releaseId'] = release_id
-    else:
-        rawquery['release.name'] = parameters.get('project', None)
+    elif parameters.get('release', None) is not None:
+        rawquery['release.name'] = parameters.get('release', None)
     if build_id is not None:
         rawquery['build.buildId'] = build_id
-    else:
-        rawquery['build.name'] = parameters.get('project', None)
+    elif parameters.get('build', None) is not None:
+        rawquery['build.name'] = parameters.get('build', None)
 
     # if 'project' in parameters:
     #     project = get_project(parameters["project"])
