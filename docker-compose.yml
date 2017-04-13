@@ -1,0 +1,23 @@
+version: '2'
+services:
+  mongo:
+    container_name: slickmongo
+    image: mongo:3.4
+    volumes:
+      - slickdb:/opt/slickdb
+    
+#  slickdata:
+#    container_name: slickdata 
+#    volumes:
+#      - ./slickdata
+
+  web:
+    container_name: slickweb
+    build: .
+    ports:
+      - "80:80"
+    links:
+      - mongo
+
+volumes:
+  slickdb:
