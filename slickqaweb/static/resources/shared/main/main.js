@@ -83,6 +83,6 @@ angular.module('slickApp')
         });
 
         $scope.fetchData();
-        stop = $interval($scope.fetchData, 3000);
+        stop = $interval($scope.fetchData, 7500);
         window.scope = $scope;
   }]);

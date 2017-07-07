@@ -233,12 +233,9 @@ angular.module('slickApp')
                 });
 
                 $scope.recentlyFetchedTestrun = true;
-                $scope.testrunQuery();
+                $scope.testrunQuery(testrun.state);
                 nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
 
-                if(testrun.state != "FINISHED") {
-                    $timeout($scope.fetchTestrun, 3000);
-                }
 
                 if(!testrun.info && testrun.project && testrun.release && testrun.build) {
                     projrest.one('projects', testrun.project.name).one('releases', testrun.release.name).one('builds', testrun.build.name).get().then(function(build) {
@@ -251,7 +248,7 @@ angular.module('slickApp')
 
         $scope.fetchTestrun();
 
-        $scope.testrunQuery = function() {
+        $scope.testrunQuery = function(state) {
             var oldQuery = $scope.resultQuery.q;
             var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key]});
             if(includableStatuses.length == 1) {
@@ -278,6 +275,9 @@ angular.module('slickApp')
                         $scope.results.push(result);
                     });
                     $scope.recentlyFetchedTestrun = false;
+                    if(state !== "FINISHED") {
+                        $timeout($scope.fetchTestrun, 5000);
+                    }
                 });
             }
         };
