@@ -33,6 +33,8 @@ def get_build_report(project_name, release_name, build_name):
     report.grouptype = "PARALLEL"
     report.testruns = []
     testplans = []
+    if build_id is None:
+        return JsonResponse(None)
     for testrun in Testrun.objects(build__buildId=build_id).order_by("-dateCreated"):
         assert isinstance(testrun, Testrun)
         if testrun.testplanId not in testplans:
