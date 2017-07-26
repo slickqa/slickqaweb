@@ -322,6 +322,9 @@ def add_result(testrun_id=None):
     if 'requirements' in raw['testcase']:
         testcase.requirements = raw['testcase']['requirements']
         testcase_changed = True
+    if 'author' in raw['testcase']:
+        testcase.author = raw['testcase']['author']
+        testcase_changed = True
     # TODO: feature and automationTool
 
     if testcase_changed:

@@ -19,6 +19,7 @@ from slickqaweb.model.resultReference import ResultReference
 
 from slickqaweb.utils import is_provided
 
+
 def create_project_reference(proj):
     """Create a Project Reference from the project instance
 
@@ -32,6 +33,7 @@ def create_project_reference(proj):
     retval.id = proj.id
     retval.name = proj.name
     return retval
+
 
 def create_testcase_reference(testcase):
     """Create a Testcase Reference from the Testcase instance
@@ -53,7 +55,10 @@ def create_testcase_reference(testcase):
         retval.automationKey = testcase.automationKey
     if hasattr(testcase, 'automationTool') and testcase.automationTool is not None and testcase.automationTool != '':
         retval.automationTool = testcase.automationTool
+    if hasattr(testcase, 'author') and testcase.author is not None and testcase.author != '':
+        retval.author = testcase.author
     return retval
+
 
 def create_component_reference(component):
     """Create a Component Reference from a Component
@@ -75,6 +80,7 @@ def create_component_reference(component):
 
     return retval
 
+
 def create_release_reference(release):
     """Create a ReleaseReference instance populated from the provided release
 
@@ -89,6 +95,7 @@ def create_release_reference(release):
     retval.name = release.name
     return retval
 
+
 def create_build_reference(build):
     """Create a BuildReference instance populated from the provided build
 
@@ -102,6 +109,7 @@ def create_build_reference(build):
     retval.buildId = build.id
     retval.name = build.name
     return retval
+
 
 def create_configuration_reference(config):
     """Create a Configuration Reference from the Configuration instance
@@ -122,6 +130,7 @@ def create_configuration_reference(config):
         retval.filename = config.filename
     return retval
 
+
 def create_testrun_reference(testrun):
     """Create a TestrunReference instance populated from the provided testrun
 
@@ -136,6 +145,7 @@ def create_testrun_reference(testrun):
     retval.name = testrun.name
     retval.testplanId = testrun.testplanId
     return retval
+
 
 def create_result_reference(result):
     """Create a ResultReference instance populated from the provided result
