@@ -16,7 +16,7 @@ angular.module('slickApp')
         $scope.testrungroup = {};
         $scope.testrunList = {};
         $scope.editbutton = {
-            href: "/result-list/" + $routeParams['project'] + "/" + $routeParams['release'] + "/" + $routeParams['build'],
+            href: "result-list/" + $routeParams['project'] + "/" + $routeParams['release'] + "/" + $routeParams['build'],
             name: "Broken and Failed Results"
         };
 
