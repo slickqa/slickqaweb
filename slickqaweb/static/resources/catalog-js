@@ -32,3 +32,4 @@ pages/tps/tps.js
 shared/filter-half/first-half.js
 shared/filter-half/last-half.js
 pages/email/email.js
+pages/result-list/result-list.js

@@ -30,6 +30,10 @@ angular.module('slickApp')
         $scope.replaceOnStatus = replaceOnStatus;
         $scope.testrungroup = {};
         $scope.testrunList = {};
+        $scope.editbutton = {
+            href: "testrungroup/" + $routeParams['id'] + "/edit",
+            name: "Add or Remove Testruns"
+        };
 
         $scope.parallelSummaryData = new google.visualization.DataTable();
         $scope.parallelSummaryData.addColumn('string', 'Status');
