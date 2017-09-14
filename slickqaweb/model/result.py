@@ -1,3 +1,5 @@
+from slickqaweb.model.link import Link
+
 __author__ = 'jcorbett'
 
 from mongoengine import *
@@ -35,6 +37,7 @@ class Result(Document):
     history = ListField(EmbeddedDocumentField(ResultReference))
     hostname = StringField()
     requirements = ListField(StringField())
+    links = ListField(EmbeddedDocumentField(Link))
     meta = {'collection': 'results'}
 
 # These are the result statuses that are "non final" meaning we are expecting updates

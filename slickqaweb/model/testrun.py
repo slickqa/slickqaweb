@@ -1,3 +1,5 @@
+from slickqaweb.model.link import Link
+
 __author__ = 'lhigginson'
 
 from mongoengine import *
@@ -27,6 +29,7 @@ class Testrun(Document):
     build = EmbeddedDocumentField(BuildReference)
     summary = EmbeddedDocumentField(TestrunSummary, default=TestrunSummary())
     files = ListField(ReferenceField(StoredFile, dbref=True))
+    links = ListField(EmbeddedDocumentField(Link))
     state = StringField()
     attributes = MapField(StringField())
     meta = {'collection': 'testruns'}

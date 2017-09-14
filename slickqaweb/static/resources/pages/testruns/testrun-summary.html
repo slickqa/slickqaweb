@@ -117,6 +117,12 @@
                             <a ng-repeat="file in testrun.files" href="api/files/{{file.id}}/content/{{file.filename}}" ng-click="displayFile(file, $event)">{{file.filename}} </a>
                         </div>
                     </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.links">
+                        <div class="testrun-summary-metadata-key">Links({{ testrun.links.length }}):</div>
+                        <div class="testrun-summary-metadata-value">
+                            <a ng-repeat="link in testrun.links" href="{{link.url}}" target="_blank">{{link.name}}</a>
+                        </div>
+                    </div>
                     <div ng-show="testrun.info">
                         <pre ng-bind="testrun.info"></pre>
                     </div>
@@ -166,6 +172,15 @@
                     [
                         <span ng-repeat="file in result.files">
                             <a href="api/files/{{file.id}}/content/{{file.filename}}" ng-click="displayFile(file, $event)">{{file.filename}} </a>
+                            <span ng-show="!$last">,</span>
+                        </span>]
+
+                </span>
+                <span  ng-show="result.links">
+                    Links ({{ result.links.length }}):
+                    [
+                        <span ng-repeat="link in result.links">
+                            <a href="{{link.url}}" target="_blank">{{link.name}}</a>
                             <span ng-show="!$last">,</span>
                         </span>]
                 </span>
