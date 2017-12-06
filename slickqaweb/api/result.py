@@ -60,7 +60,7 @@ def find_history(result):
         else:
             query['testrun__testplanId__exists'] = False
 
-        for hresult in Result.objects(**query).order_by('-recorded').limit(10):
+        for hresult in Result.objects(**query).fields(id=1, status=1, recorded=1, build=1).order_by('-recorded').limit(10):
             history.append(create_result_reference(hresult))
     except:
         logger = logging.getLogger('slickqaweb.api.result.find_history')
