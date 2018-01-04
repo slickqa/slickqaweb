@@ -549,6 +549,17 @@ def get_single_scheduled_result(hostname):
                 'status': 'NO_RESULT'}
     update = {'set__runstatus': 'TO_BE_RUN',
               'set__hostname': hostname}
+    attr_query = dict(**parameters)
+    if 'project' in attr_query:
+        del attr_query['project']
+    if 'release' in attr_query:
+        del attr_query['release']
+    if 'build' in attr_query:
+        del attr_query['build']
+    if 'provides' in attr_query:
+        del attr_query['provides']
+    for key, value in attr_query.items():
+        rawquery["attributes.{}".format(key)] = value
 
     project_id, release_id, build_id = Project.lookup_project_release_build_ids(parameters.get('project', None),
                                                                                 parameters.get('release', None),
