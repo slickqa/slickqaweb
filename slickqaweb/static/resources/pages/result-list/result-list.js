@@ -51,13 +51,29 @@ angular.module('slickApp')
 
         $scope.showTestcase = false;
         $scope.showAddStep = false;
+        var title = "FAILED and BROKEN";
+        var statusQuery = 'or(eq(status,"FAIL"),eq(status,"BROKEN_TEST"))';
+        if ($routeParams['status']) {
+            var statusList = $routeParams['status'].split(",");
+            title = statusList.join(", ").replace(/,([^,]*)$/,' & '+'$1').replace(/_/g, " ");
+            if (statusList.length > 1) {
+                var finalList = [];
+                for (var i = 0; i < statusList.length; i++) {
+                    finalList.push('eq(status,"' + statusList[i] + '")');
+                }
+                statusQuery = 'or(' + finalList.join(",") + ')';
+            } else {
+                statusQuery = 'eq(status,"' + statusList[0] + '")'
+            }
 
-        nav.setTitle("FAILED and BROKEN results for " + $routeParams['project'] + " " + $routeParams['release'] + "." + $routeParams['build']);
+        }
+
+        nav.setTitle(title + " results for " + $routeParams['project'] + " " + $routeParams['release'] + "." + $routeParams['build']);
 
         rest.one('projects', $routeParams['project']).get().then(function (project) {
             rest.one('projects', $routeParams['project']).one('releases', $routeParams['release']).get().then(function (release) {
                 rest.one('projects', $routeParams['project']).one('releases', $routeParams['release']).one('builds', $routeParams['build']).get().then(function (build) {
-                    rest.all('results').getList({q: 'and(eq(project.id,"' + project.id + '"),' + 'eq(release.releaseId,"' + release.id + '"),eq(build.buildId,"' + build.id + '"),or(eq(status,"BROKEN_TEST"),eq(status,"FAIL")))'}).then(function(results) {
+                    rest.all('results').getList({q: 'and(eq(project.id,"' + project.id + '"),' + 'eq(release.releaseId,"' + release.id + '"),eq(build.buildId,"' + build.id + '"),' + statusQuery + ')'}).then(function(results) {
                         $scope.results = [];
                         //$scope.results = results;
                         _.each(results, function(result) {
