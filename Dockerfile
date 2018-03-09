@@ -19,5 +19,4 @@ ADD startup.sh /opt/slick
 # expose our volumes
 VOLUME ["/opt/slick", "/var/log/apache2"]
 
-#ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 CMD ["/opt/slick/startup.sh"]
