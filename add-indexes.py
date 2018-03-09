@@ -3,17 +3,22 @@
 import pymongo
 import sys
 import configparser
+import shutil
+
+prod_config='/opt/slick/prodserver.cfg'
+mongo_config='/opt/slick/mongo.cfg'
+shutil.copy(prod_config, mongo_config)
+header="[defaults]"
+with open(mongo_config, 'r+') as f:
+    file_data = f.read()
+    f.seek(0,0)
+    f.write(header.rstrip('\r\n') + '\n' + file_data)
 
 config=configparser.ConfigParser()
-config.read("/opt/slick/prodserver.cfg")
+config.read(mongo_config)
+
 hostName = config["defaults"]["MONGODB_HOSTNAME"].replace("\"", "")
 dbName = config["defaults"]["MONGODB_DBNAME"].replace("\"", "")
-
-print hostName
-print dbName
-
-#client = pymongo.MongoClient(host='mongo', port=27017)
-#db = client['slick']
 
 client = pymongo.MongoClient(host=hostName, port=27017)
 db = client[dbName]
@@ -73,3 +78,4 @@ sys.stdout.write("Done.\n")
 sys.stdout.flush()
 
 print "Should be all done now."
+
