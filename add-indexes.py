@@ -2,14 +2,21 @@
 
 import pymongo
 import sys
+import configparser
 
-client = pymongo.MongoClient()
-# If not connecting to localhost on the default port use this instead:
-# client = pymongo.MongoClient('hostname', 27017)
+config=configparser.ConfigParser()
+config.read("/opt/slick/prodserver.cfg")
+hostName = config["defaults"]["MONGODB_HOSTNAME"].replace("\"", "")
+dbName = config["defaults"]["MONGODB_DBNAME"].replace("\"", "")
 
+print hostName
+print dbName
 
-# If the database name is something other than slickij, adjust it below:
-db = client.slickij
+#client = pymongo.MongoClient(host='mongo', port=27017)
+#db = client['slick']
+
+client = pymongo.MongoClient(host=hostName, port=27017)
+db = client[dbName]
 
 sys.stdout.write("Creating index on projects...")
 sys.stdout.flush()

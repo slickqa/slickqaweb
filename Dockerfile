@@ -12,8 +12,12 @@ RUN chown -R slick /opt/slick; npm install -g less; pip install --upgrade pip; p
 #set the slick configs in place and kick the apache HTTP service
 RUN cp -a /opt/slick/docker-files/* /opt/slick/; ln -s /opt/slick/apache.conf /etc/apache2/sites-available/slick.conf; a2ensite slick; rm -f /usr/bin/node; ln -s /usr/bin/nodejs /usr/bin/node
 
+ADD add-indexes.py /opt/slick/
+RUN chmod a+x /opt/slick/add-indexes.py
+ADD startup.sh /opt/slick
+
 # expose our volumes
 VOLUME ["/opt/slick", "/var/log/apache2"]
 
-ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
-
+#ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+CMD ["/opt/slick/startup.sh"]
