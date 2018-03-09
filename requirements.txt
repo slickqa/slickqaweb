@@ -11,3 +11,4 @@ python-dateutil
 pyparsing
 kombu
 librabbitmq
+ConfigParser
