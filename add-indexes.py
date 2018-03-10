@@ -2,23 +2,21 @@
 
 import pymongo
 import sys
-import configparser
-import shutil
 
 prod_config='/opt/slick/prodserver.cfg'
-mongo_config='/opt/slick/mongo.cfg'
-shutil.copy(prod_config, mongo_config)
-header="[defaults]"
-with open(mongo_config, 'r+') as f:
-    file_data = f.read()
-    f.seek(0,0)
-    f.write(header.rstrip('\r\n') + '\n' + file_data)
 
-config=configparser.ConfigParser()
-config.read(mongo_config)
+hostName=""
+dbName=""
 
-hostName = config["defaults"]["MONGODB_HOSTNAME"].replace("\"", "")
-dbName = config["defaults"]["MONGODB_DBNAME"].replace("\"", "")
+with open(prod_config) as f:
+    for line in f:
+        if line.startswith("MONGODB_HOSTNAME"):
+            hostName = line.split('=')[1].strip()
+        if line.startswith("MONGODB_DBNAME"):
+            dbName = line.split('=')[1].strip()
+
+hostName = hostName.replace("\"", "")
+dbName = dbName.replace("\"", "")
 
 client = pymongo.MongoClient(host=hostName, port=27017)
 db = client[dbName]
