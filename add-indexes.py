@@ -3,13 +3,23 @@
 import pymongo
 import sys
 
-client = pymongo.MongoClient()
-# If not connecting to localhost on the default port use this instead:
-# client = pymongo.MongoClient('hostname', 27017)
+prod_config='/opt/slick/prodserver.cfg'
 
+hostName=""
+dbName=""
 
-# If the database name is something other than slickij, adjust it below:
-db = client.slickij
+with open(prod_config) as f:
+    for line in f:
+        if line.startswith("MONGODB_HOSTNAME"):
+            hostName = line.split('=')[1].strip()
+        if line.startswith("MONGODB_DBNAME"):
+            dbName = line.split('=')[1].strip()
+
+hostName = hostName.replace("\"", "")
+dbName = dbName.replace("\"", "")
+
+client = pymongo.MongoClient(host=hostName, port=27017)
+db = client[dbName]
 
 sys.stdout.write("Creating index on projects...")
 sys.stdout.flush()
@@ -66,3 +76,4 @@ sys.stdout.write("Done.\n")
 sys.stdout.flush()
 
 print "Should be all done now."
+
