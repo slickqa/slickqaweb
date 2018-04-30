@@ -470,6 +470,9 @@ def reschedule_individual_result(result_id):
     """Reschedule a single result, only works on a result that was originally scheduled."""
     orig = Result.objects(id=result_id).first()
     orig_status = orig.status
+    log = []
+    if orig.log:
+        log = orig.log
     if 'retry_count' in orig.attributes:
         orig.attributes['retry_count'] = str(int(orig.attributes['retry_count']) + 1)
     else:
@@ -480,7 +483,8 @@ def reschedule_individual_result(result_id):
         decrement_orig_status_by = "dec__summary__resultsByStatus__" + orig_status
         increment_noresult_status_by = "inc__summary__resultsByStatus__NO_RESULT"
         Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_noresult_status_by: 1})
-    Result.objects(id=result_id).update(log=[{"entryTime": datetime.datetime.utcnow(), "level": "WARN", "loggerName": "slick.note", "message": "Rescheduled. Count: {}. Max: {}    {}    {}".format(orig.attributes['retry_count'], orig.attributes['max_retry'], orig.hostname, orig.reason), "exceptionMessage": ""}], files=[], links=[], runstatus="SCHEDULED", status="NO_RESULT", recorded=datetime.datetime.utcnow(),
+    log.append({"entryTime": datetime.datetime.utcnow(), "level": "WARN", "loggerName": "slick.note", "message": "Rescheduled. Count: {}. Max: {}    {}    {}".format(orig.attributes['retry_count'], orig.attributes['max_retry'], orig.hostname, orig.reason), "exceptionMessage": ""})
+    Result.objects(id=result_id).update(log=log, files=[], links=[], runstatus="SCHEDULED", status="NO_RESULT", recorded=datetime.datetime.utcnow(),
                                         unset__hostname=True, unset__started=True, unset__finished=True,
                                         unset__runlength=True, unset__reason=True, attributes=orig.attributes)
     orig.reload()
