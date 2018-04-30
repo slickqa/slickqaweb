@@ -474,11 +474,13 @@ def reschedule_individual_result(result_id):
         orig.attributes['retry_count'] = str(int(orig.attributes['retry_count']) + 1)
     else:
         orig.attributes['retry_count'] = "1"
+    if 'max_retry' not in orig.attributes:
+        orig.attributes['max_retry'] = "3"
     if orig_status != "NO_RESULT":
         decrement_orig_status_by = "dec__summary__resultsByStatus__" + orig_status
         increment_noresult_status_by = "inc__summary__resultsByStatus__NO_RESULT"
         Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_noresult_status_by: 1})
-    Result.objects(id=result_id).update(log=[{"entryTime": datetime.datetime.utcnow(), "level": "WARN", "loggerName": "slick.note", "message": "Manual Reschedule. Count: {}".format(orig.attributes['retry_count']), "exceptionMessage": ""}], files=[], links=[], runstatus="SCHEDULED", status="NO_RESULT",
+    Result.objects(id=result_id).update(log=[{"entryTime": datetime.datetime.utcnow(), "level": "WARN", "loggerName": "slick.note", "message": "Rescheduled. Count: {}. Max: {}    {}    {}".format(orig.attributes['retry_count'], orig.attributes['max_retry'], orig.hostname, orig.reason), "exceptionMessage": ""}], files=[], links=[], runstatus="SCHEDULED", status="NO_RESULT", recorded=datetime.datetime.utcnow(),
                                         unset__hostname=True, unset__started=True, unset__finished=True,
                                         unset__runlength=True, unset__reason=True, attributes=orig.attributes)
     orig.reload()
