@@ -1,5 +1,10 @@
 #!vpy/bin/python
 import cherrypy
+import subprocess
+import os
+
+base_dir=os.path.dirname(__file__)
+subprocess.call(os.path.join(base_dir, 'vpy', 'bin', 'python') + ' ' + os.path.join(base_dir, 'slickqaweb', 'compiledResources.py'), shell=True)
 from slickqaweb.main import app
 
 base = app.config['APPLICATION_ROOT']
@@ -16,7 +21,7 @@ cherrypy.config.update({
 })
 
 cherrypy.engine.autoreload.unsubscribe()
-cherrypy.engine.timeout_monitor.unsubscribe()
+#cherrypy.engine.timeout_monitor.unsubscribe()
 
 if __name__ == '__main__':
    try:
