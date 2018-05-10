@@ -8,7 +8,7 @@ angular.module('slickApp')
         controller: 'MainCtrl'
       });
   }])
-  .controller('MainCtrl', ['$scope', 'Restangular', '$interval', function ($scope, rest, $interval) {
+  .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', function ($scope, rest, $interval, $routeParams) {
         $scope.testrunTableOne = {};
         $scope.testrunTableTwo = {};
         $scope.testrunListOne = [];
@@ -23,11 +23,19 @@ angular.module('slickApp')
         $scope.buildTableTwo = {};
         $scope.buildListOne = [];
         $scope.buildListTwo = [];
+        $scope.project = "";
+        if($routeParams["project"]) {
+            $scope.project = $routeParams["project"];
+        }
 
         var stop;
 
         $scope.fetchData = function() {
-            rest.all('testruns').getList({orderby: '-dateCreated', limit: 10}).then(function(testruns) {
+            var testrunsQuery = {orderby: '-dateCreated', limit: 10};
+            if($scope.project !== "") {
+                testrunsQuery["project.name"] = $scope.project;
+            }
+            rest.all('testruns').getList(testrunsQuery).then(function(testruns) {
                 $scope.testrunListOne = testruns.splice(0, 5);
                 $scope.testrunListTwo = testruns;
             });
@@ -38,16 +46,8 @@ angular.module('slickApp')
 
             // recent builds are a little tricky
             var buildList = [];
-            rest.all('projects').getList().then(function(projects) {
-                _.each(projects, function(project) {
-                    _.each(project.releases, function(release) {
-                        _.each(release.builds, function(build) {
-                            // This creates a flat list that we can sort
-                            buildList.push({build: build, project: project, release: release});
-                        });
-                    });
-                });
 
+            function processBuildList(buildList) {
                 buildList = _.sortBy(buildList, function(build) {
                     if(build.build.built) {
                         return build.build.built;
@@ -68,7 +68,30 @@ angular.module('slickApp')
                         }
                     });
                 });
-            });
+            }
+            if($scope.project === "") {
+                rest.all('projects').getList().then(function (projects) {
+                    _.each(projects, function (project) {
+                        _.each(project.releases, function (release) {
+                            _.each(release.builds, function (build) {
+                                // This creates a flat list that we can sort
+                                buildList.push({build: build, project: project, release: release});
+                            });
+                        });
+                    });
+                    processBuildList(buildList);
+                });
+            } else {
+                rest.one('projects', $scope.project).get().then(function(project) {
+                    _.each(project.releases, function (release) {
+                        _.each(release.builds, function (build) {
+                            // This creates a flat list that we can sort
+                            buildList.push({build: build, project: project, release: release});
+                        });
+                    });
+                    processBuildList(buildList);
+                });
+            }
         };
 
         $scope.stopRefresh = function() {
