@@ -158,7 +158,7 @@ angular.module('slickApp')
         window.scope = $scope;
 
     }])
-    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location) {
+    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', '$cookieStore', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location, $cookieStore) {
         $scope.replaceOnStatus = replaceOnStatus;
         $scope.testrun = {};
         $scope.results = [];
@@ -186,6 +186,7 @@ angular.module('slickApp')
         $scope.logs = [];
         $scope.showDisplayLogs = false;
         $scope.recentlyFetchedTestrun = false;
+        $scope.withoutNotesStats = {};
         $scope.options = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
             backgroundColor: "#000000",
@@ -193,6 +194,18 @@ angular.module('slickApp')
             legend: 'none',
             colors: []
         };
+        if(!$cookieStore.get('testrunShowFilter')) {
+            $cookieStore.put('testrunShowFilter', {
+                author: true,
+                component: false,
+                recorded: true,
+                duration: true,
+                hostname: true,
+                automationid: false,
+                resultid: false
+            });
+        }
+        $scope.show = $cookieStore.get('testrunShowFilter');
 
         $scope.testcase = {
             name: "",
@@ -225,10 +238,17 @@ angular.module('slickApp')
                     $scope.data.addRow([replaceOnStatus(status, " "), testrun.summary.resultsByStatus[status]]);
                     $scope.options.colors.push(getStyle(replaceOnStatus(status, "") + "-element", "color"));
                     if (emptyFilter) {
-                        $scope.filter[status] = status != "PASS";
+                        $scope.filter[status] = status !== "PASS";
                         if ($routeParams.all) {
                             $scope.filter[status] = true;
                         }
+                    }
+                    if(status === "FAIL" || status === "BROKEN_TEST") {
+                        rest.one('results', 'count').get({"q": "and(eq(testrun__testrunId,\"" +
+                            $routeParams["testrunid"] + "\"),eq(status,\"" + status +
+                            "\"),ne(log__loggerName,\"slick.note\"))"}).then(function(count) {
+                                $scope.withoutNotesStats[status] = count;
+                        });
                     }
                 });
 
@@ -250,20 +270,23 @@ angular.module('slickApp')
 
         $scope.testrunQuery = function(state) {
             var oldQuery = $scope.resultQuery.q;
-            var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key]});
-            if(includableStatuses.length == 1) {
-                $scope.resultQuery = {
-                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),eq(status,\"" + includableStatuses[0] + "\"))",
-                };
-            } else {
+            var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key] && key !== 'withoutnotes'});
+            var andQuery = ["eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\")"];
+            if(includableStatuses.length === 1) {
+                andQuery.push("eq(status,\"" + includableStatuses[0] + "\")")
+            } else if(includableStatuses.length > 1) {
                 var statuses = [];
                 _.each(includableStatuses, function(status) {
                     statuses.push("eq(status,\"" + status + "\")");
                 });
-                $scope.resultQuery = {
-                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),or(" + statuses.join(",") + "))",
-                }
+                andQuery.push("or(" + statuses.join(',') + ")")
             }
+            if($scope.filter['withoutnotes']) {
+                andQuery.push('ne(log__loggerName,"slick.note")')
+            }
+            $scope.resultQuery = {
+                q: "and(" + andQuery.join(',') + ")"
+            };
             if (oldQuery != $scope.resultQuery.q || $scope.recentlyFetchedTestrun) {
                 rest.all('results').getList($scope.resultQuery).then(function(results) {
                     $scope.results = [];
@@ -311,6 +334,12 @@ angular.module('slickApp')
         $scope.$watch('statusFilter.$dirty', function(newValue, oldValue) {
             $scope.testrunQuery();
             $scope.statusFilter.$setPristine();
+        });
+        $scope.$watch('showFilter.$dirty', function(newValue, oldValue) {
+            if(newValue) {
+                $cookieStore.put('testrunShowFilter', $scope.show);
+                $scope.showFilter.$setPristine();
+            }
         });
 
         $scope.getAbbreviatedReason = function(result) {
