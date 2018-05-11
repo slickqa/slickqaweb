@@ -56,13 +56,16 @@
                 <google-pie-chart class="testrun-summary-chart" data="data" options="options"></google-pie-chart>
                 <div class="testrun-summary-data">
                     <div class="testrun-summary-data-container">
-                        <div class="testrun-summary-data-row result-status-{{ replaceOnStatus(status, '')}}" ng-repeat="status in testrun.summary.statusListOrdered">
-                            <div class="cancel-button" ng-show="testrun.attributes && testrun.attributes.scheduled && status === 'NO_RESULT'" ng-click="cancelResults()"> </div>
-                            <div class="cancel-button-empty" ng-show="testrun.attributes && testrun.attributes.scheduled && status !== 'NO_RESULT'"> </div>
-                            <div class="reschedule-button" ng-show="testrun.attributes && testrun.attributes.scheduled" ng-click="rescheduleStatus(status)"> </div>
-                            <div class="testrun-summary-data-status clickable-text" ng-bind="replaceOnStatus(status, ' ')" ng-click="toggleFilter(status)"></div>
-                            <div class="testrun-summary-data-number" ng-bind="testrun.summary.resultsByStatus[status]"></div>
-                            <div class="testrun-summary-data-percent" ng-bind="'' + (((testrun.summary.resultsByStatus[status] * 1.0)/testrun.summary.total) * 100).toFixed(1) + '%'"></div>
+                        <div class="result-status-{{ replaceOnStatus(status, '')}}" ng-repeat="status in testrun.summary.statusListOrdered">
+                            <div class="testrun-summary-data-row">
+                                <div class="cancel-button" ng-show="testrun.attributes && testrun.attributes.scheduled && status === 'NO_RESULT'" ng-click="cancelResults()"> </div>
+                                <div class="cancel-button-empty" ng-show="testrun.attributes && testrun.attributes.scheduled && status !== 'NO_RESULT'"> </div>
+                                <div class="reschedule-button" ng-show="testrun.attributes && testrun.attributes.scheduled" ng-click="rescheduleStatus(status)"> </div>
+                                <div class="testrun-summary-data-status clickable-text" ng-bind="replaceOnStatus(status, ' ')" ng-click="toggleFilter(status)"></div>
+                                <div class="testrun-summary-data-number" ng-bind="testrun.summary.resultsByStatus[status]"></div>
+                                <div class="testrun-summary-data-percent" ng-bind="'' + (((testrun.summary.resultsByStatus[status] * 1.0)/testrun.summary.total) * 100).toFixed(1) + '%'"></div>
+                            </div>
+                            <div class="testrun-summary-data-notes clickable-text" ng-click="toggleFilter('withoutnotes')" ng-show="withoutNotesStats[status]" ng-bind="withoutNotesStats[status] + ' without notes'"></div>
                         </div>
                         <div class="testrun-summary-data-row result-status-total">
                             <div class="testrun-summary-data-status">Total</div>
@@ -137,6 +140,22 @@
                 <span ng-repeat="status in testrun.summary.statusListOrdered" class="testrun-summary-filter result-status-{{replaceOnStatus(status, '')}}">
                     <input type="checkbox" ng-model="filter[status]">{{replaceOnStatus(status, " ")}}
                 </span>
+
+                <span class="testrun-summary-filter"><input type="checkbox" ng-model="filter['withoutnotes']"> Without Notes</span>
+            </form>
+        </div>
+    </div>
+    <div class="testrun-summary-outer">
+        <div class="testrun-summary-inner testrun-summary-filter-container">
+            <form class="testrun-summary-show-form" name="showFilter">
+                Show:
+                <span class="testrun-summary-filter"><input type="checkbox" ng-model="show['author']">Author</span>
+                <span class="testrun-summary-filter"><input type="checkbox" ng-model="show['component']">Component</span>
+                <span class="testrun-summary-filter"><input type="checkbox" ng-model="show['recorded']">Recorded</span>
+                <span class="testrun-summary-filter"><input type="checkbox" ng-model="show['duration']">Duration</span>
+                <span class="testrun-summary-filter"><input type="checkbox" ng-model="show['hostname']">Hostname</span>
+                <span class="testrun-summary-filter"><input type="checkbox" ng-model="show['automationid']">Automation ID</span>
+                <span class="testrun-summary-filter"><input type="checkbox" ng-model="show['resultid']">Slick Result ID</span>
                 <span class="testrun-summary-filter">
                     <input type="checkbox" ng-model="moreDetail">More Detail
                 </span>
@@ -146,10 +165,11 @@
     <slick-list-header model="resultList" search="on" pagination="on" default-sort="recorded" default-page-size="50">
         <slick-list-columns class="result-list-column-container">
             <slick-list-column class="result-list-name-column" sort-property-name="testcase.name" sortable="true">Name</slick-list-column>
-            <slick-list-column class="result-list-component-column" sort-property-name="component.name" sortable="true">Component</slick-list-column>
-            <slick-list-column class="result-list-recorded-column" sort-property-name="recorded" sortable="true">Recorded</slick-list-column>
-            <slick-list-column class="result-list-duration-column" sort-property-name="runlength" sortable="true">Duration</slick-list-column>
-            <slick-list-column class="result-list-hostname-column" sort-property-name="hostname" sortable="true">Hostname</slick-list-column>
+            <slick-list-column class="result-list-author-column" sort-property-name="testcase.author" sortable="true" ng-show="show['author']">Author</slick-list-column>
+            <slick-list-column class="result-list-component-column" sort-property-name="component.name" sortable="true" ng-show="show['component']">Component</slick-list-column>
+            <slick-list-column class="result-list-recorded-column" sort-property-name="recorded" sortable="true" ng-show="show['recorded']">Recorded</slick-list-column>
+            <slick-list-column class="result-list-duration-column" sort-property-name="runlength" sortable="true" ng-show="show['duration']">Duration</slick-list-column>
+            <slick-list-column class="result-list-hostname-column" sort-property-name="hostname" sortable="true" ng-show="show['hostname']">Hostname</slick-list-column>
             <slick-list-column class="result-list-history-column" sortable="false">History</slick-list-column>
             <slick-list-column class="result-list-status-column" sort-property-name="status" sortable="true">Status</slick-list-column>
         </slick-list-columns>
@@ -157,12 +177,17 @@
     <div class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id">
         <div class="result-list-column-container">
             <div class="result-list-name-column"><a href="testcases/{{ result.testcase.testcaseId }}" ng-click="showTestcase(result.testcase.testcaseId, $event)" ng-bind="result.testcase.name"></a></div>
-            <div class="result-list-component-column" ng-bind="result.component.name"></div>
-            <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'"></div>
-            <div class="result-list-duration-column" ng-bind="getResultDuration(result)"></div>
-            <div class="result-list-hostname-column" ng-bind="result.hostname"></div>
+            <div class="result-list-author-column" ng-bind="result.testcase.author" ng-show="show['author']"></div>
+            <div class="result-list-component-column" ng-bind="result.component.name" ng-show="show['component']"></div>
+            <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'" ng-show="show['recorded']"></div>
+            <div class="result-list-duration-column" ng-bind="getResultDuration(result)" ng-show="show['duration']"></div>
+            <div class="result-list-hostname-column" ng-bind="result.hostname" ng-show="show['hostname']"></div>
             <div class="result-list-history-column"><img class="clickable" ng-repeat="hres in result.history | reverse track by hres.resultId" ng-src="static/images/status-{{hres.status}}.png" ng-click="onHistoryClick(hres)"/></div>
             <div class="result-list-status-column result-status-{{replaceOnStatus(result.status, '')}}" ng-bind="replaceOnStatus(result.status, ' ')"></div>
+        </div>
+        <div class="result-list-tcdata-part">
+            <div class="result-list-automationid-column" ng-show="show['automationid']" ng-bind="'Automation ID: ' + result.testcase.automationId"></div>
+            <div class="result-list-resultid-column" ng-show="show['resultid']" ng-bind="'Slick Result ID: ' + result.id"></div>
         </div>
         <div class="result-list-second-part">
             <div class="result-list-log-column"><a href="results/{{result.id}}/log" ng-show="result.log" ng-click="displayLogs(result, $event)">Log Entries ({{result.log.length}})</a></div>
