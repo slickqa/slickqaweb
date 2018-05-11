@@ -4,7 +4,7 @@ from slickqaweb.app import app
 from slickqaweb.model.userAccount import UserAccount
 from .standardResponses import JsonResponse, read_request
 from slickqaweb.model.query import queryFor
-from flask import g, Response
+from flask import Response
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
 from slickqaweb.model.serialize import deserialize_that
@@ -28,10 +28,7 @@ def get_users():
 def get_current_user(email):
     """Retrieve a user account by their email address."""
     if "current" == email:
-        if g.user is not None:
-            return Response(g.user.to_json(), mimetype='application/json')
-        else:
-            return Response(status=404)
+        return Response(status=404)
     else:
         return(JsonResponse(UserAccount.objects(email=email).first()))
 
@@ -42,11 +39,7 @@ def get_current_user(email):
 @argument_doc('email', "The email address of the user you wish to recieve the account for, or current for the currently logged in user.")
 def update_user_account(email):
     """Update a user's account info."""
-    orig = None
-    if "current" == email and g.user is not None:
-            orig = g.user
-    else:
-        orig = UserAccount.objects(email=email).first()
+    orig = UserAccount.objects(email=email).first()
     if orig is None:
         return Response(status=404)
     update_event = events.UpdateEvent(before=orig)

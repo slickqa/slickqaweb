@@ -1,8 +1,7 @@
 pymongo==2.8
 Flask
-flask-mongoengine
+mongoengine
 Flask-gzip
-flask_openid
 CherryPy
 watchdog
 argcomplete

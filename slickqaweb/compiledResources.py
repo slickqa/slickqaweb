@@ -1,6 +1,6 @@
 __author__ = 'jcorbett'
 
-from slickqaweb.app import app
+#from slickqaweb.app import app
 
 from flask import Response, request
 
@@ -50,24 +50,26 @@ def get_catalog_files(dir, extension):
 
 ########################### build scripts.js #############################
 scripts_dir = os.path.join(os.path.dirname(__file__), 'static', 'resources')
-scriptsjs = StringIO()
+scriptsjs = open(os.path.join(os.path.dirname(__file__), 'static', 'scripts.js'), 'w')
 for script in get_catalog_files(scripts_dir, "js"):
     if os.path.exists(os.path.join(scripts_dir, script)):
         with open(os.path.join(scripts_dir, script), 'r') as script_file:
             scriptsjs.write(script_file.read())
 
-scripts_hash = hashlib.sha256()
-scriptsjs.seek(0)
-scripts_hash.update(scriptsjs.read())
-scripts_etag = scripts_hash.hexdigest()
-scriptsjs.seek(0)
+#scripts_hash = hashlib.sha256()
+#scriptsjs.seek(0)
+#scripts_hash.update(scriptsjs.read())
+#scripts_etag = scripts_hash.hexdigest()
+#scriptsjs.seek(0)
+scriptsjs.close()
 
-@app.route('/scripts.js')
-def combined_scriptsjs():
-    if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == scripts_etag:
-        return Response(status=304)
-    scriptsjs.seek(0)
-    return Response(scriptsjs.read(), headers={'Etag': scripts_etag}, mimetype='application/javascript')
+# no more dynamic
+#@app.route('/scripts.js')
+#def combined_scriptsjs():
+#    if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == scripts_etag:
+#        return Response(status=304)
+#    scriptsjs.seek(0)
+#    return Response(scriptsjs.read(), headers={'Etag': scripts_etag}, mimetype='application/javascript')
 
 
 ########################### build style.css #############################
@@ -79,43 +81,44 @@ for less_script in get_catalog_files(style_dir, 'less'):
             less_source.write(less_script_file.read())
 
 # run the less source through the less compiler
-main_css = StringIO()
+main_css = open(os.path.join(os.path.dirname(__file__), 'static', 'style.css'), 'w')
 less_source.seek(0)
 less_compiler = subprocess.Popen(['lessc', '-s', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 main_css.write(less_compiler.communicate(less_source.read())[0])
 
 less_compiler.wait()
 
-main_css_hash = hashlib.sha256()
-main_css.seek(0)
-main_css_hash.update(main_css.read())
-maincss_etag = main_css_hash.hexdigest()
+#main_css_hash = hashlib.sha256()
+#main_css.seek(0)
+#main_css_hash.update(main_css.read())
+#maincss_etag = main_css_hash.hexdigest()
+main_css.close()
 
-@app.route('/style.css')
-def compiled_style():
-    if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == maincss_etag:
-        return Response(status=304)
-    main_css.seek(0)
-    return Response(main_css.read(), headers={'Etag': maincss_etag}, mimetype='text/css')
+#@app.route('/style.css')
+#def compiled_style():
+#    if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == maincss_etag:
+#        return Response(status=304)
+#    main_css.seek(0)
+#    return Response(main_css.read(), headers={'Etag': maincss_etag}, mimetype='text/css')
 
 
 if os.path.exists(os.path.join(os.path.dirname(__file__), '..', 'slickqawebtest')):
     jstests_dir = os.path.join(os.path.dirname(__file__), '..', 'slickqawebtest', 'jstests')
-    jstestsjs = StringIO()
+    jstestsjs = open(os.path.join(os.path.dirname(__file__), 'static', 'jstests.js'), 'w')
     for script in get_catalog_files(jstests_dir, "js"):
         if os.path.exists(os.path.join(jstests_dir, script)):
             with open(os.path.join(jstests_dir, script), 'r') as script_file:
                 jstestsjs.write(script_file.read())
+    jstestsjs.close()
+    #jstests_hash = hashlib.sha256()
+    #jstestsjs.seek(0)
+    #jstests_hash.update(jstestsjs.read())
+    #jstests_etag = jstests_hash.hexdigest()
 
-    jstests_hash = hashlib.sha256()
-    jstestsjs.seek(0)
-    jstests_hash.update(jstestsjs.read())
-    jstests_etag = jstests_hash.hexdigest()
-
-    @app.route('/jstests.js')
-    def combined_jstestsjs():
-        if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == jstests_etag:
-            return Response(status=304)
-        jstestsjs.seek(0)
-        return Response(jstestsjs.read(), headers={'Etag': jstests_etag}, mimetype='application/javascript')
+    #@app.route('/jstests.js')
+    #def combined_jstestsjs():
+    #    if 'If-None-Match' in request.headers and request.headers['If-None-Match'] == jstests_etag:
+    #        return Response(status=304)
+    #    jstestsjs.seek(0)
+    #    return Response(jstestsjs.read(), headers={'Etag': jstests_etag}, mimetype='application/javascript')
 
