@@ -638,7 +638,7 @@ angular.module('slickApp')
         controller: 'MainCtrl'
       });
   }])
-  .controller('MainCtrl', ['$scope', 'Restangular', '$interval', function ($scope, rest, $interval) {
+  .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', function ($scope, rest, $interval, $routeParams) {
         $scope.testrunTableOne = {};
         $scope.testrunTableTwo = {};
         $scope.testrunListOne = [];
@@ -653,11 +653,19 @@ angular.module('slickApp')
         $scope.buildTableTwo = {};
         $scope.buildListOne = [];
         $scope.buildListTwo = [];
+        $scope.project = "";
+        if($routeParams["project"]) {
+            $scope.project = $routeParams["project"];
+        }
 
         var stop;
 
         $scope.fetchData = function() {
-            rest.all('testruns').getList({orderby: '-dateCreated', limit: 10}).then(function(testruns) {
+            var testrunsQuery = {orderby: '-dateCreated', limit: 10};
+            if($scope.project !== "") {
+                testrunsQuery["project.name"] = $scope.project;
+            }
+            rest.all('testruns').getList(testrunsQuery).then(function(testruns) {
                 $scope.testrunListOne = testruns.splice(0, 5);
                 $scope.testrunListTwo = testruns;
             });
@@ -668,16 +676,8 @@ angular.module('slickApp')
 
             // recent builds are a little tricky
             var buildList = [];
-            rest.all('projects').getList().then(function(projects) {
-                _.each(projects, function(project) {
-                    _.each(project.releases, function(release) {
-                        _.each(release.builds, function(build) {
-                            // This creates a flat list that we can sort
-                            buildList.push({build: build, project: project, release: release});
-                        });
-                    });
-                });
 
+            function processBuildList(buildList) {
                 buildList = _.sortBy(buildList, function(build) {
                     if(build.build.built) {
                         return build.build.built;
@@ -698,7 +698,30 @@ angular.module('slickApp')
                         }
                     });
                 });
-            });
+            }
+            if($scope.project === "") {
+                rest.all('projects').getList().then(function (projects) {
+                    _.each(projects, function (project) {
+                        _.each(project.releases, function (release) {
+                            _.each(release.builds, function (build) {
+                                // This creates a flat list that we can sort
+                                buildList.push({build: build, project: project, release: release});
+                            });
+                        });
+                    });
+                    processBuildList(buildList);
+                });
+            } else {
+                rest.one('projects', $scope.project).get().then(function(project) {
+                    _.each(project.releases, function (release) {
+                        _.each(release.builds, function (build) {
+                            // This creates a flat list that we can sort
+                            buildList.push({build: build, project: project, release: release});
+                        });
+                    });
+                    processBuildList(buildList);
+                });
+            }
         };
 
         $scope.stopRefresh = function() {
@@ -1481,7 +1504,7 @@ angular.module('slickApp')
         window.scope = $scope;
 
     }])
-    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location) {
+    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', '$cookieStore', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location, $cookieStore) {
         $scope.replaceOnStatus = replaceOnStatus;
         $scope.testrun = {};
         $scope.results = [];
@@ -1509,6 +1532,7 @@ angular.module('slickApp')
         $scope.logs = [];
         $scope.showDisplayLogs = false;
         $scope.recentlyFetchedTestrun = false;
+        $scope.withoutNotesStats = {};
         $scope.options = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
             backgroundColor: "#000000",
@@ -1516,6 +1540,18 @@ angular.module('slickApp')
             legend: 'none',
             colors: []
         };
+        if(!$cookieStore.get('testrunShowFilter')) {
+            $cookieStore.put('testrunShowFilter', {
+                author: true,
+                component: false,
+                recorded: true,
+                duration: true,
+                hostname: true,
+                automationid: false,
+                resultid: false
+            });
+        }
+        $scope.show = $cookieStore.get('testrunShowFilter');
 
         $scope.testcase = {
             name: "",
@@ -1548,10 +1584,17 @@ angular.module('slickApp')
                     $scope.data.addRow([replaceOnStatus(status, " "), testrun.summary.resultsByStatus[status]]);
                     $scope.options.colors.push(getStyle(replaceOnStatus(status, "") + "-element", "color"));
                     if (emptyFilter) {
-                        $scope.filter[status] = status != "PASS";
+                        $scope.filter[status] = status !== "PASS";
                         if ($routeParams.all) {
                             $scope.filter[status] = true;
                         }
+                    }
+                    if(status === "FAIL" || status === "BROKEN_TEST") {
+                        rest.one('results', 'count').get({"q": "and(eq(testrun__testrunId,\"" +
+                            $routeParams["testrunid"] + "\"),eq(status,\"" + status +
+                            "\"),ne(log__loggerName,\"slick.note\"))"}).then(function(count) {
+                                $scope.withoutNotesStats[status] = count;
+                        });
                     }
                 });
 
@@ -1573,20 +1616,23 @@ angular.module('slickApp')
 
         $scope.testrunQuery = function(state) {
             var oldQuery = $scope.resultQuery.q;
-            var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key]});
-            if(includableStatuses.length == 1) {
-                $scope.resultQuery = {
-                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),eq(status,\"" + includableStatuses[0] + "\"))",
-                };
-            } else {
+            var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key] && key !== 'withoutnotes'});
+            var andQuery = ["eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\")"];
+            if(includableStatuses.length === 1) {
+                andQuery.push("eq(status,\"" + includableStatuses[0] + "\")")
+            } else if(includableStatuses.length > 1) {
                 var statuses = [];
                 _.each(includableStatuses, function(status) {
                     statuses.push("eq(status,\"" + status + "\")");
                 });
-                $scope.resultQuery = {
-                    q: "and(eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\"),or(" + statuses.join(",") + "))",
-                }
+                andQuery.push("or(" + statuses.join(',') + ")")
             }
+            if($scope.filter['withoutnotes']) {
+                andQuery.push('ne(log__loggerName,"slick.note")')
+            }
+            $scope.resultQuery = {
+                q: "and(" + andQuery.join(',') + ")"
+            };
             if (oldQuery != $scope.resultQuery.q || $scope.recentlyFetchedTestrun) {
                 rest.all('results').getList($scope.resultQuery).then(function(results) {
                     $scope.results = [];
@@ -1634,6 +1680,12 @@ angular.module('slickApp')
         $scope.$watch('statusFilter.$dirty', function(newValue, oldValue) {
             $scope.testrunQuery();
             $scope.statusFilter.$setPristine();
+        });
+        $scope.$watch('showFilter.$dirty', function(newValue, oldValue) {
+            if(newValue) {
+                $cookieStore.put('testrunShowFilter', $scope.show);
+                $scope.showFilter.$setPristine();
+            }
         });
 
         $scope.getAbbreviatedReason = function(result) {
