@@ -2,22 +2,32 @@ version: '2'
 services:
   mongo:
     container_name: slickmongo
-    image: mongo:3.4
+    image: mongo:3.6
     volumes:
-      - slickdb:/opt/slickdb
-    
-#  slickdata:
-#    container_name: slickdata 
-#    volumes:
-#      - ./slickdata
-
-  web:
-    container_name: slickweb
-    build: .
-    ports:
-      - "80:80"
+      - slickdb:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=ch@ngeMe 
+    command: mongod --auth
+  slick:
+    image: slickqa/slickqaweb
     links:
       - mongo
+    environment:
+      - MONGODB_USERNAME=mongoadmin
+      - MONGODB_PASSWORD=ch@ngeMe
+      - MONGODB_AUTHDB=admin
+
+  lb:
+    image: dockercloud/haproxy:latest
+    links:
+      - slick
+    environment:
+      - BALANCE=leastconn
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - '80:80'
 
 volumes:
   slickdb:

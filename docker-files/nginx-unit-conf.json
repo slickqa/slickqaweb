@@ -1,0 +1,18 @@
+{
+	"listeners": {
+		"*:80": {
+			"application": "slick"
+		}
+	},
+	"applications": {
+		"slick": {
+			"type": "python",
+			"processes": 2,
+			"working_directory": "/opt/slick",
+			"user": "slick",
+			"group": "nogroup",
+			"module": "wsgi",
+			"path": "/opt/slick"
+		}
+	}
+}
