@@ -1,22 +1,97 @@
-FROM ubuntu:16.04
-LABEL maintainer "Jaron Jones"
+FROM debian:stretch-slim
 
-# Install
-RUN apt-get update; apt-get -y dist-upgrade; apt-get install -y python-dev python-pip build-essential python-setuptools python-virtualenv nodejs npm apache2 libapache2-mod-wsgi
-RUN adduser --system --home /opt/slick --disabled-password --disabled-login slick
+LABEL maintainer="Jason Corbett"
 
-# get slick and dependencies
-COPY . /opt/slick/
-RUN chown -R slick /opt/slick; npm install -g less; pip install --upgrade pip; pip install -r /opt/slick/requirements.txt
+# this is from https://github.com/nginxinc/docker-unit/blob/master/Dockerfile.python2.7
+ENV UNIT_VERSION          1.1-1~stretch
 
-#set the slick configs in place and kick the apache HTTP service
-RUN cp -a /opt/slick/docker-files/* /opt/slick/; ln -s /opt/slick/apache.conf /etc/apache2/sites-available/slick.conf; a2ensite slick; rm -f /usr/bin/node; ln -s /usr/bin/nodejs /usr/bin/node
+RUN set -x \
+	&& apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y gnupg1 apt-transport-https ca-certificates \
+	&& \
+	NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
+	found=''; \
+	for server in \
+		ha.pool.sks-keyservers.net \
+		hkp://keyserver.ubuntu.com:80 \
+		hkp://p80.pool.sks-keyservers.net:80 \
+		pgp.mit.edu \
+	; do \
+		echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
+		apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
+	done; \
+	test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
+	apt-get remove --purge --auto-remove -y gnupg1 && rm -rf /var/lib/apt/lists/* \
+	&& dpkgArch="$(dpkg --print-architecture)" \
+	&& unitPackages=" \
+		unit=${UNIT_VERSION} \
+		unit-python2.7=${UNIT_VERSION} \
+	" \
+	&& case "$dpkgArch" in \
+		amd64|i386) \
+# arches officialy built by upstream
+			echo "deb https://packages.nginx.org/unit/debian/ stretch unit" >> /etc/apt/sources.list.d/unit.list \
+			&& apt-get update \
+			;; \
+		*) \
+# we're on an architecture upstream doesn't officially build for
+# let's build binaries from the published source packages
+			echo "deb-src https://packages.nginx.org/unit/debian/ stretch unit" >> /etc/apt/sources.list.d/unit.list \
+			\
+# new directory for storing sources and .deb files
+			&& tempDir="$(mktemp -d)" \
+			&& chmod 777 "$tempDir" \
+# (777 to ensure APT's "_apt" user can access it too)
+			\
+# save list of currently-installed packages so build dependencies can be cleanly removed later
+			&& savedAptMark="$(apt-mark showmanual)" \
+			\
+# build .deb files from upstream's source packages (which are verified by apt-get)
+			&& apt-get update \
+			&& apt-get build-dep -y $unitPackages \
+			&& ( \
+				cd "$tempDir" \
+				&& DEB_BUILD_OPTIONS="nocheck parallel=$(nproc)" \
+					apt-get source --compile $unitPackages \
+			) \
+# we don't remove APT lists here because they get re-downloaded and removed later
+			\
+# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+# (which is done after we install the built packages so we don't have to redownload any overlapping dependencies)
+			&& apt-mark showmanual | xargs apt-mark auto > /dev/null \
+			&& { [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
+			\
+# create a temporary local APT repo to install from (so that dependency resolution can be handled by APT, as it should be)
+			&& ls -lAFh "$tempDir" \
+			&& ( cd "$tempDir" && dpkg-scanpackages . > Packages ) \
+			&& grep '^Package: ' "$tempDir/Packages" \
+			&& echo "deb [ trusted=yes ] file://$tempDir ./" > /etc/apt/sources.list.d/temp.list \
+# work around the following APT issue by using "Acquire::GzipIndexes=false" (overriding "/etc/apt/apt.conf.d/docker-gzip-indexes")
+#   Could not open file /var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages - open (13: Permission denied)
+#   ...
+#   E: Failed to fetch store:/var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages  Could not open file /var/lib/apt/lists/partial/_tmp_tmp.ODWljpQfkE_._Packages - open (13: Permission denied)
+			&& apt-get -o Acquire::GzipIndexes=false update \
+			;; \
+	esac \
+	\
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
+						$unitPackages \
+                        curl python-pip \
+	&& apt-get remove --purge --auto-remove -y apt-transport-https && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/unit.list \
+	\
+# if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
+	&& if [ -n "$tempDir" ]; then \
+		apt-get purge -y --auto-remove \
+		&& rm -rf "$tempDir" /etc/apt/sources.list.d/temp.list; \
+	fi; adduser --system --home /opt/slick --disabled-password --disabled-login slick;
 
-ADD add-indexes.py /opt/slick/
-RUN chmod a+x /opt/slick/add-indexes.py
-ADD startup.sh /opt/slick
+COPY . /opt/slick
 
-# expose our volumes
-VOLUME ["/opt/slick", "/var/log/apache2"]
+# forward log to docker log collector
+RUN pip install --upgrade pip setuptools; cat /opt/slick/requirements.txt |grep -v CherryPy |grep -v watchdog >/opt/slick/requirements-docker.txt; /usr/local/bin/pip install -r /opt/slick/requirements-docker.txt; cp /opt/slick/docker-files/* /opt/slick; chown -R slick /opt/slick; ln -sf /dev/stdout /var/log/unit.log; 
 
-CMD ["/opt/slick/startup.sh"]
+EXPOSE 80
+
+STOPSIGNAL SIGTERM
+
+CMD ["/opt/slick/docker-entry-point.sh"]

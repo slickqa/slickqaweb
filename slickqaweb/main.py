@@ -30,14 +30,21 @@ if 'SECRET_KEY_FILE' in app.config:
         app.secret_key = secret_key_file.readline()
 #Gzip(app)
 
-mongo_hostname = app.config['MONGODB_HOSTNAME']
-mongo_dbname = app.config['MONGODB_DBNAME']
-logger.debug("Connecting to mongo database '%s' on host '%s'.", mongo_dbname, mongo_hostname)
+connect_options = {
+        "host": app.config['MONGODB_HOSTNAME'],
+        "db": app.config['MONGODB_DBNAME']
+}
+logger.debug("Connecting to mongo database '%s' on host '%s'.", connect_options['host'], connect_options['db'])
+if 'MONGODB_USERNAME' in app.config:
+    connect_options['username'] = app.config['MONGODB_USERNAME']
+if 'MONGODB_PASSWORD' in app.config:
+    connect_options['password'] = app.config['MONGODB_PASSWORD']
+if 'MONGODB_AUTHDB' in app.config:
+    connect_options['authentication_source'] = app.config['MONGODB_AUTHDB']
 try:
-    connect(host=mongo_hostname, db=mongo_dbname)
+    connect(**connect_options)
 except:
     logger.fatal("Error connecting to database: ", exc_info=sys.exc_info())
-    logger.fatal("Unable to connect to mongodb database '%s' on host '%s'.", )
     raise
 try:
     amqp_configuration = AMQPSystemConfiguration.objects().first()
