@@ -10,7 +10,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=ch@ngeMe 
     command: mongod --auth
   slick:
-    image: slickqa/slickqaweb
+    image: slickqa/python-slickqaweb
     links:
       - mongo
     environment:
