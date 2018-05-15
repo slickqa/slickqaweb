@@ -271,7 +271,7 @@ angular.module('slickApp')
         $scope.testrunQuery = function(state) {
             var oldQuery = $scope.resultQuery.q;
             var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key] && key !== 'withoutnotes'});
-            var andQuery = ["eq(testrun.testrunId,\"" + $routeParams["testrunid"] + "\")"];
+            var andQuery = ["eq(testrun__testrunId,\"" + $routeParams["testrunid"] + "\")"];
             if(includableStatuses.length === 1) {
                 andQuery.push("eq(status,\"" + includableStatuses[0] + "\")")
             } else if(includableStatuses.length > 1) {
