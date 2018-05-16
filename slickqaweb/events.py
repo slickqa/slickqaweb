@@ -8,7 +8,6 @@ from .model.serialize import serialize_this
 from .model.slickLogEvent import SlickLogEvent, EventTypes
 
 from kombu import producers
-from flask import g
 import sys
 
 
@@ -59,8 +58,8 @@ class CreateEvent(Event):
                 logevent.targetid = str(created.id)
             if hasattr(created, 'name'):
                 logevent.name = created.name
-            if g.user is not None:
-                logevent.user = g.user.full_name + " <" + g.user.email + ">"
+            #if g.user is not None:
+            #    logevent.user = g.user.full_name + " <" + g.user.email + ">"
             logevent.save()
         except:
             self.logger.warn("Error saving slick log event: ", exc_info=sys.exc_info())
@@ -89,8 +88,8 @@ class UpdateEvent(Event):
                 logevent.targetid = str(after.id)
             if hasattr(after, 'name'):
                 logevent.name = after.name
-            if g.user is not None:
-                logevent.user = g.user.full_name + " <" + g.user.email + ">"
+            #if g.user is not None:
+            #    logevent.user = g.user.full_name + " <" + g.user.email + ">"
             logevent.save()
         except:
             self.logger.warn("Error saving slick log event: ", exc_info=sys.exc_info())
@@ -116,8 +115,8 @@ class DeleteEvent(Event):
                 logevent.targetid = str(deleted.id)
             if hasattr(deleted, 'name'):
                 logevent.name = deleted.name
-            if g.user is not None:
-                logevent.user = g.user.full_name + " <" + g.user.email + ">"
+            #if g.user is not None:
+            #    logevent.user = g.user.full_name + " <" + g.user.email + ">"
             logevent.save()
         except:
             self.logger.warn("Error saving slick log event: ", exc_info=sys.exc_info())

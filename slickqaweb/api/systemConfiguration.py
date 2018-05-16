@@ -4,7 +4,7 @@ from slickqaweb.app import app
 from slickqaweb.model.systemConfiguration import load_system_configuration_type, SystemConfigurationTypes, BaseSystemConfiguration
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
-from flask import request, g
+from flask import request
 from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note

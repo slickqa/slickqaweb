@@ -4,7 +4,7 @@ from slickqaweb.app import app
 from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
-from flask import request, g
+from flask import request
 from .standardResponses import JsonResponse, read_request
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
@@ -39,8 +39,8 @@ def get_testcase_by_id(testcase_id):
 def add_testcase():
     """Add a new testcase."""
     new_tc = deserialize_that(read_request(), Testcase())
-    if (new_tc.author is None or new_tc.author == "") and g.user is not None:
-        new_tc.author = g.user.full_name
+    #if (new_tc.author is None or new_tc.author == "") and g.user is not None:
+    #    new_tc.author = g.user.full_name
     new_tc.save()
     return JsonResponse(new_tc)
 

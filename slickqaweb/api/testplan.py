@@ -4,7 +4,7 @@ from slickqaweb.app import app
 from slickqaweb.model.testPlan import TestPlan
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
-from flask import request, g
+from flask import request
 from .standardResponses import JsonResponse, read_request
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
@@ -38,8 +38,8 @@ def get_testplan_by_id(testplan_id):
 def add_testplan():
     """Add a new testplan."""
     new_tp = deserialize_that(read_request(), TestPlan())
-    if (new_tp.createdBy is None or new_tp.createdBy == "") and g.user is not None:
-        new_tp.createdBy = g.user.full_name
+    #if (new_tp.createdBy is None or new_tp.createdBy == "") and g.user is not None:
+    #    new_tp.createdBy = g.user.full_name
     new_tp.save()
     return JsonResponse(new_tp)
 
