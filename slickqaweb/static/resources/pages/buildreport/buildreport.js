@@ -103,10 +103,28 @@ angular.module('slickApp')
                     colors: []
                 };
                 $scope.testrungroup = buildreport;
+                $scope.estimatedTimeRemaining = "";
+                $scope.buildRunTime = "";
                 var testrungroup = buildreport;
                 if (buildreport.hasOwnProperty('name')) {
                     nav.setTitle(buildreport.name);
-
+                    let buildFinished = true;
+                    let finishedRunTimes = [];
+                    for (let key in buildreport.testruns) {
+                        if (!buildreport.testruns[key].hasOwnProperty('runFinished')) {
+                            buildFinished = false;
+                            break;
+                        } else {
+                            finishedRunTimes.push(buildreport.testruns[key].runFinished)
+                        }
+                    }
+                    $scope.estimatedTimeRemaining = getEstimatedTimeRemaining(buildreport, 'build');
+                    let createdTime = buildreport.testruns[0].dateCreated;
+                    if (buildFinished || $scope.estimatedTimeRemaining === "") {
+                        $scope.buildRunTime = finishedRunTimes.length !== 0 ? getDurationString(Math.max(...finishedRunTimes) - createdTime, true) : "";
+                    } else {
+                        $scope.buildRunTime = getDurationString(new Date().getTime() - createdTime, true);
+                    }
                     $scope.parallelSummaryData = new google.visualization.DataTable();
                     $scope.parallelSummaryData.addColumn('string', 'Status');
                     $scope.parallelSummaryData.addColumn('number', 'Results');

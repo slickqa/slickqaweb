@@ -114,6 +114,10 @@
                         <div class="testrun-summary-metadata-key">Run Time: </div>
                         <div class="testrun-summary-metadata-value" ng-bind="getTestrunDuration(testrun)"></div>
                     </div>
+                    <div class="testrun-summary-metadata-row" ng-show="estimatedTimeRemaining">
+                        <div class="testrun-summary-metadata-key">Time Remaining: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="estimatedTimeRemaining"></div>
+                    </div>
                     <div class="testrun-summary-metadata-row" ng-show="testrun.files">
                         <div class="testrun-summary-metadata-key">Files({{ testrun.files.length }}):</div>
                         <div class="testrun-summary-metadata-value">

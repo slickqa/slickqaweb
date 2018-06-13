@@ -255,7 +255,7 @@ angular.module('slickApp')
                 $scope.recentlyFetchedTestrun = true;
                 $scope.testrunQuery(testrun.state);
                 nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
-
+                $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
 
                 if(!testrun.info && testrun.project && testrun.release && testrun.build) {
                     projrest.one('projects', testrun.project.name).one('releases', testrun.release.name).one('builds', testrun.build.name).get().then(function(build) {

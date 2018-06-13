@@ -24,7 +24,7 @@ function getStyle(el,styleProp)
     return y;
 }
 
-function getDurationString(duration) {
+function getDurationString(duration, doNotShowDecimals) {
     var seconds = duration / 1000.0;
     var minutes = 0;
     var hours = 0;
@@ -33,27 +33,27 @@ function getDurationString(duration) {
 
     if (seconds > 60) {
         minutes = Math.floor(seconds / 60);
-        seconds = (seconds % 60).toFixed(3) + " seconds"
+        seconds = doNotShowDecimals ? Math.floor((seconds % 60)) + " seconds" : (seconds % 60).toFixed(3) + " seconds"
     } else {
-        seconds = seconds.toFixed(3) + " seconds";
+        seconds = doNotShowDecimals ? Math.floor(seconds) + " seconds" : seconds.toFixed(3) + " seconds";
     }
 
     if (minutes > 60) {
         hours = Math.floor(minutes / 60);
-        minutes = (minutes % 60) + " minutes ";
+        minutes = `${(minutes % 60)} minute${minutes === 1 ? "" : "s"} `;
     } else if (minutes > 0) {
-        minutes = minutes + " minutes ";
+        minutes = `${minutes} minute${minutes === 1 ? "" : "s"} `;
     }
 
     if (hours > 24) {
         days = Math.floor(hours / 24);
-        hours = (hours % 24) + " hours ";
+        hours = `${(hours % 24)} hour${hours === 1 ? "" : "s"} `;
     } else if (hours > 0) {
-        hours = hours + " hours ";
+        hours = `${hours} hour${hours === 1 ? "" : "s"} `;
     }
 
     if (days > 0) {
-        retval = days + " days ";
+        retval = `${days} day${days === 1 ? "" : "s"} `;
     }
     if (hours) {
         retval = retval + hours;
@@ -66,6 +66,32 @@ function getDurationString(duration) {
     }
 
     return retval;
+}
+
+function getEstimatedTimeRemaining(report, type) {
+    let createTime = null;
+    let summaryKey = null;
+    if (type === 'build') {
+        createTime = report.hasOwnProperty('testruns') && report.testruns !== null ? report.testruns[0].dateCreated : null;
+        summaryKey = 'groupSummary';
+    } else if (type === 'testrun') {
+        createTime = report.runStarted;
+        summaryKey = 'summary';
+    }
+    if (createTime) {
+        const currentTime = new Date().getTime();
+        const timeSinceCreation = currentTime - createTime;
+        let executedResults = 0;
+        for (let key in report[summaryKey].resultsByStatus) {
+            executedResults += key !== 'NO_RESULT' ? report[summaryKey].resultsByStatus[key] : 0
+        }
+        const executionTimePerTest = timeSinceCreation / executedResults;
+        const estimatedTimeRemaining = executionTimePerTest * report[summaryKey].resultsByStatus.NO_RESULT;
+        const durationString = getDurationString(estimatedTimeRemaining, true);
+        return durationString !== "0 seconds" ? durationString : "";
+    } else {
+        return "";
+    }
 }
 'use strict';
 /**
@@ -1601,7 +1627,7 @@ angular.module('slickApp')
                 $scope.recentlyFetchedTestrun = true;
                 $scope.testrunQuery(testrun.state);
                 nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
-
+                $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
 
                 if(!testrun.info && testrun.project && testrun.release && testrun.build) {
                     projrest.one('projects', testrun.project.name).one('releases', testrun.release.name).one('builds', testrun.build.name).get().then(function(build) {
@@ -2514,10 +2540,28 @@ angular.module('slickApp')
                     colors: []
                 };
                 $scope.testrungroup = buildreport;
+                $scope.estimatedTimeRemaining = "";
+                $scope.buildRunTime = "";
                 var testrungroup = buildreport;
                 if (buildreport.hasOwnProperty('name')) {
                     nav.setTitle(buildreport.name);
-
+                    let buildFinished = true;
+                    let finishedRunTimes = [];
+                    for (let key in Object.keys(buildreport.testruns)) {
+                        if (!buildreport.testruns[key].hasOwnProperty('runFinished')) {
+                            buildFinished = false;
+                            break;
+                        } else {
+                            finishedRunTimes.push(buildreport.testruns[key].runFinished)
+                        }
+                    }
+                    $scope.estimatedTimeRemaining = getEstimatedTimeRemaining(buildreport, 'build');
+                    let createdTime = buildreport.testruns[0].dateCreated;
+                    if (buildFinished || $scope.estimatedTimeRemaining === "") {
+                        $scope.buildRunTime = finishedRunTimes.length !== 0 ? getDurationString(Math.max(...finishedRunTimes) - createdTime, true) : "";
+                    } else {
+                        $scope.buildRunTime = getDurationString(new Date().getTime() - createdTime, true);
+                    }
                     $scope.parallelSummaryData = new google.visualization.DataTable();
                     $scope.parallelSummaryData.addColumn('string', 'Status');
                     $scope.parallelSummaryData.addColumn('number', 'Results');
