@@ -1627,6 +1627,10 @@ angular.module('slickApp')
                 $scope.recentlyFetchedTestrun = true;
                 $scope.testrunQuery(testrun.state);
                 nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
+                $scope.goToBuildReportButton = {
+                    href: `build-report/${testrun.project.name}/${testrun.release.name}/${testrun.build.name}`,
+                    name: "Go to Build Report"
+                };
                 $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
 
                 if(!testrun.info && testrun.project && testrun.release && testrun.build) {

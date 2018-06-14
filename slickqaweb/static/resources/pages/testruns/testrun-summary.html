@@ -74,6 +74,9 @@
                     </div>
                 </div>
                 <div class="testrun-summary-metadata">
+                    <div class="testrun-summary-metadata-row testrun-summary-metadata-row-build" ng-show="testrun.build">
+                        <a class="testrun-summary-metadata-value button" href="{{ goToBuildReportButton.href }}">{{ goToBuildReportButton.name }}</a>
+                    </div>
                     <div class="testrun-summary-metadata-row testrun-summary-metadata-row-project" ng-show="testrun.project">
                         <div class="testrun-summary-metadata-key">Project: </div>
                         <div class="testrun-summary-metadata-value" ng-bind="testrun.project.name"></div>
