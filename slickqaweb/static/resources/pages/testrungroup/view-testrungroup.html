@@ -3,6 +3,12 @@
         <div class="testrungroup-chart-container">
             <div class="testrungroup-parallel-summary-chart-container">
                 <h2>Overall Summary</h2>
+                <div ng-if="buildRunTime">
+                    <h3>{{ 'Run Time: ' + buildRunTime }}</h3>
+                </div>
+                <div ng-if="estimatedTimeRemaining">
+                    <h3>{{ 'Time Remaining: ' + estimatedTimeRemaining }}</h3>
+                </div>
                 <google-pie-chart class="testrungroup-parallel-summary-chart" data="parallelSummaryData" options="summaryChartOptions"></google-pie-chart>
             </div>
             <div class="testrungroup-parallel-individual-chart-container">

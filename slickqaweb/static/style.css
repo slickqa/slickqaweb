@@ -4072,6 +4072,9 @@ div.multi-project-dashboard-statusbar {
 .statusbar-BROKENTEST {
   background-color: #ffac00;
 }
+.statusbar-NOT_TESTED {
+  background-color: #1e90ff;
+}
 .statusbar-SKIPPED {
   background-color: #bdb76b;
 }
@@ -4310,7 +4313,7 @@ div.multi-project-dashboard-statusbar {
   min-height: .45in;
   max-width: .45in;
   max-height: .45in;
-  background-image: url("static/images/rerun_blank.png");
+  background-image: url("images/rerun_blank.png");
   background-size: .44in;
   cursor: pointer;
   background-repeat: no-repeat;
@@ -4318,10 +4321,10 @@ div.multi-project-dashboard-statusbar {
   margin-right: .1in;
 }
 .reschedule-button:hover {
-  background-image: url("static/images/rerun_hover.png");
+  background-image: url("images/rerun_hover.png");
 }
 .reschedule-button:active {
-  background-image: url("static/images/rerun_clicked.png");
+  background-image: url("images/rerun_clicked.png");
 }
 .reschedule-button.reschedule-button-result {
   min-width: .25in;
@@ -4343,7 +4346,7 @@ div.multi-project-dashboard-statusbar {
   min-height: .45in;
   max-width: .45in;
   max-height: .45in;
-  background-image: url("static/images/cancel_blank.png");
+  background-image: url("images/cancel_blank.png");
   background-size: .44in;
   cursor: pointer;
   background-repeat: no-repeat;
@@ -4351,10 +4354,10 @@ div.multi-project-dashboard-statusbar {
   margin-right: .1in;
 }
 .cancel-button:hover {
-  background-image: url("static/images/cancel_hover.png");
+  background-image: url("images/cancel_hover.png");
 }
 .cancel-button:active {
-  background-image: url("static/images/cancel_clicked.png");
+  background-image: url("images/cancel_clicked.png");
 }
 .testrun-summary-data-status {
   width: 3in;
@@ -4917,6 +4920,11 @@ div.multi-project-dashboard-statusbar {
   width: 30%;
 }
 .testrungroup-parallel-summary-chart-container h2 {
+  margin-top: .05in;
+  margin-bottom: .05in;
+  text-align: center;
+}
+.testrungroup-parallel-summary-chart-container h3 {
   margin-top: .05in;
   margin-bottom: .05in;
   text-align: center;

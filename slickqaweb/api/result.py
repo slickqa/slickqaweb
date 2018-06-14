@@ -421,7 +421,7 @@ def update_result(result_id):
     update_event = events.UpdateEvent(before=orig)
     update = read_request()
     print(repr(update))
-    
+
     if 'status' in update and update['status'] != orig.status:
         atomic_update = {
             'dec__summary__resultsByStatus__' + orig.status: 1,
@@ -502,7 +502,14 @@ def cancel_individual_result(result_id):
         decrement_orig_status_by = "dec__summary__resultsByStatus__" + orig_status
         increment_skipped_status_by = "inc__summary__resultsByStatus__SKIPPED"
         Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_skipped_status_by: 1})
-    Result.objects(id=result_id).update(runstatus="FINISHED", status="SKIPPED", reason="Run cancelled from slick.")
+        testrun = Testrun.objects(id=orig.testrun.testrunId).first()
+        if testrun.summary.resultsByStatus.NO_RESULT == 0:
+            # finish testrun
+            testrun.runFinished = datetime.datetime.utcnow()
+            testrun.state = "FINISHED"
+            Testrun.objects(id=orig.testrun.testrunId).update_one(runFinished=testrun.runFinished, state=testrun.state)
+    reason = request.args.get("reason") if request.args.get("reason") else "Run cancelled from slick."
+    Result.objects(id=result_id).update(runstatus="FINISHED", status="SKIPPED", reason=reason)
     orig.reload()
     return JsonResponse(orig)
 

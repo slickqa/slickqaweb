@@ -74,6 +74,9 @@
                     </div>
                 </div>
                 <div class="testrun-summary-metadata">
+                    <div class="testrun-summary-metadata-row testrun-summary-metadata-row-build" ng-show="testrun.build.name">
+                        <a class="testrun-summary-metadata-value button" href="{{ goToBuildReportButton.href }}">{{ goToBuildReportButton.name }}</a>
+                    </div>
                     <div class="testrun-summary-metadata-row testrun-summary-metadata-row-project" ng-show="testrun.project">
                         <div class="testrun-summary-metadata-key">Project: </div>
                         <div class="testrun-summary-metadata-value" ng-bind="testrun.project.name"></div>
@@ -113,6 +116,10 @@
                     <div class="testrun-summary-metadata-row" ng-show="testrun.runStarted && testrun.runFinished">
                         <div class="testrun-summary-metadata-key">Run Time: </div>
                         <div class="testrun-summary-metadata-value" ng-bind="getTestrunDuration(testrun)"></div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="estimatedTimeRemaining">
+                        <div class="testrun-summary-metadata-key">Time Remaining: </div>
+                        <div class="testrun-summary-metadata-value" ng-bind="estimatedTimeRemaining"></div>
                     </div>
                     <div class="testrun-summary-metadata-row" ng-show="testrun.files">
                         <div class="testrun-summary-metadata-key">Files({{ testrun.files.length }}):</div>
