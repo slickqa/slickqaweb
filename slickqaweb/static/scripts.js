@@ -2545,19 +2545,15 @@ angular.module('slickApp')
                 var testrungroup = buildreport;
                 if (buildreport.hasOwnProperty('name')) {
                     nav.setTitle(buildreport.name);
-                    let buildFinished = true;
                     let finishedRunTimes = [];
-                    for (let key in Object.keys(buildreport.testruns)) {
-                        if (!buildreport.testruns[key].hasOwnProperty('runFinished')) {
-                            buildFinished = false;
-                            break;
-                        } else {
+                    for (let key in buildreport.testruns) {
+                        if (buildreport.testruns[key].hasOwnProperty('runFinished')) {
                             finishedRunTimes.push(buildreport.testruns[key].runFinished)
                         }
                     }
                     $scope.estimatedTimeRemaining = getEstimatedTimeRemaining(buildreport, 'build');
                     let createdTime = buildreport.testruns[0].dateCreated;
-                    if (buildFinished || $scope.estimatedTimeRemaining === "") {
+                    if (finishedRunTimes.length === buildreport.testruns.length || $scope.estimatedTimeRemaining === "") {
                         $scope.buildRunTime = finishedRunTimes.length !== 0 ? getDurationString(Math.max(...finishedRunTimes) - createdTime, true) : "";
                     } else {
                         $scope.buildRunTime = getDurationString(new Date().getTime() - createdTime, true);
