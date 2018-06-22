@@ -18,7 +18,7 @@
         </div>
     </div>
     <div class="list-action-bar">
-        <a class="button" href="{{editbutton.href}}">{{ editbutton.name }}</a>
+        <a class="button" ng-if="editbutton" href="{{editbutton.href}}">{{ editbutton.name }}</a>
     </div>
     <google-line-chart class="testrungroup-serial-chart" data="serialData" options="serialChartOptions" ng-switch-when="SERIAL"></google-line-chart>
     <div class="testrungroup-data-container">
