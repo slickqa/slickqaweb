@@ -74,9 +74,6 @@
                     </div>
                 </div>
                 <div class="testrun-summary-metadata">
-                    <div class="testrun-summary-metadata-row testrun-summary-metadata-row-build" ng-show="testrun.build.name">
-                        <a class="testrun-summary-metadata-value button" href="{{ goToBuildReportButton.href }}">{{ goToBuildReportButton.name }}</a>
-                    </div>
                     <div class="testrun-summary-metadata-row testrun-summary-metadata-row-project" ng-show="testrun.project">
                         <div class="testrun-summary-metadata-key">Project: </div>
                         <div class="testrun-summary-metadata-value" ng-bind="testrun.project.name"></div>
@@ -132,6 +129,12 @@
                         <div class="testrun-summary-metadata-value">
                             <a ng-repeat="link in testrun.links" href="{{link.url}}" target="_blank">{{link.name}}</a>
                         </div>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.build.name">
+                        <a class="testrun-summary-metadata-value button" href="{{ goToBuildReportButton.href }}">{{ goToBuildReportButton.name }}</a>
+                    </div>
+                    <div class="testrun-summary-metadata-row" ng-show="testrun.release.name">
+                        <a class="testrun-summary-metadata-value button" href="{{ goToTPSReportButton.href }}">{{ goToTPSReportButton.name }}</a>
                     </div>
                     <div ng-show="testrun.info">
                         <pre ng-bind="testrun.info"></pre>

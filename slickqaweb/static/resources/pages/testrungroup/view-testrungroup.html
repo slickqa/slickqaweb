@@ -40,7 +40,10 @@
                     <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
                     <div class="testruns-list-environment-column" ng-bind="testrun.config.name"></div>
                     <div class="testruns-list-build-column">{{testrun.release.name}} Build {{ testrun.build.name }}</div>
-                    <div class="testruns-list-created-column" ng-bind="testrun.dateCreated | date:'medium'"></div>
+                    <div class="testruns-list-created-column">
+                        <div class="testruns-list-created-column" ng-bind="testrun.dateCreated | date:'medium'"></div>
+                        <a ng-show="isBuildReport" class="button" href="tps-report/{{ testrun.project.name }}/{{ testrun.release.name }}/{{ testrun.testplan.name }}">TPS Report</a>
+                    </div>
                 </div>
             </div>
         </div>

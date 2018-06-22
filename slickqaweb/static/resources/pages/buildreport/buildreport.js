@@ -105,6 +105,7 @@ angular.module('slickApp')
                 $scope.testrungroup = buildreport;
                 $scope.estimatedTimeRemaining = "";
                 $scope.buildRunTime = "";
+                $scope.isBuildReport = false;
                 var testrungroup = buildreport;
                 if (buildreport.hasOwnProperty('name')) {
                     nav.setTitle(buildreport.name);
@@ -115,6 +116,7 @@ angular.module('slickApp')
                         }
                     }
                     $scope.estimatedTimeRemaining = getEstimatedTimeRemaining(buildreport, 'build');
+                    $scope.isBuildReport = true;
                     let createdTime = buildreport.testruns[0].dateCreated;
                     if (finishedRunTimes.length === buildreport.testruns.length || $scope.estimatedTimeRemaining === "") {
                         $scope.buildRunTime = finishedRunTimes.length !== 0 ? getDurationString(Math.max(...finishedRunTimes) - createdTime, true) : "";

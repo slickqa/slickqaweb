@@ -1633,7 +1633,11 @@ angular.module('slickApp')
                 nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
                 $scope.goToBuildReportButton = {
                     href: `build-report/${testrun.project.name}/${testrun.release.name}/${testrun.build.name}`,
-                    name: "Go to Build Report"
+                    name: "Build Report"
+                };
+                $scope.goToTPSReportButton = {
+                    href: `tps-report/${testrun.project.name}/${testrun.release.name}/${testrun.testplan.name}`,
+                    name: "TPS Report"
                 };
                 $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
 
@@ -2550,6 +2554,7 @@ angular.module('slickApp')
                 $scope.testrungroup = buildreport;
                 $scope.estimatedTimeRemaining = "";
                 $scope.buildRunTime = "";
+                $scope.isBuildReport = false;
                 var testrungroup = buildreport;
                 if (buildreport.hasOwnProperty('name')) {
                     nav.setTitle(buildreport.name);
@@ -2560,6 +2565,7 @@ angular.module('slickApp')
                         }
                     }
                     $scope.estimatedTimeRemaining = getEstimatedTimeRemaining(buildreport, 'build');
+                    $scope.isBuildReport = true;
                     let createdTime = buildreport.testruns[0].dateCreated;
                     if (finishedRunTimes.length === buildreport.testruns.length || $scope.estimatedTimeRemaining === "") {
                         $scope.buildRunTime = finishedRunTimes.length !== 0 ? getDurationString(Math.max(...finishedRunTimes) - createdTime, true) : "";
@@ -2680,9 +2686,9 @@ angular.module('slickApp')
                         return testrun.dateCreated;
                     });
                     _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        var color = getStyle(status.replace("_", "") + "-element", "color");
+                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                         $scope.serialChartOptions.colors.push(color);
-                        $scope.serialData.addColumn('number', status.replace("_", " "))
+                        $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
                     });
                     _.each(testrungroup.testruns, function (testrun) {
                         var row = [new Date(testrun.dateCreated)];
