@@ -257,7 +257,11 @@ angular.module('slickApp')
                 nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
                 $scope.goToBuildReportButton = {
                     href: `build-report/${testrun.project.name}/${testrun.release.name}/${testrun.build.name}`,
-                    name: "Go to Build Report"
+                    name: "Build Report"
+                };
+                $scope.goToTPSReportButton = {
+                    href: `tps-report/${testrun.project.name}/${testrun.release.name}/${testrun.testplan.name}`,
+                    name: "TPS Report"
                 };
                 $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
 

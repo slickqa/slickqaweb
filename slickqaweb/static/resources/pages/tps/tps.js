@@ -51,9 +51,9 @@ angular.module('slickApp')
                         return testrun.dateCreated;
                     });
                     _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        var color = getStyle(status.replace("_", "") + "-element", "color");
+                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                         $scope.serialChartOptions.colors.push(color);
-                        $scope.serialData.addColumn('number', status.replace("_", " "))
+                        $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
                     });
                     _.each(testrungroup.testruns, function (testrun) {
                         var row = [new Date(testrun.dateCreated)];
