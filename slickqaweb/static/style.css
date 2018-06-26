@@ -4674,6 +4674,9 @@ div.multi-project-dashboard-statusbar {
   color: #ffac00;
   margin-left: .3in;
 }
+.result-note .INFO {
+  color: #c0c0c0;
+}
 .result-note-message {
   margin-left: .2in;
 }

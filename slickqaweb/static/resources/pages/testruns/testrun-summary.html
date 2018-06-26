@@ -231,8 +231,8 @@
         </div>
         <div class="result-list-notes-part">
             <div ng-repeat="note in getResultNotes(result)" class="result-note">
-                <span class="result-note-timestamp" ng-bind="note.entryTime |date:'medium'"></span>
-                <span class="result-note-message" ng-bind="note.message.split('\n')[0]"></span>
+                <span class="result-note-timestamp {{ note.level }}" ng-bind="note.entryTime |date:'medium'"></span>
+                <span class="result-note-message {{ note.level }}" ng-bind="note.message.split('\n')[0]"></span>
                 <a href="{{note.exceptionMessage}}" class="result-note-link" ng-show="note.exceptionMessage" ng-bind="note.exceptionMessage"></a>
             </div>
         </div>

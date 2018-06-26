@@ -1802,7 +1802,7 @@ angular.module('slickApp')
 
         $scope.getResultNotes = function(result) {
             return _.filter(result.log, function(logEntry) {
-                return logEntry.level == "WARN" && logEntry.loggerName == "slick.note";
+                return (logEntry.level === "WARN" || logEntry.level === "INFO") && logEntry.loggerName === "slick.note";
             });
         };
 
