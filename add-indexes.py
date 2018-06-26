@@ -28,7 +28,7 @@ if 'MONGODB_USERNAME' in config:
 if 'MONGODB_PASSWORD' in config:
     connect_options['password'] = config['MONGODB_PASSWORD']
 if 'MONGODB_AUTHDB' in config:
-    connect_options['authentication_source'] = config['MONGODB_AUTHDB']
+    connect_options['authSource'] = config['MONGODB_AUTHDB']
 
 client = pymongo.MongoClient(**connect_options)
 db = client[config['MONGODB_DBNAME']]
