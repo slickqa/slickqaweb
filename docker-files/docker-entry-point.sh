@@ -39,8 +39,9 @@ then
 	echo "MONGODB_AUTHDB = \"${MONGODB_AUTHDB}\"" >> /opt/slick/prodserver.cfg
 fi
 
+
 /usr/sbin/unitd --no-daemon &
-sleep 1
+/usr/bin/env python /opt/slick/add-indexes.py
 curl -X PUT -d @/opt/slick/nginx-unit-conf.json --unix-socket /var/run/control.unit.sock http://localhost
 
 wait
