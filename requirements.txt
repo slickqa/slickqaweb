@@ -1,4 +1,4 @@
-pymongo==2.8
+pymongo
 Flask
 mongoengine
 Flask-gzip
