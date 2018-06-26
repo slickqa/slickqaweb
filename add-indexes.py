@@ -9,15 +9,15 @@ config = {}
 with open(prod_config) as f:
     for line in f:
         if line.startswith("MONGODB_HOSTNAME"):
-            config['MONGODB_HOSTNAME'] = line.split('=')[1].strip()
+            config['MONGODB_HOSTNAME'] = line.split('=')[1].strip().strip('"')
         if line.startswith("MONGODB_DBNAME"):
-            config['MONGODB_DBNAME'] = line.split('=')[1].strip()
+            config['MONGODB_DBNAME'] = line.split('=')[1].strip().strip('"')
         if line.startswith("MONGODB_USERNAME"):
-            config['MONGODB_USERNAME'] = line.split('=')[1].strip()
+            config['MONGODB_USERNAME'] = line.split('=')[1].strip().strip('"')
         if line.startswith("MONGODB_PASSWORD"):
-            config['MONGODB_PASSWORD'] = line.split('=')[1].strip()
+            config['MONGODB_PASSWORD'] = line.split('=')[1].strip().strip('"')
         if line.startswith("MONGODB_AUTHDB"):
-            config['MONGODB_AUTHDB'] = line.split('=')[1].strip()
+            config['MONGODB_AUTHDB'] = line.split('=')[1].strip().strip('"')
 
 connect_options = {
         "host": config['MONGODB_HOSTNAME'],
