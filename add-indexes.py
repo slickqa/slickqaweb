@@ -21,7 +21,6 @@ with open(prod_config) as f:
 
 connect_options = {
         "host": config['MONGODB_HOSTNAME'],
-        "db": config['MONGODB_DBNAME']
 }
 if 'MONGODB_USERNAME' in config:
     connect_options['username'] = config['MONGODB_USERNAME']
