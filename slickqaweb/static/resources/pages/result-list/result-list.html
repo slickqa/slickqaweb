@@ -1,38 +1,43 @@
 <div class="slickview">
     <slick-dialog title="Add Note" size="small" show="showAddNote" buttons="Add|Cancel" button-callback="addNoteDialogButtonClicked(buttonName)">
-        <div class="data-view testrun-summary-add-note">
-            <div class="data-view-item">
-                <div class="data-view-property-name">Message</div>
-                <div class="data-view-property-value"><input type="text" ng-model="note.message" /></div>
-            </div>
-            <div class="data-view-item">
-                <div class="data-view-property-name">URL (optional)</div>
-                <div class="data-view-property-value"><input type="url" ng-model="note.externalLink" /></div>
-            </div>
-            <div class="data-view-item">
-                <div class="data-view-property-name">Recurring</div>
-                <div class="data-view-property-value"><input type="checkbox" ng-model="note.recurring" /></div>
-            </div>
-            <div class="data-view-item" ng-show="note.recurring">
-                <div class="data-view-property-name">Match Release</div>
-                <div class="data-view-property-value"><input type="checkbox" ng-model="note.matchRelease" />{{note.result.release.name}}</div>
-            </div>
-            <div class="data-view-item" ng-show="note.recurring">
-                <div class="data-view-property-name">Match Environment</div>
-                <div class="data-view-property-value"><input type="checkbox" ng-model="note.matchEnvironment" />{{note.result.config.name}}</div>
-            </div>
+        <div class="data-view testrun-summary-add-note" layout="column">
+            <md-input-container>
+                <label>Message</label>
+                <input type="text" ng-model="note.message"/>
+            </md-input-container>
+            <md-input-container>
+                <label>URL (optional)</label>
+                <input type="url" ng-model="note.externalLink"/>
+            </md-input-container>
+            <md-input-container>
+                <md-checkbox type="checkbox" ng-model="note.recurring">Recurring</md-checkbox>
+            </md-input-container>
+            <fieldset class="standard" ng-show="note.recurring">
+                <legend>Match Release</legend>
+                <md-input-container>
+                    <md-checkbox type="checkbox" ng-model="note.matchRelease" aria-label="note.result.release.name">
+                        {{ note.result.release.name }}</md-checkbox>
+                </md-input-container>
+            </fieldset>
+            <fieldset class="standard" ng-show="note.recurring">
+                <legend>Match Environment</legend>
+                <md-input-container>
+                    <md-checkbox ng-model="note.matchEnvironment" aria-label="note.result.config.name">
+                        {{ note.result.config.name }}</md-checkbox>
+                </md-input-container>
+            </fieldset>
         </div>
     </slick-dialog>
-    <slick-dialog title="{{fileToDisplay.filename}}" size="large" show="showDisplayFile" buttons="Ok" button-callback="displayFileDialogButtonClicked(buttonName)">
+    <slick-dialog title="{{ fileToDisplay.filename }}" size="large" show="showDisplayFile" buttons="Ok" button-callback="displayFileDialogButtonClicked(buttonName)">
         <div ng-switch on="getFileViewer(fileToDisplay)">
             <div class="testrun-summary-display-file-image" ng-switch-when="image">
-                <img ng-src="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}" alt="{{fileToDisplay.filename}}"/>
+                <img ng-src="api/files/{{ fileToDisplay.id }}/content/{{ fileToDisplay.filename }}" alt="{{ fileToDisplay.filename }}"/>
             </div>
             <div class="testrun-summary-display-file-embed-video" ng-switch-when="embed-video">
-                <object type="{{fileToDisplay.mimetype}}" width="800" height="600" data="api/files/{{fileToDisplay.id}}/content/{{fileToDisplay.filename}}"></object>
+                <object type="{{ fileToDisplay.mimetype }}" width="800" height="600" data="api/files/{{ fileToDisplay.id }}/content/{{ fileToDisplay.filename }}"></object>
             </div>
-            <div class="testrun-summary-display-file-html5-video" ng-switch-when="html5-video">
-                <video ng-src="{{getUrlForFile(fileToDisplay)}}" preload="auto" controls></video>
+            <div style="text-align: center" class="testrun-summary-display-file-html5-video" ng-switch-when="html5-video">
+                <video ng-src="{{ getUrlForFile(fileToDisplay) }}" preload="auto" controls></video>
             </div>
             <div class="testrun-summary-display-file-text" ng-switch-when="text">
                 <pre prettyprint code="fileToDisplay.text"></pre>
@@ -50,76 +55,118 @@
         <ng-include src="'static/resources/pages/testcase/testcase-dataview.html'">
         </ng-include>
     </slick-dialog>
-    <slick-list-header model="resultList" search="on" pagination="on" default-sort="recorded" default-page-size="50">
-        <slick-list-columns class="result-list-column-container">
-            <slick-list-column class="result-list-name-column" sort-property-name="testcase.name" sortable="true">Name</slick-list-column>
-            <slick-list-column class="result-list-component-column" sort-property-name="component.name" sortable="true">Component</slick-list-column>
-            <slick-list-column class="result-list-recorded-column" sort-property-name="recorded" sortable="true">Recorded</slick-list-column>
-            <slick-list-column class="result-list-duration-column" sort-property-name="runlength" sortable="true">Duration</slick-list-column>
-            <slick-list-column class="result-list-hostname-column" sort-property-name="hostname" sortable="true">Hostname</slick-list-column>
-            <slick-list-column class="result-list-history-column" sortable="false">History</slick-list-column>
-            <slick-list-column class="result-list-status-column" sort-property-name="status" sortable="true">Status</slick-list-column>
-        </slick-list-columns>
-    </slick-list-header>
-    <div class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id">
-        <div class="result-list-column-container">
-            <div class="result-list-name-column"><a href="testcases/{{ result.testcase.testcaseId }}" ng-click="showTestcase(result.testcase.testcaseId, $event)" ng-bind="result.testcase.name"></a></div>
-            <div class="result-list-component-column" ng-bind="result.component.name"></div>
-            <div class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'"></div>
-            <div class="result-list-duration-column" ng-bind="getResultDuration(result)"></div>
-            <div class="result-list-hostname-column" ng-bind="result.hostname"></div>
-            <div class="result-list-history-column"><img class="clickable" ng-repeat="hres in result.history | reverse track by hres.resultId" ng-src="static/images/status-{{hres.status}}.png" ng-click="onHistoryClick(hres)"/></div>
-            <div class="result-list-status-column result-status-{{replaceOnStatus(result.status, '')}}" ng-bind="replaceOnStatus(result.status, ' ')"></div>
-        </div>
-        <div class="result-list-second-part">
-            <div class="result-list-log-column"><a href="results/{{result.id}}/log" ng-show="result.log" ng-click="displayLogs(result, $event)">Log Entries ({{result.log.length}})</a></div>
-            <div class="result-list-files-column">
-                <span  ng-show="result.files">
-                    Files ({{result.files.length}}):
-                    [
+    <md-content style="overflow: auto">
+        <table slick-list-header model="resultList" search="on" pagination="on" default-sort="recorded" default-page-size="50">
+            <tr slick-list-columns class="result-list-column-container">
+                <th slick-list-column ng-show="results[0].attributes && results[0].attributes.scheduled" class="result-list-status-column" sortable="false"></th>
+                <th slick-list-column class="result-list-name-column" sort-property-name="testcase.name" sortable="true">Name</th>
+                <th slick-list-column class="result-list-author-column" sort-property-name="testcase.author" sortable="true" ng-show="show['author']">Author</th>
+                <th slick-list-column class="result-list-component-column" sort-property-name="component.name" sortable="true" ng-show="show['component']">Component</th>
+                <th slick-list-column class="result-list-recorded-column" sort-property-name="recorded" sortable="true" ng-show="show['recorded']">Recorded</th>
+                <th slick-list-column class="result-list-duration-column" sort-property-name="runlength" sortable="true" ng-show="show['duration']">Duration</th>
+                <th slick-list-column class="result-list-hostname-column" sort-property-name="hostname" sortable="true" ng-show="show['hostname']">Hostname</th>
+                <th slick-list-column class="result-list-history-column" sortable="false">History</th>
+                <th slick-list-column class="result-list-status-column" sort-property-name="status" sortable="true">Status</th>
+            </tr>
+            <tbody style="width: 100%" class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+            <tr style="padding-bottom: 5px">
+                <td align="center" ng-show="result.attributes && result.attributes.scheduled" class="result-list-status-column">
+                    <md-button class="md-icon-button" ng-click="rescheduleResult(result.id)">
+                        <md-icon class="material-icons">refresh</md-icon>
+                        <md-tooltip>Reschedule Testcase</md-tooltip>
+                    </md-button>
+                </td>
+                <td class="result-list-name-column">
+                    <a href="testcases/{{ result.testcase.testcaseId }}" ng-click="showTestcase(result.testcase.testcaseId, $event)">
+                        <md-icon class="material-icons" ng-show="!isExpanded(result.testcase.name)">chevron_right</md-icon>
+                        <md-icon class="material-icons" ng-show="isExpanded(result.testcase.name)">expand_more</md-icon>
+                        <span style="vertical-align: middle" ng-bind="result.testcase.name"></span>
+                    </a>
+                </td>
+                <td class="result-list-author-column" ng-bind="result.testcase.author" ng-show="show['author']"></td>
+                <td class="result-list-component-column" ng-bind="result.component.name" ng-show="show['component']"></td>
+                <td class="result-list-recorded-column" ng-bind="result.recorded|date:'medium'" ng-show="show['recorded']"></td>
+                <td class="result-list-duration-column" ng-bind="getResultDuration(result)" ng-show="show['duration']"></td>
+                <td class="result-list-hostname-column" ng-bind="result.hostname" ng-show="show['hostname']"></td>
+                <td class="result-list-history-column">
+                    <md-icon style="width: .2in" ng-repeat="hres in result.history | reverse track by hres.resultId" class="clickable material-icons result-status-{{ replaceOnStatus(hres.status, '') }}" ng-click="onHistoryClick(hres)"/>
+                    {{ statusToIcon(hres.status) }}</td>
+                <td style="align-items: center"><span class="result-status-{{ replaceOnStatus(result.status, '') }}" ng-bind="replaceOnStatus(result.status, ' ')"></span></td>
+            </tr>
+            <tr ng-show="show['automationid']">
+                <td colspan="9" class="result-list-automationid-column" ng-bind="'Automation ID: ' + result.testcase.automationId"></td>
+            </tr>
+            <tr ng-show="show['resultid']">
+                <td colspan="9" class="result-list-resultid-column" ng-bind="'Slick Result ID: ' + result.id"></td>
+            </tr>
+            <tr ng-show="getResultNotes(result).length !== 0">
+                <td colspan="9" class="result-list-notes-part">
+                    <fieldset class="standard">
+                        <legend>Notes</legend>
+                        <div ng-repeat="note in getResultNotes(result)" class="result-note">
+                            <span class="result-note-timestamp {{ note.level }}" ng-bind="note.entryTime |date:'medium'"></span>
+                            <span class="result-note-message {{ note.level }}" ng-bind="note.message.split('\n')[0]"></span>
+                            <a href="{{ note.exceptionMessage }}" class="result-note-link" ng-show="note.exceptionMessage" ng-bind="note.exceptionMessage"></a>
+                        </div>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr ng-show="result.reason && !moreDetail && !moreDetailForResult[result.id]">
+                <td colspan="9" class="result-list-reason-part">
+                    <fieldset class="standard">
+                        <legend>Reason</legend>
+                        <a href="results/{{ result.id }}/reason" ng-click="displayReason(result, $event)"><span class="result-list-reason-field">{{ getAbbreviatedReason(result) }}</span>...</a>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr class="result-expanded" ng-show="isExpanded(result.testcase.name)">
+                <td colspan="9" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                    <fieldset style="margin-bottom: 5px" class="standard" ng-show="result.files.length !== 0">
+                        <legend>Files ({{ result.files.length }})</legend>
                         <span ng-repeat="file in result.files">
-                            <a href="api/files/{{file.id}}/content/{{file.filename}}" ng-click="displayFile(file, $event)">{{file.filename}} </a>
-                            <span ng-show="!$last">,</span>
-                        </span>]
-                </span>
-                <span  ng-show="result.links">
-                    Links ({{ result.links.length }}):
+                                        <a href="api/files/{{ file.id }}/content/{{ file.filename }}" ng-click="displayFile(file, $event)">{{ file.filename }} </a>
+                                        <span ng-show="!$last">,</span>
+                                </span>
+                    </fieldset>
+                    <fieldset style="margin-bottom: 5px" class="standard" ng-show="result.links.length !== 0">
+                        <legend>Links ({{ result.links.length }})</legend>
                         <span ng-repeat="link in result.links">
-                            <a href="{{link.url}}" target="_blank">{{link.name}}</a>
-                            <span ng-show="!$last">,</span>
-                        </span>]
-                </span>
-            </div>
-            <div class="result-list-actions-column">
-                <span class="button" ng-click="addNote(result)">Add Note</span>
-                <span class="button" ng-hide="moreDetail || moreDetailForResult[result.id]" ng-click="addMoreDetail(result)">More Detail</span>
-                <span class="button" ng-show="moreDetail || moreDetailForResult[result.id]" ng-click="removeDetail(result)">Less Detail</span>
-            </div>
-            <div class="result-reschedule-column">
-                <div class="reschedule-button reschedule-button-result" ng-show="result.attributes && result.attributes.scheduled" ng-click="rescheduleResult(result.id)"> </div>
-            </div>
-        </div>
-        <div class="result-list-notes-part">
-            <div ng-repeat="note in getResultNotes(result)" class="result-note">
-                <span class="result-note-timestamp  {{ note.level }}" ng-bind="note.entryTime |date:'medium'"></span>
-                <span class="result-note-message  {{ note.level }}" ng-bind="note.message.split('\n')[0]"></span>
-                <a href="{{note.exceptionMessage}}" class="result-note-link" ng-show="note.exceptionMessage" ng-bind="note.exceptionMessage"></a>
-            </div>
-        </div>
-        <div class="result-list-reason-part" ng-show="result.reason && !moreDetail && !moreDetailForResult[result.id]">
-            <a href="results/{{result.id}}/reason" ng-click="displayReason(result, $event)">Reason: <span class="result-list-reason-field">{{getAbbreviatedReason(result)}}</span>...</a>
-        </div>
-        <div class="result-list-more-detail-part" ng-show="moreDetail || moreDetailForResult[result.id]">
-            <div class="result-list-more-detail-reason">
-                <pre>{{result.reason}}</pre>
-            </div>
-            <div class="result-list-more-detail-screenshots">
-                <div class="result-list-more-detail-screenshot" ng-repeat="image in getImages(result) track by image.id">
-                    <div class="result-list-more-detail-screenshot-filename">{{image.filename}}</div>
-                    <img ng-src="api/files/{{image.id}}/content/{{image.filename}}" alt="{{image.filename}}" />
-                </div>
-            </div>
-        </div>
-    </div>
-
+                                        <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>
+                                        <span ng-show="!$last">,</span>
+                                </span>
+                    </fieldset>
+                    <fieldset style="margin-bottom: 5px" class="standard">
+                        <legend>Testcase</legend>
+                        <md-toolbar md-colors="{background: 'accent-A200'}">
+                            <div class="md-toolbar-tools">
+                                <span>{{ testcases[result.testcase.name].name }}</span>
+                                <div flex></div>
+                                <md-button class="md-raised md-primary" ng-href="results/{{ result.id }}/log" ng-disabled="result.log.length === 0" ng-click="result.log.length === 0 || displayLogs(result, $event)">Logs</md-button>
+                                <md-button class="md-raised md-primary" ng-click="addNote(result)">Add Note</md-button>
+                                <md-button class="md-raised md-primary" ng-hide="moreDetail || moreDetailForResult[result.id]" ng-click="addMoreDetail(result)">More Detail</md-button>
+                                <md-button class="md-raised md-primary" ng-show="moreDetail || moreDetailForResult[result.id]" ng-click="removeDetail(result)">Less Detail</md-button>
+                            </div>
+                        </md-toolbar>
+                        <div ng-show="testcase && testcases[result.testcase.name]" ng-include src="'static/resources/pages/testcase/testcase-dataview.html'"></div>
+                    </fieldset>
+                </td>
+            <tr class="result-list-more-detail-part" ng-show="moreDetailForResult[result.id]">
+                <td colspan="9">
+                    <fieldset style="margin-bottom: 5px" class="standard">
+                        <legend>More Detail</legend>
+                        <div class="result-list-more-detail-reason">
+                            <pre>{{ result.reason }}</pre>
+                        </div>
+                        <div class="result-list-more-detail-screenshots">
+                            <div class="result-list-more-detail-screenshot" ng-repeat="image in getImages(result) track by image.id">
+                                <div class="result-list-more-detail-screenshot-filename">{{ image.filename }}</div>
+                                <img ng-src="api/files/{{ image.id }}/content/{{ image.filename }}" alt="{{ image.filename }}"/>
+                            </div>
+                        </div>
+                    </fieldset>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </md-content>
 </div>

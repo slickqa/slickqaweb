@@ -15,37 +15,37 @@ angular.module('slickApp')
       var _nav = [
           {name: "Bookmarks",
            show: false,
-           icon: "bookmarks.png",
+           icon: "bookmarks",
            links: [
            ]},
           {name: "Reports",
            show: false,
-           icon: "reports.png",
+           icon: "equalizer",
            links: [
           ]},
           {name: "Run Tests",
            show: false,
-           icon: "runtests.png",
+           icon: "done_all",
            links: [
           ]},
           {name: "Settings",
            show: false,
-           icon: "settings.png",
+           icon: "settings",
            links: [
            ]},
           {name: "Project Management",
            show: false,
-           icon: "project.png",
+           icon: "explore",
            links: [
           ]},
           {name: "Test Management",
            show: false,
-           icon: "testmgmt.png",
+           icon: "create",
            links: [
           ]},
           {name: "Dashboards",
            show: false,
-           icon: "dashboards.png",
+           icon: "dashboard",
            links: [
            ]}
       ];
@@ -80,7 +80,7 @@ angular.module('slickApp')
       };
       this.addLink = addLink;
 
-      this.$get = ['$cookieStore', '$window', function(cookieStore, $window) {
+      this.$get = ['$cookies', '$window', function(cookieStore, $window) {
         if(getSection('Bookmarks').links.length > 0) {
             getSection('Bookmarks').show = true;
         }

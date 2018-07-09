@@ -3,9 +3,6 @@
 .slick-dialog {
   position: fixed;
   z-index: 1001;
-  .rounded-corners(@dialog-rounded-corners);
-  .glow-big;
-  background: black;
 }
 
 .slick-dialog.ng-hide-remove {
@@ -45,21 +42,21 @@
   top: 20%;
   left: 30%;
   width: 40%;
-  bottom: 40%;
+  max-height: 40%;
 }
 
 .slick-dialog-medium {
   top: 20%;
   left: 20%;
   width: 60%;
-  bottom: 20%;
+  max-height: 60%;
 }
 
 .slick-dialog-large {
   top: 10%;
-  left: 5%;
+  left: 10%;
   width: 90%;
-  bottom: 10%;
+  max-height: 80%;
 }
 
 .slick-dialog-title {
@@ -79,7 +76,6 @@
 }
 
 .slick-dialog-body {
-  position: absolute;
   top: .5in;
   bottom: .5in;
   left: .05in;

@@ -1,10 +1,28 @@
 <div>
-    <div ng-show="show" class="slick-dialog-shade-parent"><div class="slick-dialog-shade"></div></div>
-    <div class="slick-dialog slick-dialog-{{ size }}" ng-show="show">
-        <div class="slick-dialog-title"><h2 ng-bind="title"></h2></div>
-        <div class="slick-dialog-body" ng-transclude></div>
-        <div class="slick-dialog-button-row">
-            <div ng-repeat="buttonName in buttonNames" class="slick-dialog-button" ng-click="buttonCallback({buttonName: buttonName})" ng-bind="buttonName"></div>
-        </div>
+    <div ng-show="show" class="slick-dialog-shade-parent">
+        <div class="slick-dialog-shade"></div>
+    </div>
+    <div>
+        <md-dialog style="opacity: unset" class="slick-dialog slick-dialog-{{ size }}" ng-show="show">
+            <form ng-cloak>
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <h2 ng-bind="title"></h2>
+                        <span flex></span>
+                        <md-button class="md-icon-button">
+                            <md-icon class="material-icons" ng-click="show = !show">cancel</md-icon>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+                <md-dialog-content class="slick-dialog-body">
+                    <md-content style="padding: 10px" ng-transclude></md-content>
+                </md-dialog-content>
+                <md-divider></md-divider>
+                <md-dialog-actions layout="row">
+                    <span flex></span>
+                    <md-button ng-repeat="buttonName in buttonNames" ng-click="buttonCallback({buttonName: buttonName})" aria-label="buttonName" ng-bind="buttonName"></md-button>
+                </md-dialog-actions>
+            </form>
+        </md-dialog>
     </div>
 </div>

@@ -1,24 +1,33 @@
 .slick-list-header-box {
-  .fade(@c-structural-top, @c-structural-bottom, @c-text);
   //background: #003200;
   // background: #444444;
   //background: #29407C;
   padding-top: .1in;
-  border-top-left-radius: .1in;
-  border-top-right-radius: .1in;
   //margin-top: .1in;
   //border-bottom: 1px solid #AAAAAA;
-  margin-bottom: .03in;
 }
 
 .slick-list-header-container {
   .flex-container;
+  padding-top: 10px;
 }
 
 .slick-list-header-search-box {
   padding-left: .1in;
   padding-bottom: .05in;
   .flex-grow-off;
+}
+
+.md-errors-spacer { display: none; }
+
+.slick-list-header-container md-input-container {
+  margin: unset;
+  margin-top: 5px;
+}
+
+.slick-list-header-container md-input-container label:not(.md-no-float):not(.md-container-ignore), md-input-container .md-placeholder {
+  overflow: unset;
+  text-overflow: unset;
 }
 
 .slick-list-header-pagination-box {
@@ -28,15 +37,7 @@
 }
 
 .slick-list-columns {
-  border-top: 1px solid black;
-}
-
-.slick-list-column {
-  border-right: 1px solid black;
-}
-
-.slick-list-column:last-child {
-  border-right: none;
+  font-weight: bold;
 }
 
 .slick-list-sortable-column {

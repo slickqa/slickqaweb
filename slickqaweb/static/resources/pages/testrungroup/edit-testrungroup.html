@@ -17,7 +17,7 @@
                 <div class="testruns-list-column-container">
                     <div class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></div>
                     <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a></div>
-                    <div class="testrungroups-list-actions-column"><span class="button" ng-click="removeTestrunFromGroup(testrun)">Remove</span></div>
+                    <md-button class="md-raised md-primary" ng-click="removeTestrunFromGroup(testrun)">Remove</md-button></div>
                     <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
                     <div class="testruns-list-environment-column" ng-bind="testrun.config.name"></div>
                     <div class="testruns-list-build-column">{{testrun.release.name}} Build {{ testrun.build.name }}</div>
@@ -47,7 +47,7 @@
         <div ng-repeat="testrun in testruns | slickListFilter:availableTestrunList track by testrun.id" class="testruns-list-row">
             <div class="testruns-list-column-container">
                 <div class="testruns-list-name-column" ng-bind="testrun.name"></div>
-                <div class="testrungroups-list-actions-column"><span class="button" ng-click="addTestrunToGroup(testrun)">Add</span></div>
+                <md-button class="md-raised md-primary" ng-click="addTestrunToGroup(testrun)">Add</md-button></div>
                 <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
                 <div class="testruns-list-environment-column">{{ testrun.config.name}}</div>
                 <div class="testruns-list-build-column">{{ testrun.release.name }} Build {{ testrun.build.name }}</div>

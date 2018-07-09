@@ -1,12 +1,21 @@
-<div ng-controller="NavCtrl" class="sidenav-inner">
-    <div class="sidenav-pin-box">
-        <a href="#" ng-click="toggleMode($event)"><img class="sidenav-mode-image" ng-src="static/images/sidenav-{{ nav.mode() }}.png"/></a>
+<md-toolbar md-scroll-shrink layout="row" style="white-space: nowrap; overflow: auto; -webkit-overflow-scrolling: touch;" ng-controller="NavCtrl">
+    <md-toolbar-filler layout layout-align="center center">
+        <md-button class="md-icon-button slick-nav-logo" ng-href="{{ slickHomeUrl }}" aria-label="Settings" style="min-width: 50px">S</md-button>
+    </md-toolbar-filler>
+    <div class="md-toolbar-tools">
+        <md-menu-bar style="padding: unset">
+            <md-menu ng-repeat="group in nav.sections()">
+                <md-button class="md-fab md-mini md-primary" ng-disabled="group.links.length === 0" ng-click="$mdMenu.open()">
+                    <md-icon class="material-icons">{{ group.icon }}</md-icon>
+                    <md-tooltip md-direction="bottom">{{ group.name }}</md-tooltip>
+                </md-button>
+                <md-menu-content ng-show="group.links.length !== 0">
+                    <md-menu-item ng-repeat="link in group.links">
+                        <md-button ng-href="{{ link.url }}">{{ link.name }}</md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </md-menu-bar>
     </div>
-    <a href="{{slickHomeUrl}}"><img src="static/images/home.png" class="nav-image"/>Home</a><br />
-    <div ng-repeat="group in nav.sections()">
-        <a href="#" class="nav-group-link" ng-click="toggleShow(group, $event)"><img ng-src="static/images/{{group.icon}}" class="nav-image"/>{{group.name}}</a>
-        <div class="nav-group-box" ng-show="group.show">
-            <span ng-repeat="link in group.links"><a class="nav-link" href="{{link.url}}">{{link.name}}</a><br /></span>
-        </div>
-    </div>
-</div>
+</md-toolbar>
+

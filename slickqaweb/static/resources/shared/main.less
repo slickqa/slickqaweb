@@ -1,7 +1,4 @@
-
-@c-background: #000000;
-@c-nav-background: #222222;
-@c-text: #BBBBBB;
+@c-text: black;
 @c-header-top: #AA0000;
 @c-header-bottom: #660000;
 @c-header-text: #FFFFFF;
@@ -15,14 +12,55 @@
 @c-status-noresult: #c0c0c0;
 @c-status-skip: #bdb76b;
 @c-status-cancelled: #a0522d;
-@c-status-total: #ffffff;
+@c-status-total: unset;
 @c-status-passedonretry: #006000;
 //@import url(http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic&subset=latin,latin-ext);
 
-@font: 'Noto Sans', sans-serif;
+@font: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 
 img {
   border: 0;
+}
+
+.pulse {
+  margin: 0 auto;
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: @c-status-noresult;
+  cursor: pointer;
+  box-shadow: 0 0 0 @c-status-noresult;
+  animation: pulse 2s infinite;
+}
+.pulse:hover {
+  animation: none;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+  }
+  70% {
+      -webkit-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+  }
+  100% {
+      -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+  }
+}
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+      box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+      box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+  }
 }
 
 .rotate(@deg) {
@@ -35,29 +73,10 @@ img {
 .fade(@c-top, @c-bottom, @c-text) {
   background: -webkit-linear-gradient(@c-top, @c-bottom);
   background: linear-gradient(@c-top, @c-bottom);
-  color: @c-text;
 }
 
 .faded {
   .fade(@c-header-top, @c-header-bottom, @c-header-text);
-}
-
-.glow {
-  -webkit-box-shadow: #fff 0 0 .15in;
-  -moz-box-shadow: #fff 0 0 .15in;
-  -ms-box-shadow: #fff 0 0 .15in;
-  box-shadow: #fff 0 0 .15in;
-}
-
-.glow-big {
-  -webkit-box-shadow: #fff 0 0 .25in;
-  -moz-box-shadow: #fff 0 0 .25in;
-  -ms-box-shadow: #fff 0 0 .25in;
-  box-shadow: #fff 0 0 .25in;
-}
-
-.glow-text {
-  text-shadow: #fff 0 0 .04in;
 }
 
 .no-padding {
@@ -188,23 +207,10 @@ img {
 }
 
 body {
-  background: @c-background;
-  color: @c-text;
   .no-padding;
   .no-margins;
-  font-family: @font;
   position: absolute;
   height: 100%;
-  width: 100%;
-}
-
-header {
-  .faded;
-  padding: 0;
-  height: .5in;
-  position: fixed;
-  z-index: 900;
-  top: 0;
   width: 100%;
 }
 
@@ -213,12 +219,6 @@ header {
   .flex-layout-row-nowrap;
   .no-padding;
   .no-margins;
-}
-
-header div div {
-  .flex-grow-off;
-  margin-left: .05in;
-  padding-top: .1in;
 }
 
 header div img {
@@ -238,9 +238,6 @@ header div img {
   color: white;
 }
 
-.loginbox a:hover {
-  .glow-text;
-}
 
 .main {
   //margin-top: .5in;
@@ -260,7 +257,6 @@ header h1 {
 }
 
 .main-container {
-  margin-top: .6in;
   .flex-grow-on;
   position: relative;
 }
@@ -273,6 +269,10 @@ header h1 {
 .main-view.ng-enter,
 .main-view.ng-leave {
   .animated;
+}
+
+a:-webkit-any-link {
+  color: unset;
 }
 
 .main-view.ng-enter-active {
@@ -291,11 +291,18 @@ header h1 {
 
 .sidenav {
   .flex-grow-off;
-  background: @c-nav-background;
   height: 100%;
   z-index: 1;
   width: 3in;
   //margin-top: -.5in;
+}
+
+md-menu-bar.md-default-theme md-menu.md-open > button, md-menu-bar md-menu.md-open > button, md-menu-bar.md-default-theme md-menu > button:focus, md-menu-bar md-menu > button:focus {
+  background: unset;
+}
+
+table.md-table th.md-column.md-active, table.md-table th.md-column.md-active md-icon {
+  color: unset;
 }
 
 .sidenav.ng-hide-remove {
@@ -316,6 +323,23 @@ header h1 {
 
 .sidenav-inner {
   padding-top: .5in;
+}
+
+table.md-table th.md-column {
+  color: unset;
+}
+
+table.md-table td.md-cell {
+  color: unset;
+  border-top: unset;
+}
+
+table.md-table thead.md-head>tr.md-row {
+  border-bottom: 1px solid;
+}
+
+md-toolbar.md-table-toolbar .md-toolbar-tools md-icon {
+  color: unset;
 }
 
 .sidenav-overlay {
@@ -383,27 +407,28 @@ header h1 {
 }
 
 .sidenav-button-link:hover img {
-  .glow;
-}
+  }
 
 .clickable {
   cursor: pointer;
 }
 
 .clickable:hover {
-  .glow;
-}
+  }
 
 .clickable-text {
   .clickable;
 }
 
 .clickable-text:hover {
-  .glow-text;
-}
+  }
 
 .data-view-item {
   .flex-container;
+}
+
+.data-view-item.tags {
+  align-items: center;
 }
 
 .data-view-item-save-button-row.ng-hide-add {
@@ -419,8 +444,8 @@ header h1 {
 
 .data-view-property-name {
   .flex-grow-off;
-  min-width: 20%;
-  width: 20%;
+  min-width: 10%;
+  width: 10%;
   text-align: right;
   vertical-align: top;
   margin-right: .1in;
@@ -431,7 +456,7 @@ header h1 {
 
 .data-view-property-value {
   .flex-grow-on;
-  border-left: 1px solid white;
+  border-left: 1px solid;
   padding-left: .1in;
   padding-top: .05in;
   padding-bottom: .05in;
@@ -448,17 +473,17 @@ header h1 {
 
 .slickview a, .slickview a:visited {
   text-decoration: none;
-  color: white;
 }
 
-.slickview a:hover {
-  .glow-text;
+.slick-nav-logo {
+  font-family: 'Audiowide', cursive;
+  font-size: 2em;
+  text-decoration: none;
 }
 
 [contenteditable=true]:hover {
   .rounded-corners();
-  .glow;
-}
+  }
 
 .button {
   display: inline-block;
@@ -468,9 +493,6 @@ header h1 {
   .faded;
 }
 
-.button:hover {
-  .glow;
-}
 
 .result-status-PASS {
   color: @c-status-pass;

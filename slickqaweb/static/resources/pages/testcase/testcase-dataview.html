@@ -1,29 +1,37 @@
 <div class="data-view">
     <div class="data-view-item">
         <div class="data-view-property-name">Purpose</div>
-        <div class="data-view-property-value" ng-model="testcase.purpose" name="purpose" contenteditable="true"></div>
+        <div class="data-view-property-value" ng-model="testcases[result.testcase.name].purpose" name="purpose" contenteditable="true"></div>
     </div>
     <div class="data-view-item">
         <div class="data-view-property-name">Automation ID</div>
-        <div class="data-view-property-value" ng-model="testcase.automationId" name="automationId" contenteditable="true"></div>
+        <div class="data-view-property-value" ng-model="testcases[result.testcase.name].automationId" name="automationId" contenteditable="true"></div>
     </div>
     <div class="data-view-item">
-        <div class="data-view-property-name">Tags</div>
-        <div class="data-view-property-value"><slick-tag-list model="testcase.tags" editable="yes"></slick-tag-list></div>
+
+        <div class="data-view-property-name tags">Tags</div>
+        <div class="data-view-property-value">
+            <md-chips ng-model="testcases[result.testcase.name].tags" name="tag" readonly="true"
+                      md-removable="true">
+                <md-chip-template>
+                    <strong>{{$chip}}</strong>
+                </md-chip-template>
+            </md-chips>
+        </div>
     </div>
     <div class="data-view-item">
         <div class="data-view-property-name">Component</div>
-        <div class="data-view-property-value" ng-model="testcase.component.name" name="componentname" contenteditable="false">></div>
+        <div class="data-view-property-value" ng-model="testcases[result.testcase.name].component.name" name="componentname" contenteditable="false">></div>
     </div>
     <div class="data-view-item">
         <div class="data-view-property-name">Author</div>
-        <div class="data-view-property-value" ng-model="testcase.author" name="author" contenteditable="true">></div>
+        <div class="data-view-property-value" ng-model="testcases[result.testcase.name].author" name="author" contenteditable="true">></div>
     </div>
 
     <div class="data-view-item">
-        <div class="data-view-property-name">Steps<br /><span class="button" ng-click="toggleAddStep()" ng-show="testcaseEditable">Add</span></div>
+        <div class="data-view-property-name">Steps<br/><span class="button" ng-click="toggleAddStep()" ng-show="testcaseEditable">Add</span></div>
         <div class="data-view-property-value">
-            <div class="testcase-step" ng-repeat="step in testcase.steps">
+            <div class="testcase-step" ng-repeat="step in testcases[result.testcase.name].steps">
                 <div class="testcase-step-number">{{$index + 1}}</div>
                 <div class="testcase-step-content">
                     <div class="testcase-step-row"><span ng-model="step.name" contenteditable="true"></span></div>

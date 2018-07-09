@@ -6,11 +6,17 @@ function replaceOnStatus(status, replace_with) {
     return status.replace(_replace_underscore_regexp, replace_with)
 }
 
-angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'restangular', 'ngSanitize' ])
+angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'ngMaterial', 'ngAria', 'ngMdIcons', 'md.data.table', 'restangular', 'ngSanitize' ])
   .config(['$locationProvider', 'RestangularProvider', function ($locationProvider, RestangularProvider) {
     $locationProvider.html5Mode(true);
     RestangularProvider.setBaseUrl("api/");
-  }]);
+  }])
+    .config(function($mdThemingProvider) {
+        $mdThemingProvider.theme('default')
+            .primaryPalette("red")
+            .accentPalette("blue-grey")
+            .dark()
+    });
 
 angular.module('slickLoginApp', []);
 
@@ -114,37 +120,37 @@ angular.module('slickApp')
       var _nav = [
           {name: "Bookmarks",
            show: false,
-           icon: "bookmarks.png",
+           icon: "bookmarks",
            links: [
            ]},
           {name: "Reports",
            show: false,
-           icon: "reports.png",
+           icon: "equalizer",
            links: [
           ]},
           {name: "Run Tests",
            show: false,
-           icon: "runtests.png",
+           icon: "done_all",
            links: [
           ]},
           {name: "Settings",
            show: false,
-           icon: "settings.png",
+           icon: "settings",
            links: [
            ]},
           {name: "Project Management",
            show: false,
-           icon: "project.png",
+           icon: "explore",
            links: [
           ]},
           {name: "Test Management",
            show: false,
-           icon: "testmgmt.png",
+           icon: "create",
            links: [
           ]},
           {name: "Dashboards",
            show: false,
-           icon: "dashboards.png",
+           icon: "dashboard",
            links: [
            ]}
       ];
@@ -179,7 +185,7 @@ angular.module('slickApp')
       };
       this.addLink = addLink;
 
-      this.$get = ['$cookieStore', '$window', function(cookieStore, $window) {
+      this.$get = ['$cookies', '$window', function(cookieStore, $window) {
         if(getSection('Bookmarks').links.length > 0) {
             getSection('Bookmarks').show = true;
         }
@@ -293,7 +299,6 @@ angular.module('slickApp')
 angular.module("slickApp")
     .directive("slickListHeader", function() {
         return {
-            restrict: 'E',
             transclude: true,
             replace: true,
             templateUrl: "static/resources/shared/slick-list/slick-list-header.html",
@@ -361,11 +366,10 @@ angular.module("slickApp")
     })
     .directive("slickListColumns", function() {
         return {
-            restrict: 'E',
             transclude: true,
             replace: true,
             require: "^slickListHeader",
-            template: "<div class=\"slick-list-columns\" ng-transclude></div>",
+            template: "<tr style=\"border-bottom: 2px solid\" class=\"slick-list-columns\" ng-transclude></tr>",
             scope: {},
             controller: function($scope) {
             //controller: function($scope) {
@@ -398,7 +402,6 @@ angular.module("slickApp")
     })
     .directive("slickListColumn", function() {
         return {
-            restrict: 'E',
             transclude: true,
             replace: true,
             require: "^slickListColumns",
@@ -406,7 +409,7 @@ angular.module("slickApp")
                sortable: "@",
                sortPropertyName: "@"
             },
-            template: "<div class=\"slick-list-column\" ng-click=\"setOrderBy()\"><span ng-transclude></span><img class=\"slick-list-column-sort-image\" src=\"static/images/sort-down.png\" ng-show=\"currentlySorted() && !sortReversed()\" /><img class=\"slick-list-column-sort-image\" src=\"static/images/sort-up.png\" ng-show=\"currentlySorted() && sortReversed()\" /></div>",
+            template: "<th align=\"left\" class=\"slick-list-column\" ng-click=\"setOrderBy()\"><span ng-transclude></span><img class=\"slick-list-column-sort-image\" src=\"static/images/sort-down.png\" ng-show=\"currentlySorted() && !sortReversed()\" /><img class=\"slick-list-column-sort-image\" src=\"static/images/sort-up.png\" ng-show=\"currentlySorted() && sortReversed()\" /></th>",
             link: function(scope, element, attrs, slickListColumnsController) {
                 var sortable = scope.sortable == "yes" || scope.sortable == "on" || scope.sortable == "true";
                 if(sortable) {
@@ -661,18 +664,45 @@ angular.module('slickApp')
 'use strict';
 
 angular.module('slickApp')
-  .config(['$routeProvider', function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'static/resources/shared/main/main.html',
-        controller: 'MainCtrl'
-      });
-  }])
-  .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', function ($scope, rest, $interval, $routeParams) {
+    .config(['$routeProvider', function ($routeProvider) {
+        $routeProvider
+            .when('/', {
+                templateUrl: 'static/resources/shared/main/main.html',
+                controller: 'MainCtrl'
+            });
+    }])
+    .filter('unique', function () {
+        return function (arr, field) {
+            return _.uniq(arr, function (a) {
+                return a[field];
+            });
+        };
+    })
+    .config(function ($sceDelegateProvider) {
+        let allowed = [];
+        try {
+            if (environment && environment.iframeConfig) {
+                allowed = environment.iframeConfig.map(a => `${a.url}**`);
+            }
+        } catch (e) {
+            console.log("No environment file. That's ok.")
+        }
+        allowed.push("self");
+        $sceDelegateProvider.resourceUrlWhitelist(allowed);
+    })
+    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', function ($scope, rest, $interval, $routeParams, $cookies) {
+        try {
+            $scope.environment = environment;
+        } catch (e) {
+            //    Don't log again but still catch.
+        }
+
         $scope.testrunTableOne = {};
         $scope.testrunTableTwo = {};
         $scope.testrunListOne = [];
         $scope.testrunListTwo = [];
+
+        $scope.getDurationString = getDurationString;
 
         $scope.testrungroupTableOne = {};
         $scope.testrungroupTableTwo = {};
@@ -683,66 +713,147 @@ angular.module('slickApp')
         $scope.buildTableTwo = {};
         $scope.buildListOne = [];
         $scope.buildListTwo = [];
-        $scope.project = "";
-        if($routeParams["project"]) {
+        $scope.project = $cookies.get("projectFilter");
+        $scope.limits = [25, 50, 100, 200];
+        if ($routeParams["project"]) {
             $scope.project = $routeParams["project"];
         }
 
         var stop;
 
-        $scope.fetchData = function() {
-            var testrunsQuery = {orderby: '-dateCreated', limit: 10};
-            if($scope.project !== "") {
+        // $scope.testrunChartOptions = {
+        //             chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+        //             backgroundColor: "#000000",
+        //             legend: {
+        //                 textStyle: {
+        //                     color: "#ffffff"
+        //                 }
+        //             },
+        //             colors: []
+        //         };
+
+        $scope.buildsQuery = $cookies.getObject("buildsQuery");
+        $scope.testrunsQuery = $cookies.getObject("testrunsQuery");
+        $scope.testrunGroupsQuery = $cookies.getObject("testrunGroupsQuery");
+        if (!$scope.buildsQuery) {
+            $scope.buildsQuery = {
+                index: 0,
+                order: '-report.testruns[0].dateCreated',
+                limit: 25,
+                queryLimit: 25,
+                page: 1
+            };
+        }
+        if (!$scope.testrunsQuery) {
+            $scope.testrunsQuery = {
+                index: 1,
+                order: '-dateCreated',
+                limit: 25,
+                queryLimit: 25,
+                page: 1
+            };
+        }
+
+        $scope.selectedIndex = parseInt($cookies.get("selectedIndex")) || 0;
+
+        if (!$scope.testrunGroupsQuery) {
+            $scope.testrunGroupsQuery = {
+                index: 2,
+                order: '-created',
+                limit: 25,
+                queryLimit: 25,
+                page: 1
+            };
+        }
+
+        $scope.onTabSelected = function (index) {
+            $cookies.put("selectedIndex", index)
+            $scope.selectedIndex = index;
+        };
+
+        $scope.isTabSelected = function (index) {
+            return index === $scope.selectedIndex;
+        };
+
+        $scope.setBuildsSort = function (order) {
+            $scope.buildsQuery.order = order;
+        };
+
+        $scope.setTestrunsSort = function (order) {
+            $scope.testrunsQuery.order = order;
+        };
+
+        $scope.setTestrunGroupsSort = function (order) {
+            $scope.testrunGroupsQuery.order = order;
+        };
+
+        $scope.currentTimeMillis = new Date().getTime();
+
+        $scope.fetchData = function () {
+
+            $scope.currentTimeMillis = new Date().getTime();
+            var testrunsQuery = {orderby: '-dateCreated', limit: $scope.testrunsQuery.queryLimit};
+            if ($scope.project) {
                 testrunsQuery["project.name"] = $scope.project;
+                $cookies.put("projectFilter", $scope.project)
             }
-            rest.all('testruns').getList(testrunsQuery).then(function(testruns) {
-                $scope.testrunListOne = testruns.splice(0, 5);
-                $scope.testrunListTwo = testruns;
+            $cookies.putObject("buildsQuery", $scope.buildsQuery);
+            $cookies.putObject("testrunsQuery", $scope.testrunsQuery);
+            $cookies.putObject("testrunGroupsQuery", $scope.testrunGroupsQuery);
+            rest.all('testruns').getList(testrunsQuery).then(function (testruns) {
+                $scope.testrunListOne = testruns
             });
-            rest.all('testrungroups').getList({orderby: '-created', limit: 10}).then(function(testrungroups) {
-                $scope.testrungroupListOne = testrungroups.splice(0,5);
-                $scope.testrungroupListTwo = testrungroups;
+            rest.all('testrungroups').getList({orderby: '-created', limit: $scope.testrunGroupsQuery.queryLimit}).then(function (testrungroups) {
+                $scope.testrungroupListOne = testrungroups
             });
 
             // recent builds are a little tricky
             var buildList = [];
 
             function processBuildList(buildList) {
-                buildList = _.sortBy(buildList, function(build) {
-                    if(build.build.built) {
+                buildList = _.sortBy(buildList, function (build) {
+                    if (build.build.built) {
                         return build.build.built;
                     } else {
                         return 0;
                     }
                 });
                 buildList.reverse();
-
-
-                _.each(buildList.slice(0, 10), function(buildInfo, index) {
-                    rest.one('build-report', buildInfo.project.name).one(buildInfo.release.name, buildInfo.build.name).get().then(function(buildReport) {
+                _.each(buildList.slice(0, $scope.buildsQuery.queryLimit), function (buildInfo, index) {
+                    rest.one('build-report', buildInfo.project.name).one(buildInfo.release.name, buildInfo.build.name).get().then(function (buildReport) {
                         buildInfo.report = buildReport;
-                        if (index < 5) {
-                            $scope.buildListOne[index] = buildInfo;
-                        } else {
-                            $scope.buildListTwo[index - 5] = buildInfo;
-                        }
+                        $scope.buildListOne[index] = buildInfo;
                     });
                 });
             }
-            if($scope.project === "") {
+
+            if (!$scope.projects) {
                 rest.all('projects').getList().then(function (projects) {
-                    _.each(projects, function (project) {
-                        _.each(project.releases, function (release) {
-                            _.each(release.builds, function (build) {
-                                // This creates a flat list that we can sort
-                                buildList.push({build: build, project: project, release: release});
+                    $scope.projects = projects;
+                    if (!$scope.project) {
+                        _.each(projects, function (project) {
+                            _.each(project.releases, function (release) {
+                                _.each(release.builds, function (build) {
+                                    // This creates a flat list that we can sort
+                                    buildList.push({build: build, project: project, release: release});
+                                });
                             });
                         });
-                    });
-                    processBuildList(buildList);
+                        processBuildList(buildList);
+                    } else {
+                        rest.one('projects', $scope.project).get().then(function (project) {
+                            _.each(project.releases, function (release) {
+                                _.each(release.builds, function (build) {
+                                    // This creates a flat list that we can sort
+                                    buildList.push({build: build, project: project, release: release});
+                                });
+                            });
+                            processBuildList(buildList);
+                        });
+                    }
                 });
-            } else {
-                rest.one('projects', $scope.project).get().then(function(project) {
+            } else if ($scope.project) {
+                rest.one('projects', $scope.project).get().then(function (project) {
                     _.each(project.releases, function (release) {
                         _.each(release.builds, function (build) {
                             // This creates a flat list that we can sort
@@ -754,21 +865,21 @@ angular.module('slickApp')
             }
         };
 
-        $scope.stopRefresh = function() {
+        $scope.stopRefresh = function () {
             if (angular.isDefined(stop)) {
                 $interval.cancel(stop);
                 stop = undefined;
             }
         };
 
-        $scope.$on('$destroy', function() {
+        $scope.$on('$destroy', function () {
             $scope.stopRefresh();
         });
 
         $scope.fetchData();
         stop = $interval($scope.fetchData, 7500);
         window.scope = $scope;
-  }]);
+    }]);
 'use strict';
 /**
  * User: jcorbett
@@ -781,12 +892,12 @@ angular.module('slickApp')
         $scope.nav = nav;
         $scope.slickHomeUrl = document.baseURI;
 
-        $scope.toggleShow = function(group, $event) {
+        $scope.toggleShow = function (group, $event) {
             group.show = !group.show;
             $event.preventDefault();
         };
 
-        $scope.toggleMode = function($event) {
+        $scope.toggleMode = function ($event) {
             nav.toggleMode();
             $event.preventDefault();
         };
@@ -890,7 +1001,7 @@ angular.module('slickApp')
         });
         $scope.projectList = {}; // Model for the list header and filter
     }])
-    .controller('ViewAndUpdateProjectCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$routeParams', '$cookieStore', function($scope, rest, nav, $routeParams, $cookieStore) {
+    .controller('ViewAndUpdateProjectCtrl', ['$scope', 'NameBasedRestangular', 'NavigationService', '$routeParams', '$cookies', function($scope, rest, nav, $routeParams, $cookies) {
         $scope.releaseList = {};
         $scope.buildLists = {};
 
@@ -975,7 +1086,7 @@ angular.module('slickApp')
         };
 
         rest.one('projects', $routeParams.name).get().then(function(project) {
-            $cookieStore.put('slick-last-project-used', project.name);
+            $cookies.put('slick-last-project-used', project.name);
             $scope.project = project;
             window.project = project;
             nav.setTitle($scope.project.name);
@@ -1204,7 +1315,7 @@ angular.module('slickApp')
 
 
     }])
-    .controller('TestcaseTreeCtrl', ['$scope', 'NameBasedRestangular', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookieStore', function ($scope, projrest, rest, nav, $routeParams, $location, $cookieStore) {
+    .controller('TestcaseTreeCtrl', ['$scope', 'NameBasedRestangular', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookies', function ($scope, projrest, rest, nav, $routeParams, $location, $cookies) {
         // --------------- Initialize Variables used in the Page -------------------
         $scope.projects = [];
         $scope.project = null;
@@ -1217,9 +1328,9 @@ angular.module('slickApp')
         // determine if we have a pre-selected project
         if ($routeParams['project']) {
             $scope.selectedProjectName = $routeParams['project'];
-            $cookieStore.put('slick-last-project-used', $routeParams['project']);
-        } else if ($cookieStore.get('slick-last-project-used')) {
-            $scope.selectedProjectName =  $cookieStore.get('slick-last-project-used');
+            $cookies.put('slick-last-project-used', $routeParams['project']);
+        } else if ($cookies.get('slick-last-project-used')) {
+            $scope.selectedProjectName =  $cookies.get('slick-last-project-used');
         }
 
         // Get the list of projects, sorted by last updated
@@ -1393,7 +1504,7 @@ angular.module('slickApp')
             });
         nav.addLink('Reports', 'Testruns', 'testruns');
     }])
-    .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', '$location', 'UserService', function ($scope, rest, nav, $routeParams, $cookieStore, $location, user) {
+    .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookies', '$location', 'UserService', function ($scope, rest, nav, $routeParams, $cookies, $location, user) {
         $scope.project = null;
         $scope.release = null;
         $scope.testplan = null;
@@ -1406,47 +1517,47 @@ angular.module('slickApp')
         $scope.editOn = false;
 
 
-        if (!$routeParams["project"] && $cookieStore.get('slick-last-project-used')) {
-            $location.search("project", $cookieStore.get('slick-last-project-used'));
+        if (!$routeParams["project"] && $cookies.get('slick-last-project-used')) {
+            $location.search("project", $cookies.get('slick-last-project-used'));
         }
         $scope.$watch('project', function (newValue, oldValue) {
-            if (newValue && oldValue != newValue) {
-                $location.search("project", newValue.name);
+            if (newValue && oldValue !== newValue) {
+                $location.search("project", newValue.name || newValue);
                 $location.search("release", null);
                 $location.search("testplanId", null);
             }
         });
 
         nav.setTitle("Testruns");
-        rest.all('projects').getList().then(function(projects) {
+        rest.all('projects').getList().then(function (projects) {
             $scope.projects = _.sortBy(projects, "lastUpdated");
             $scope.projects.reverse();
             if ($routeParams["project"]) {
-                $scope.project = _.find(projects, function(project) {
-                    return $routeParams["project"] == project.name;
+                $scope.project = _.find(projects, function (project) {
+                    return $routeParams["project"] === project.name;
                 });
                 if ($scope.project) {
                     $scope.releases = $scope.project.releases;
                     if ($routeParams["release"]) {
-                        $scope.release = _.find($scope.releases, function(release) {
-                            return $routeParams["release"] == release.name;
+                        $scope.release = _.find($scope.releases, function (release) {
+                            return $routeParams["release"] === release.name;
                         });
                     }
                     $scope.$watch('release', function (newValue, oldValue) {
-                        if(newValue) {
-                            $location.search('release', newValue.name);
+                        if (newValue) {
+                            $location.search('release', newValue.name || newValue);
                         }
                     });
-                    rest.all('testplans').getList({q: "eq(project.id,\"" + $scope.project.id + "\")"}).then(function(testplans) {
+                    rest.all('testplans').getList({q: "eq(project.id,\"" + $scope.project.id + "\")"}).then(function (testplans) {
                         $scope.testplans = testplans;
                         if ($routeParams["testplanid"]) {
-                            $scope.testplan = _.find($scope.testplans, function(testplan) {
-                                return $routeParams["testplanid"] == testplan.id;
+                            $scope.testplan = _.find($scope.testplans, function (testplan) {
+                                return $routeParams["testplanid"] === testplan.id;
                             });
                         }
-                        $scope.$watch('testplan', function(newValue, oldValue) {
+                        $scope.$watch('testplan', function (newValue, oldValue) {
                             if (newValue) {
-                                $location.search("testplanid", newValue.id);
+                                $location.search("testplanid", newValue.id || newValue);
                             }
                         });
                     });
@@ -1455,12 +1566,12 @@ angular.module('slickApp')
             }
         });
 
-        $scope.fetchTestruns = function(full) {
+        $scope.fetchTestruns = function (full) {
             var testrunQuery = [];
-            if ($routeParams["project"]) {
+            if ($routeParams["project"] || $scope.project) {
                 testrunQuery.push("eq(project.name,\"" + $routeParams["project"] + "\")");
             }
-            if ($routeParams["release"]) {
+            if ($routeParams["release"] || $scope.release) {
                 testrunQuery.push("eq(release.name,\"" + $routeParams["release"] + "\")");
             }
             if ($routeParams["testplanid"]) {
@@ -1476,20 +1587,22 @@ angular.module('slickApp')
                 q = q + ")";
             }
             if (q == "") {
-                if(full) {
-                    rest.all('testruns').getList({orderby: '-dateCreated', limit: 525}).then(function(testruns) {
+                if (full) {
+                    rest.all('testruns').getList({orderby: '-dateCreated', limit: 525}).then(function (testruns) {
                         $scope.testruns = testruns;
                     });
                 } else {
-                    rest.all('testruns').getList({orderby: '-dateCreated', limit: 25}).then(function(testruns) {
+                    rest.all('testruns').getList({orderby: '-dateCreated', limit: 25}).then(function (testruns) {
                         $scope.testruns = testruns;
-                        rest.all('testruns').getList({orderby: '-dateCreated', limit: 500, skip: 25}).then(function(therest) {
-                            _.each(therest, function(testrun) { $scope.testruns.push(testrun)});
+                        rest.all('testruns').getList({orderby: '-dateCreated', limit: 500, skip: 25}).then(function (therest) {
+                            _.each(therest, function (testrun) {
+                                $scope.testruns.push(testrun)
+                            });
                         });
                     });
                 }
             } else {
-                if(full) {
+                if (full) {
                     rest.all('testruns').getList({q: q, limit: 525, orderby: '-dateCreated'}).then(function (testruns) {
                         $scope.testruns = testruns;
                     });
@@ -1509,7 +1622,7 @@ angular.module('slickApp')
 
         $scope.testrunList = {}; // Model for the list header and filter
 
-        $scope.getDisplayName = function(testrun) {
+        $scope.getDisplayName = function (testrun) {
             var retval = testrun.name;
             if (testrun.testplan) {
                 retval = testrun.testplan.name;
@@ -1517,16 +1630,16 @@ angular.module('slickApp')
             return retval;
         };
 
-        $scope.isEmpty = function(obj) {
+        $scope.isEmpty = function (obj) {
             return _.isEmpty(obj);
         };
 
-        $scope.toggleEdit = function() {
+        $scope.toggleEdit = function () {
             $scope.editOn = !$scope.editOn;
         };
 
-        $scope.deleteTestrun = function(testrun) {
-            rest.one('testruns', testrun.id).remove().then(function() {
+        $scope.deleteTestrun = function (testrun) {
+            rest.one('testruns', testrun.id).remove().then(function () {
                 $scope.fetchTestruns(true);
             })
         };
@@ -1534,8 +1647,40 @@ angular.module('slickApp')
         window.scope = $scope;
 
     }])
-    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', '$cookieStore', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location, $cookieStore) {
+    .controller('TestrunSummaryCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', '$cookies', '$mdDialog', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location, $cookies, $mdDialog) {
         $scope.replaceOnStatus = replaceOnStatus;
+        $scope.query = {
+            order: 'name',
+            limit: 25,
+            page: 1
+        };
+        $scope.limitOptions = [25, 50, 100, 200];
+
+        $scope.expandedResults = {};
+
+        $scope.isExpanded = function (testcaseId) {
+            return !!$scope.expandedResults[testcaseId];
+        };
+
+        $scope.statusToIcon = function (status) {
+            switch (status) {
+                case 'PASS':
+                    return 'check_circle';
+                case 'PASSED_ON_RETRY':
+                    return 'check_circle';
+                case 'FAIL':
+                    return 'cancel';
+                case 'BROKEN_TEST':
+                    return 'error';
+                case 'NO_RESULT':
+                    return 'help';
+                case 'SKIPPED':
+                    return 'watch_later';
+                case 'NOT_TESTED':
+                    return 'pause_circle_filled';
+            }
+        };
+
         $scope.testrun = {};
         $scope.results = [];
         $scope.filter = {};
@@ -1565,13 +1710,13 @@ angular.module('slickApp')
         $scope.withoutNotesStats = {};
         $scope.options = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
-            backgroundColor: "#000000",
+            backgroundColor: "none",
             pieSliceBorderColor: "#000000",
             legend: 'none',
             colors: []
         };
-        if(!$cookieStore.get('testrunShowFilter')) {
-            $cookieStore.put('testrunShowFilter', {
+        if (!$cookies.getObject('testrunShowFilter')) {
+            $cookies.putObject('testrunShowFilter', {
                 author: true,
                 component: false,
                 recorded: true,
@@ -1581,7 +1726,9 @@ angular.module('slickApp')
                 resultid: false
             });
         }
-        $scope.show = $cookieStore.get('testrunShowFilter');
+        $scope.show = $cookies.getObject('testrunShowFilter');
+
+        $scope.testcases = {}
 
         $scope.testcase = {
             name: "",
@@ -1591,105 +1738,217 @@ angular.module('slickApp')
         $scope.showTestcase = false;
         $scope.showAddStep = false;
 
+        $scope.testrunHistory = [];
+
         if ($routeParams.only) {
             $scope.filter[$routeParams.only] = true;
         }
 
         if ($routeParams.result) {
-            $scope.resultList.searchField = { $: $routeParams.result };
+            $scope.resultList.searchField = {$: $routeParams.result};
         }
 
-        $scope.fetchTestrun = function() {
-            rest.one('testruns', $routeParams["testrunid"]).get().then(function(testrun) {
-                $scope.testrun = testrun;
-                $scope.data = new google.visualization.DataTable();
-                $scope.data.addColumn('string', 'Status');
-                $scope.data.addColumn('number', 'Results');
-                var emptyFilter = _.isEmpty($scope.filter);
-                if (emptyFilter) {
-                    $scope.filter = {};
-                }
-                $scope.options.colors = [];
-                _.each(testrun.summary.statusListOrdered, function(status) {
-                    $scope.data.addRow([replaceOnStatus(status, " "), testrun.summary.resultsByStatus[status]]);
-                    $scope.options.colors.push(getStyle(replaceOnStatus(status, "") + "-element", "color"));
+        $scope.repeatOffendersList = {};
+        $scope.processingOffenders = true;
+        $scope.topContributors = {};
+        $scope.keyLength = function (obj) {
+            return Object.keys(obj).length;
+        }
+
+        $scope.fetchTestrun = function () {
+            rest.one('testruns', $routeParams["testrunid"]).get().then(function (testrun) {
+                    $scope.testrun = testrun;
+                    $scope.getTPSReportData();
+                    $scope.data = new google.visualization.DataTable();
+                    $scope.data.addColumn('string', 'Status');
+                    $scope.data.addColumn('number', 'Results');
+                    var emptyFilter = _.isEmpty($scope.filter);
                     if (emptyFilter) {
-                        $scope.filter[status] = status !== "PASS";
-                        if ($routeParams.all) {
-                            $scope.filter[status] = true;
+                        $scope.filter = {};
+                    }
+                    $scope.options.colors = [];
+                    _.each(testrun.summary.statusListOrdered, function (status) {
+                        $scope.data.addRow([replaceOnStatus(status, " "), testrun.summary.resultsByStatus[status]]);
+                        $scope.options.colors.push(getStyle(replaceOnStatus(status, "") + "-element", "color"));
+                        if (emptyFilter) {
+                            $scope.filter[status] = status !== "PASS";
+                            if ($routeParams.all) {
+                                $scope.filter[status] = true;
+                            }
+                        }
+                        if (status === "FAIL" || status === "BROKEN_TEST") {
+                            rest.one('results', 'count').get({
+                                "q": "and(eq(testrun__testrunId,\"" +
+                                $routeParams["testrunid"] + "\"),eq(status,\"" + status +
+                                "\"),ne(log__loggerName,\"slick.note\"))"
+                            }).then(function (count) {
+                                $scope.withoutNotesStats[status] = count;
+                            });
+                        }
+                    });
+
+                    $scope.recentlyFetchedTestrun = true;
+                    $scope.testrunQuery(testrun.state);
+
+                    if ($scope.results.length !== 0) {
+                        if (Object.keys($scope.repeatOffendersList).length === 0 && Object.keys($scope.topContributors).length === 0) {
+                            let repeatOffenders = {};
+                            _.each($scope.results, function (result) {
+                                if (result.status === "FAIL" || result.status === "BROKEN_TEST") {
+                                    $scope.topContributors[result.testcase.author || "No Author"] = $scope.topContributors[result.testcase.author] + 1 || 1;
+                                }
+                                _.each(result.history, function (historyItem) {
+                                    if (historyItem.status === "FAIL" || historyItem.status === "BROKEN_TEST") {
+                                        repeatOffenders[historyItem.status] = repeatOffenders[historyItem.status] || {};
+                                        repeatOffenders[historyItem.status][result.testcase.name] = repeatOffenders[historyItem.status][result.testcase.name] || {};
+                                        repeatOffenders[historyItem.status][result.testcase.name]["status"] = historyItem.status;
+                                        repeatOffenders[historyItem.status][result.testcase.name]["name"] = result.testcase.name;
+                                        repeatOffenders[historyItem.status][result.testcase.name]["count"] = repeatOffenders[historyItem.status][result.testcase.name]["count"] + 1 || 1;
+                                        repeatOffenders[historyItem.status][result.testcase.name]["testcases"] = repeatOffenders[historyItem.status][result.testcase.name]["testcases"] || [];
+                                        repeatOffenders[historyItem.status][result.testcase.name]["testcases"].push(historyItem);
+                                    }
+                                });
+                            });
+                            _.each(repeatOffenders, function (status) {
+                                _.each(status, function (testcase) {
+                                    if (testcase.count > 4) {
+                                        $scope.repeatOffendersList[testcase.status] = $scope.repeatOffendersList[testcase.status] || [];
+                                        $scope.repeatOffendersList[testcase.status].push({name: testcase.name, count: testcase.count, testcases: testcase.testcases})
+                                    }
+                                });
+                            });
+                            $scope.processingOffenders = false;
                         }
                     }
-                    if(status === "FAIL" || status === "BROKEN_TEST") {
-                        rest.one('results', 'count').get({"q": "and(eq(testrun__testrunId,\"" +
-                            $routeParams["testrunid"] + "\"),eq(status,\"" + status +
-                            "\"),ne(log__loggerName,\"slick.note\"))"}).then(function(count) {
-                                $scope.withoutNotesStats[status] = count;
+                    nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
+                    $scope.goToBuildReportButton = {
+                        href: `build-report/${testrun.project.name}/${testrun.release.name}/${testrun.build.name}`,
+                        name: "Back to Build Report"
+                    };
+                    $scope.goToTPSReportButton = {
+                        href: `tps-report/${testrun.project.name}/${testrun.release.name}/${testrun.testplan.name}`,
+                        name: "TPS Report"
+                    };
+                    $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
+
+                    if (!testrun.info && testrun.project && testrun.release && testrun.build) {
+                        projrest.one('projects', testrun.project.name).one('releases', testrun.release.name).one('builds', testrun.build.name).get().then(function (build) {
+                            testrun.info = build.description;
                         });
                     }
-                });
 
-                $scope.recentlyFetchedTestrun = true;
-                $scope.testrunQuery(testrun.state);
-                nav.setTitle("Summary: " + $scope.getDisplayName(testrun));
-                $scope.goToBuildReportButton = {
-                    href: `build-report/${testrun.project.name}/${testrun.release.name}/${testrun.build.name}`,
-                    name: "Build Report"
-                };
-                $scope.goToTPSReportButton = {
-                    href: `tps-report/${testrun.project.name}/${testrun.release.name}/${testrun.testplan.name}`,
-                    name: "TPS Report"
-                };
-                $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
-
-                if(!testrun.info && testrun.project && testrun.release && testrun.build) {
-                    projrest.one('projects', testrun.project.name).one('releases', testrun.release.name).one('builds', testrun.build.name).get().then(function(build) {
-                        testrun.info = build.description;
-                    });
                 }
+            );
+        };
 
+        $scope.replaceOnStatus = replaceOnStatus;
+        $scope.testrungroup = {};
+        $scope.testrunList = {};
+        $scope.tpsReportOptions = {
+            chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+            backgroundColor: "none",
+            legend: {
+                textStyle: {
+                    color: "#ffffff"
+                }
+            },
+            colors: []
+        };
+        $scope.tpsData = new google.visualization.DataTable();
+        $scope.tpsData.addColumn('string', 'Testrun Name');
+        var refresh_promise;
+
+        $scope.getTPSReportData = function () {
+            rest.one('tps', $scope.testrun.project.name).one($scope.testrun.release.name, $scope.testrun.name).get().then(function (tpsreport) {
+                $scope.tpsReportOptions = {
+                    chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+                    backgroundColor: "none",
+                    legend: {
+                        textStyle: {
+                            color: "#ffffff"
+                        },
+                    },
+                    vAxis: {
+                        minValue: 0,
+                        maxValue: 100,
+                        format: '#\'%\''
+                    },
+                    lineWidth: 5,
+                    colors: []
+                };
+                $scope.testrungroup = tpsreport;
+                var testrungroup = tpsreport;
+                if (tpsreport.hasOwnProperty('name')) {
+                    $scope.testrunHistory = [];
+                    $scope.tpsData = new google.visualization.DataTable();
+                    $scope.tpsData.addColumn('date', 'Recorded');
+                    _.sortBy($scope.testruns, function (testrun) {
+                        return testrun.dateCreated;
+                    });
+                    _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
+                        $scope.tpsReportOptions.colors.push(color);
+                        $scope.tpsData.addColumn('number', replaceOnStatus(status, " "))
+                    });
+                    _.each(testrungroup.testruns, function (testrun) {
+                        $scope.testrunHistory.unshift(testrun)
+                        var row = [new Date(testrun.dateCreated)];
+                        let sum = Object.values(testrun.summary.resultsByStatus).reduce((a, b) => a + b, 0);
+                        _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                            row.push(testrun.summary.resultsByStatus[status] / sum * 100);
+                        });
+                        $scope.tpsData.addRow(row);
+                    });
+                } else {
+                    refresh_promise = $timeout($scope.getTPSReportData, 500);
+                }
+            }, function errorCallback() {
+                refresh_promise = $timeout($scope.getTPSReportData, 3000);
             });
         };
 
         $scope.fetchTestrun();
 
-        $scope.testrunQuery = function(state) {
+        $scope.testrunQuery = function (state) {
             var oldQuery = $scope.resultQuery.q;
-            var includableStatuses = _.filter(_.keys($scope.filter), function(key) { return $scope.filter[key] && key !== 'withoutnotes'});
+            var includableStatuses = _.filter(_.keys($scope.filter), function (key) {
+                return $scope.filter[key] && key !== 'withoutnotes'
+            });
             var andQuery = ["eq(testrun__testrunId,\"" + $routeParams["testrunid"] + "\")"];
-            if(includableStatuses.length === 1) {
+            if (includableStatuses.length === 1) {
                 andQuery.push("eq(status,\"" + includableStatuses[0] + "\")")
-            } else if(includableStatuses.length > 1) {
+            } else if (includableStatuses.length > 1) {
                 var statuses = [];
-                _.each(includableStatuses, function(status) {
+                _.each(includableStatuses, function (status) {
                     statuses.push("eq(status,\"" + status + "\")");
                 });
                 andQuery.push("or(" + statuses.join(',') + ")")
             }
-            if($scope.filter['withoutnotes']) {
+            if ($scope.filter['withoutnotes']) {
                 andQuery.push('ne(log__loggerName,"slick.note")')
             }
             $scope.resultQuery = {
                 q: "and(" + andQuery.join(',') + ")"
             };
             if (oldQuery != $scope.resultQuery.q || $scope.recentlyFetchedTestrun) {
-                rest.all('results').getList($scope.resultQuery).then(function(results) {
+                rest.all('results').getList($scope.resultQuery).then(function (results) {
                     $scope.results = [];
                     //$scope.results = results;
-                    _.each(results, function(result) {
-                        if(result.started) {
-                           result.recorded = result.started;
+                    _.each(results, function (result) {
+                        if (result.started) {
+                            result.recorded = result.started;
                         }
                         $scope.results.push(result);
                     });
                     $scope.recentlyFetchedTestrun = false;
-                    if(state !== "FINISHED") {
+                    if (state !== "FINISHED") {
                         $timeout($scope.fetchTestrun, 5000);
                     }
                 });
             }
         };
 
-        $scope.getDisplayName = function(testrun) {
+        $scope.getDisplayName = function (testrun) {
             var retval = testrun.name;
             if (testrun.testplan) {
                 retval = testrun.testplan.name;
@@ -1697,36 +1956,42 @@ angular.module('slickApp')
             return retval;
         };
 
-        $scope.toggleFilter = function(status) {
-            $scope.filter[status] = ! $scope.filter[status];
+        $scope.toggleFilter = function (status) {
+            $scope.filter[status] = !$scope.filter[status];
             $scope.statusFilter.$setDirty();
         };
 
-        $scope.getTestrunDuration = function(testrun) {
+        $scope.getTestrunDuration = function (testrun) {
             return getDurationString(testrun.runFinished - testrun.runStarted);
         };
 
-        $scope.getResultDuration = function(result) {
+        $scope.getResultDuration = function (result, raw) {
             if (result.runlength) {
+                if (raw) {
+                    return result.runlength;
+                }
                 return getDurationString(result.runlength);
             }
             if (result.started && result.finished) {
+                if (raw) {
+                    return result.finished - result.started
+                }
                 return getDurationString(result.finished - result.started);
             }
         };
 
-        $scope.$watch('statusFilter.$dirty', function(newValue, oldValue) {
+        $scope.$watch('statusFilter.$dirty', function (newValue, oldValue) {
             $scope.testrunQuery();
             $scope.statusFilter.$setPristine();
         });
-        $scope.$watch('showFilter.$dirty', function(newValue, oldValue) {
-            if(newValue) {
-                $cookieStore.put('testrunShowFilter', $scope.show);
+        $scope.$watch('showFilter.$dirty', function (newValue, oldValue) {
+            if (newValue) {
+                $cookies.putObject('testrunShowFilter', $scope.show);
                 $scope.showFilter.$setPristine();
             }
         });
 
-        $scope.getAbbreviatedReason = function(result) {
+        $scope.getAbbreviatedReason = function (result) {
             if (result.reason) {
                 var line = result.reason.split("\n")[0];
                 return line;
@@ -1735,24 +2000,26 @@ angular.module('slickApp')
             }
         };
 
-        $scope.getImages = function(result) {
-            return _.filter(result.files, function(file) { return /^image/.test(file.mimetype);});
+        $scope.getImages = function (result) {
+            return _.filter(result.files, function (file) {
+                return /^image/.test(file.mimetype);
+            });
         };
 
-        $scope.addMoreDetail = function(result) {
+        $scope.addMoreDetail = function (result, $event) {
             $scope.moreDetailForResult[result.id] = true;
         };
 
-        $scope.removeDetail = function(result) {
+        $scope.removeDetail = function (result, $event) {
             $scope.moreDetailForResult[result.id] = false;
         };
 
-        $scope.addNote = function(result) {
+        $scope.addNote = function (result, $event) {
             $scope.note.result = result;
             $scope.showAddNote = true;
         };
 
-        $scope.addNoteDialogButtonClicked = function(buttonName) {
+        $scope.addNoteDialogButtonClicked = function (buttonName) {
             if (buttonName == "Add") {
                 var result = $scope.note.result;
                 var note = $scope.note;
@@ -1763,15 +2030,15 @@ angular.module('slickApp')
                     message: note.message,
                     exceptionMessage: note.externalLink
                 };
-                rest.one('results', result.id).post('log',logEntry).then(function(numOfLogEntries) {
+                rest.one('results', result.id).post('log', logEntry).then(function (numOfLogEntries) {
                     if (!result.log) {
                         result.log = [];
                     }
                     result.log.push(logEntry);
                 });
                 if (note.recurring) {
-                    rest.one('testcases', result.testcase.testcaseId).get().then(function(testcase) {
-                        if (! testcase.activeNotes) {
+                    rest.one('testcases', result.testcase.testcaseId).get().then(function (testcase) {
+                        if (!testcase.activeNotes) {
                             testcase.activeNotes = []
                         }
                         var recurringNote = {message: note.message};
@@ -1800,80 +2067,81 @@ angular.module('slickApp')
             };
         };
 
-        $scope.getResultNotes = function(result) {
-            return _.filter(result.log, function(logEntry) {
+        $scope.getResultNotes = function (result) {
+            return _.filter(result.log, function (logEntry) {
                 return (logEntry.level === "WARN" || logEntry.level === "INFO") && logEntry.loggerName === "slick.note";
             });
         };
 
-        $scope.displayFile = function(file, $event) {
+        $scope.displayFile = function (file, $event) {
             $scope.fileToDisplay = file;
             $scope.showDisplayFile = true;
             $event.preventDefault();
-            if(file && file.mimetype && (file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml")) {
-                rest.one('files', file.id).one('content', file.filename).get().then(function(text) {
+            if (file && file.mimetype && (file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml")) {
+                rest.one('files', file.id).one('content', file.filename).get().then(function (text) {
                     $scope.fileToDisplay.text = text;
                 });
             }
         };
 
-        $scope.getFileViewer = function(file) {
-            if(file && file.mimetype) {
+        $scope.getFileViewer = function (file) {
+            if (file && file.mimetype) {
                 if (file.mimetype.indexOf("image") === 0) {
                     return "image";
-                } else if(file.mimetype.indexOf("video") === 0) {
+                } else if (file.mimetype.indexOf("video") === 0) {
                     if (file.mimetype == "video/mp4") {
                         return "html5-video";
                     } else {
                         return "embed-video";
                     }
-                } else if(file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml") {
+                } else if (file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml") {
                     return "text";
                 }
 
             }
         };
 
-        $scope.showTestcase = function(testcaseId, $event) {
+        $scope.showTestcase = function (testcaseId, $event) {
             $event.preventDefault();
-            rest.one('testcases', testcaseId).get().then(function(testcase) {
+            rest.one('testcases', testcaseId).get().then(function (testcase) {
+                $scope.expandedResults[testcase.name] = $scope.expandedResults[testcase.name] ? !$scope.expandedResults[testcase.name] : true;
                 $scope.testcase = testcase;
-                $scope.showTestcaseDialog = true;
+                $scope.testcases[testcase.name] = testcase
             });
         };
 
-        $scope.getUrlForFile = function(file) {
+        $scope.getUrlForFile = function (file) {
             return "api/files/" + file.id + "/content/" + file.filename;
         };
 
-        $scope.displayFileDialogButtonClicked = function(buttonName) {
+        $scope.displayFileDialogButtonClicked = function (buttonName) {
             $scope.showDisplayFile = false;
             $scope.fileToDisplay = {};
         };
 
-        $scope.displayReason = function(result, $event) {
+        $scope.displayReason = function (result, $event) {
             $event.preventDefault();
             $scope.showDisplayReason = true;
             $scope.reason = result.reason;
         };
 
-        $scope.displayReasonDialogButtonClicked = function(buttonName) {
+        $scope.displayReasonDialogButtonClicked = function (buttonName) {
             $scope.showDisplayReason = false;
             $scope.reason = "";
         };
 
-        $scope.displayLogs = function(result, $event) {
+        $scope.displayLogs = function (result, $event) {
             $event.preventDefault();
             $scope.logs = result.log;
             $scope.showDisplayLogs = true;
         };
 
-        $scope.displayLogsDialogButtonClicked = function(buttonName) {
+        $scope.displayLogsDialogButtonClicked = function (buttonName) {
             $scope.logs = [];
             $scope.showDisplayLogs = false;
         };
 
-        $scope.displayTestcaseDialogButtonClicked = function(buttonName) {
+        $scope.displayTestcaseDialogButtonClicked = function (buttonName) {
             $scope.showTestcaseDialog = false;
             $scope.testcase = {
                 name: "",
@@ -1881,8 +2149,8 @@ angular.module('slickApp')
             };
         };
 
-        $scope.onHistoryClick = function(history) {
-            rest.one('results', history.resultId).get().then(function(result) {
+        $scope.onHistoryClick = function (history) {
+            rest.one('results', history.resultId).get().then(function (result) {
                 $location.path('testruns/' + result.testrun.testrunId);
                 if (result.status == "PASS") {
                     $location.search({result: result.id, all: "true"});
@@ -1895,12 +2163,12 @@ angular.module('slickApp')
         $scope.cancelResults = function () {
             rest.one('testruns', $scope.testrun.id).one('cancel').get();
         };
-        
-        $scope.rescheduleStatus = function(status_name) {
+
+        $scope.rescheduleStatus = function (status_name) {
             rest.one('testruns', $scope.testrun.id).one('reschedule', status_name).get();
         };
-        
-        $scope.rescheduleResult = function(result_id) {
+
+        $scope.rescheduleResult = function (result_id) {
             rest.one('results', result_id).one('reschedule').get();
         };
 
@@ -2129,15 +2397,15 @@ angular.module('slickApp')
 
             $scope.summaryChartOptions = {
                 chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
-                backgroundColor: "#000000",
-                pieSliceBorderColor: "#000000",
+                backgroundColor: "none",
+                pieSliceBorderColor: "none",
                 legend: 'none',
                 colors: []
             };
 
             $scope.individualChartOptions = {
                 chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
-                backgroundColor: "#000000",
+                backgroundColor: "none",
                 isStacked: true,
                 legend: 'none',
                 hAxis: {
@@ -2151,7 +2419,7 @@ angular.module('slickApp')
 
             $scope.serialChartOptions = {
                 chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-                backgroundColor: "#000000",
+                backgroundColor: "none",
                 legend: {
                     textStyle: {
                         color: "#ffffff"
@@ -2175,12 +2443,12 @@ angular.module('slickApp')
 
 
                     _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        $scope.parallelSummaryData.addRow([status.replace("_", " "), testrungroup.groupSummary.resultsByStatus[status]]);
-                        var color = getStyle(status.replace("_", "") + "-element", "color");
+                        $scope.parallelSummaryData.addRow([replaceOnStatus(status, " "), testrungroup.groupSummary.resultsByStatus[status]]);
+                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                         $scope.summaryChartOptions.colors.push(color);
                         $scope.individualChartOptions.colors.push(color);
 
-                        $scope.parallelIndividualData.addColumn('number', status.replace("_", " "))
+                        $scope.parallelIndividualData.addColumn('number', replaceOnStatus(status, " "))
                     });
 
                     _.each(testrungroup.testruns, function (testrun) {
@@ -2197,9 +2465,9 @@ angular.module('slickApp')
                         return testrun.dateCreated;
                     });
                     _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        var color = getStyle(status.replace("_", "") + "-element", "color");
+                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                         $scope.serialChartOptions.colors.push(color);
-                        $scope.serialData.addColumn('number', status.replace("_", " "))
+                        $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
                     });
                     _.each(testrungroup.testruns, function (testrun) {
                         var row = [new Date(testrun.dateCreated)];
@@ -2250,7 +2518,7 @@ angular.module('slickApp')
             });
         };
     }])
-    .controller('EditTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', function($scope, rest, nav, $routeParams, $cookieStore) {
+    .controller('EditTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookies', function($scope, rest, nav, $routeParams, $cookies) {
         $scope.testrungroup = {};
         $scope.testrungroupTestrunList = {};
         $scope.availableTestrunList = {};
@@ -2272,9 +2540,9 @@ angular.module('slickApp')
         rest.all('projects').getList().then(function(projects) {
             $scope.projects = _.sortBy(projects, "lastUpdated");
             $scope.projects.reverse();
-            if ($cookieStore.get('slick-last-project-used')) {
+            if ($cookies.get('slick-last-project-used')) {
                 $scope.project = _.find(projects, function(project) {
-                    return $cookieStore.get('slick-last-project-used') == project.name;
+                    return $cookies.get('slick-last-project-used') === project.name;
                 });
             }
         });
@@ -2343,15 +2611,15 @@ angular.module('slickApp')
 
         $scope.summaryChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
-            backgroundColor: "#000000",
-            pieSliceBorderColor: "#000000",
+            backgroundColor: "none",
+            pieSliceBorderColor: "none",
             legend: 'none',
             colors: []
         };
 
         $scope.individualChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
-            backgroundColor: "#000000",
+            backgroundColor: "none",
             isStacked: true,
             legend: 'none',
             hAxis: {
@@ -2365,7 +2633,7 @@ angular.module('slickApp')
 
         $scope.serialChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-            backgroundColor: "#000000",
+            backgroundColor: "none",
             legend: {
                 textStyle: {
                     color: "#ffffff"
@@ -2412,9 +2680,9 @@ angular.module('slickApp')
                     return testrun.dateCreated;
                 });
                 _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
-                    var color = getStyle(status.replace("_", "") + "-element", "color");
+                    var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                     $scope.serialChartOptions.colors.push(color);
-                    $scope.serialData.addColumn('number', status.replace("_", " "))
+                    $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
                 });
                 _.each(testrungroup.testruns, function(testrun) {
                     var row = [new Date(testrun.dateCreated)];
@@ -2465,14 +2733,32 @@ angular.module('slickApp')
             });
     }])
     .controller('ViewBuildReportCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', function ($scope, rest, nav, $routeParams, $timeout) {
+        try {
+            $scope.environment = environment;
+        } catch (e) {
+            //    Don't log again but still catch.
+        }
+
         $scope.replaceOnStatus = replaceOnStatus;
+        $scope.query = {
+            order: 'dateCreated',
+            limit: 25,
+            page: 1
+        };
+        $scope.setOrder = function (order) {
+            $scope.query.order = order;
+        };
+        $scope.limitOptions = [25, 50, 100, 200];
         $scope.testrungroup = {};
         $scope.testrunList = {};
         $scope.editbutton = {
             href: "result-list/" + $routeParams['project'] + "/" + $routeParams['release'] + "/" + $routeParams['build'],
             name: "Broken and Failed Results"
         };
-
+        $scope.releaseReportButton = {
+            href: "release-report/" + $routeParams['project'] + "/" + $routeParams['release'],
+            name: "Release Report"
+        };
 
         $scope.parallelSummaryData = new google.visualization.DataTable();
         $scope.parallelSummaryData.addColumn('string', 'Status');
@@ -2506,7 +2792,7 @@ angular.module('slickApp')
 
         var refresh_promise;
 
-        $scope.getBuildReportData = function() {
+        $scope.getBuildReportData = function () {
             if ($routeParams.release === 'latest') {
                 rest.one('projects', $routeParams['project']).get().then(function (project) {
                     var lastRelease = project.releases.length - 1;
@@ -2532,28 +2818,30 @@ angular.module('slickApp')
             rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).get().then(function (buildreport) {
                 $scope.summaryChartOptions = {
                     chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
-                    backgroundColor: "#000000",
-                    pieSliceBorderColor: "#000000",
+                    backgroundColor: "none",
+                    pieSliceBorderColor: "none",
                     legend: 'none',
                     colors: []
                 };
 
                 $scope.individualChartOptions = {
                     chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
-                    backgroundColor: "#000000",
+                    backgroundColor: "none",
                     isStacked: true,
                     legend: 'none',
                     hAxis: {
                         textStyle: {
-                            color: '#ffffff'
+                            color: '#c0c0c0'
                         },
                         slantedText: true
                     },
                     colors: []
                 };
+                $scope.routeParams = $routeParams;
                 $scope.testrungroup = buildreport;
                 $scope.estimatedTimeRemaining = "";
                 $scope.buildRunTime = "";
+                $scope.testRunsTitle = "Testruns";
                 $scope.isBuildReport = false;
                 var testrungroup = buildreport;
                 if (buildreport.hasOwnProperty('name')) {
@@ -2590,7 +2878,7 @@ angular.module('slickApp')
                     });
 
                     _.each(testrungroup.testruns, function (testrun) {
-                        var row = [testrun.project.name + " - " + testrun.name];
+                        var row = [testrun.name];
                         _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
                             row.push(testrun.summary.resultsByStatus[status]);
                         });
@@ -2604,19 +2892,140 @@ angular.module('slickApp')
             });
         };
 
-        $scope.stopRefresh = function() {
+        $scope.buildHistory = [];
+
+        $scope.releaseReportOptions = {
+            chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+            backgroundColor: "none",
+            legend: {
+                textStyle: {
+                    color: "#ffffff"
+                }
+            },
+            colors: []
+        };
+
+        let params = {limit: "15", groupType: "PARALLEL"};
+        if ($routeParams["limit"]) {
+            params.limit = $routeParams["limit"];
+        }
+
+        $scope.releaseData = new google.visualization.DataTable();
+        $scope.releaseData.addColumn('string', 'Build Name');
+        $scope.getReleaseData = function () {
+            rest.one('release-report', $routeParams.project).one($routeParams.release).get(params).then(function (releaseReport) {
+                $scope.releaseReportOptions = {
+                    chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+                    backgroundColor: "none",
+                    vAxis: {
+                        minValue: 0,
+                        maxValue: 100,
+                        format: '#\'%\''
+                    },
+                    lineWidth: 5,
+                    legend: {
+                        textStyle: {
+                            color: "#ffffff"
+                        }
+                    },
+                    colors: []
+                };
+                if (releaseReport.hasOwnProperty('name')) {
+                    $scope.buildHistory = [];
+                    $scope.releaseData = new google.visualization.DataTable();
+                    $scope.releaseData.addColumn('date', 'Recorded');
+                    let gotXAndY = false;
+                    refresh_promise = $timeout($scope.getReleaseData, 3000);
+                    _.each(releaseReport.builds.sort(function (a, b) {
+                        return (a.testruns[0].dateCreated > b.testruns[0].dateCreated) ? 1 : ((b.testruns[0].dateCreated > a.testruns[0].dateCreated) ? -1 : 0);
+                    }), function (build) {
+                        $scope.buildHistory.unshift(build);
+                        let row = [new Date(build.testruns[0].dateCreated)];
+                        let sum = Object.values(build.groupSummary.resultsByStatus).reduce((a, b) => a + b, 0);
+                        if (!gotXAndY) {
+                            _.each(Object.keys(build.groupSummary.resultsByStatus).sort(), function (status) {
+                                let color = getStyle(replaceOnStatus(status, "") + "-element", "color");
+                                $scope.releaseReportOptions.colors.push(color);
+                                $scope.releaseData.addColumn('number', replaceOnStatus(status, " "));
+                            });
+                            gotXAndY = true;
+                            // $scope.releaseData.addColumn('string', 'Build');
+                        }
+                        _.each(Object.keys(build.groupSummary.resultsByStatus).sort(), function (status) {
+                            row.push(build.groupSummary.resultsByStatus[status] / sum * 100);
+                        });
+                        // row.push(`${build.testruns[0].project.name}/${build.testruns[0].release.name}/${build.testruns[0].build.name}`);
+                        $scope.releaseData.addRow(row);
+                    });
+                } else {
+                    refresh_promise = $timeout($scope.getReleaseData, 500);
+                }
+            }, function errorCallback() {
+                refresh_promise = $timeout($scope.getReleaseData, 3000);
+            },);
+        };
+
+        $scope.getBuildReportData();
+
+        $scope.getReleaseData();
+
+        $scope.getResults = function (state) {
+            var oldQuery = $scope.resultQuery.q;
+            var includableStatuses = _.filter(_.keys($scope.filter), function (key) {
+                return $scope.filter[key] && key !== 'withoutnotes'
+            });
+            var andQuery = ["eq(testrun__testrunId,\"" + $routeParams["testrunid"] + "\")"];
+            if (includableStatuses.length === 1) {
+                andQuery.push("eq(status,\"" + includableStatuses[0] + "\")")
+            } else if (includableStatuses.length > 1) {
+                var statuses = [];
+                _.each(includableStatuses, function (status) {
+                    statuses.push("eq(status,\"" + status + "\")");
+                });
+                andQuery.push("or(" + statuses.join(',') + ")")
+            }
+            if ($scope.filter['withoutnotes']) {
+                andQuery.push('ne(log__loggerName,"slick.note")')
+            }
+            $scope.resultQuery = {
+                q: "and(" + andQuery.join(',') + ")"
+            };
+            if (oldQuery != $scope.resultQuery.q || $scope.recentlyFetchedTestrun) {
+                rest.all('results').getList($scope.resultQuery).then(function (results) {
+                    $scope.results = [];
+                    //$scope.results = results;
+                    _.each(results, function (result) {
+                        if (result.started) {
+                            result.recorded = result.started;
+                        }
+                        $scope.results.push(result);
+                    });
+                    $scope.recentlyFetchedTestrun = false;
+                    if (state !== "FINISHED") {
+                        $timeout($scope.fetchTestrun, 5000);
+                    }
+                });
+            }
+        };
+
+        $scope.cancelResultsForBuild = function () {
+            rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).one('cancel').get();
+        };
+
+        $scope.rescheduleStatusForBuild = function (status_name) {
+            rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).one('reschedule', status_name).get();
+        };
+
+        $scope.$on('$destroy', function () {
+            $scope.stopRefresh();
+        });
+
+        $scope.stopRefresh = function () {
             if (angular.isDefined(refresh_promise)) {
                 $timeout.cancel(refresh_promise);
                 refresh_promise = undefined;
             }
         };
-        $scope.getBuildReportData();
-
-
-
-        $scope.$on('$destroy', function() {
-            $scope.stopRefresh();
-        });
     }]);
 /**
  * User: jcorbett
@@ -2652,7 +3061,7 @@ angular.module('slickApp')
         $scope.testrunList = {};
         $scope.serialChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-            backgroundColor: "#000000",
+            backgroundColor: "none",
             legend: {
                 textStyle: {
                     color: "#ffffff"
@@ -2668,12 +3077,18 @@ angular.module('slickApp')
             rest.one('tps', $routeParams.project).one($routeParams.release, $routeParams.testplan).get().then(function (tpsreport) {
                 $scope.serialChartOptions = {
                     chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-                    backgroundColor: "#000000",
+                    backgroundColor: "none",
                     legend: {
                         textStyle: {
                             color: "#ffffff"
                         }
                     },
+                    vAxis: {
+                        minValue: 0,
+                        maxValue: 100,
+                        format: '#\'%\''
+                    },
+                    lineWidth: 5,
                     colors: []
                 };
                 $scope.testrungroup = tpsreport;
@@ -2692,8 +3107,9 @@ angular.module('slickApp')
                     });
                     _.each(testrungroup.testruns, function (testrun) {
                         var row = [new Date(testrun.dateCreated)];
+                        let sum = Object.values(testrun.summary.resultsByStatus).reduce((a, b) => a + b, 0);
                         _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                            row.push(testrun.summary.resultsByStatus[status]);
+                            row.push(testrun.summary.resultsByStatus[status] / sum * 100);
                         });
                         $scope.serialData.addRow(row);
                     });
@@ -2802,7 +3218,7 @@ angular.module('slickApp')
             }
         };
     }])
-    .controller('EmailSubscriptionCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookieStore', function($scope, rest, nav, $routeParams, $location, $cookieStore) {
+    .controller('EmailSubscriptionCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookies', function($scope, rest, nav, $routeParams, $location, $cookies) {
         $scope.subscriptionsFor = '';
         $scope.subscription = {};
         $scope.availableSubscriptions = [];
@@ -2836,8 +3252,8 @@ angular.module('slickApp')
         $scope.editSubscriptions = function() {
             $location.search("for", $scope.emailAddress);
         };
-        if ($cookieStore.get('slick-last-project-used')) {
-            $scope.selectedProjectName =  $cookieStore.get('slick-last-project-used');
+        if ($cookies.get('slick-last-project-used')) {
+            $scope.selectedProjectName =  $cookies.get('slick-last-project-used');
         }
 
         if($routeParams.for) {
@@ -2976,6 +3392,13 @@ angular.module('slickApp')
     }])
     .controller('ResultListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location) {
         $scope.replaceOnStatus = replaceOnStatus;
+        $scope.expandedResults = {};
+
+        $scope.isExpanded = function (testcaseId) {
+            return !!$scope.expandedResults[testcaseId];
+        };
+        $scope.testcases = {}
+
         $scope.results = [];
         $scope.filter = {};
         $scope.resultQuery = {};
@@ -2983,6 +3406,24 @@ angular.module('slickApp')
         $scope.moreDetailForResult = {};
         $scope.moreDetail = false;
         $scope.showAddNote = false;
+        $scope.statusToIcon = function(status) {
+            switch(status) {
+                case 'PASS':
+                    return 'check_circle';
+                case 'PASSED_ON_RETRY':
+                    return 'check_circle';
+                case 'FAIL':
+                    return 'cancel';
+                case 'BROKEN_TEST':
+                    return 'error';
+                case 'NO_RESULT':
+                    return 'help';
+                case 'SKIPPED':
+                    return 'watch_later';
+                case 'NOT_TESTED':
+                    return 'pause_circle_filled';
+            }
+        };
         $scope.note = {
             result: null,
             message: '',
@@ -3051,11 +3492,17 @@ angular.module('slickApp')
         });
 
 
-        $scope.getResultDuration = function(result) {
+        $scope.getResultDuration = function(result, raw) {
             if (result.runlength) {
+                if (raw) {
+                    return result.runlength
+                }
                 return getDurationString(result.runlength);
             }
             if (result.started && result.finished) {
+                if (raw) {
+                    return result.finished - result.started
+                }
                 return getDurationString(result.finished - result.started);
             }
         };
@@ -3168,11 +3615,12 @@ angular.module('slickApp')
             }
         };
 
-        $scope.showTestcase = function(testcaseId, $event) {
-            $event.preventDefault();
-            rest.one('testcases', testcaseId).get().then(function(testcase) {
+        $scope.showTestcase = function (testcaseId, $event) {
+                        $event.preventDefault();
+            rest.one('testcases', testcaseId).get().then(function (testcase) {
+                $scope.expandedResults[testcase.name] = $scope.expandedResults[testcase.name] ? !$scope.expandedResults[testcase.name] : true;
                 $scope.testcase = testcase;
-                $scope.showTestcaseDialog = true;
+                $scope.testcases[testcase.name] = testcase
             });
         };
 
@@ -3240,5 +3688,24 @@ angular.module('slickApp')
 
         window.scope = $scope;
     }]);
+
+
+const environment = {
+    iframeConfig: [
+        {
+            icon: "video_label",
+            title: "SmartLab",
+            url: "http://10.1.44.2/",
+            width: "100%",
+            height: "100vh"
+        },
+    ],
+    buildReportActions: [
+        {
+            title: "Send Results to TestRail",
+            href: "http://tp-qa-jenkins.vivint.com/view/SmartLab%20Tools/job/Send%20Results%20to%20TestRail/build?delay=0sec"
+        }
+    ]
+};
 
 

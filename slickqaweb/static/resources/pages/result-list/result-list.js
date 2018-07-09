@@ -14,6 +14,13 @@ angular.module('slickApp')
     }])
     .controller('ResultListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location) {
         $scope.replaceOnStatus = replaceOnStatus;
+        $scope.expandedResults = {};
+
+        $scope.isExpanded = function (testcaseId) {
+            return !!$scope.expandedResults[testcaseId];
+        };
+        $scope.testcases = {}
+
         $scope.results = [];
         $scope.filter = {};
         $scope.resultQuery = {};
@@ -21,6 +28,24 @@ angular.module('slickApp')
         $scope.moreDetailForResult = {};
         $scope.moreDetail = false;
         $scope.showAddNote = false;
+        $scope.statusToIcon = function(status) {
+            switch(status) {
+                case 'PASS':
+                    return 'check_circle';
+                case 'PASSED_ON_RETRY':
+                    return 'check_circle';
+                case 'FAIL':
+                    return 'cancel';
+                case 'BROKEN_TEST':
+                    return 'error';
+                case 'NO_RESULT':
+                    return 'help';
+                case 'SKIPPED':
+                    return 'watch_later';
+                case 'NOT_TESTED':
+                    return 'pause_circle_filled';
+            }
+        };
         $scope.note = {
             result: null,
             message: '',
@@ -89,11 +114,17 @@ angular.module('slickApp')
         });
 
 
-        $scope.getResultDuration = function(result) {
+        $scope.getResultDuration = function(result, raw) {
             if (result.runlength) {
+                if (raw) {
+                    return result.runlength
+                }
                 return getDurationString(result.runlength);
             }
             if (result.started && result.finished) {
+                if (raw) {
+                    return result.finished - result.started
+                }
                 return getDurationString(result.finished - result.started);
             }
         };
@@ -206,11 +237,12 @@ angular.module('slickApp')
             }
         };
 
-        $scope.showTestcase = function(testcaseId, $event) {
-            $event.preventDefault();
-            rest.one('testcases', testcaseId).get().then(function(testcase) {
+        $scope.showTestcase = function (testcaseId, $event) {
+                        $event.preventDefault();
+            rest.one('testcases', testcaseId).get().then(function (testcase) {
+                $scope.expandedResults[testcase.name] = $scope.expandedResults[testcase.name] ? !$scope.expandedResults[testcase.name] : true;
                 $scope.testcase = testcase;
-                $scope.showTestcaseDialog = true;
+                $scope.testcases[testcase.name] = testcase
             });
         };
 
