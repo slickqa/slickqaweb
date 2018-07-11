@@ -47,8 +47,8 @@
                                 <tbody md-body>
                                 <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildListOne | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
-                                        <md-icon ng-if="build.report.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
-                                        <i ng-if="build.report.state !== 'FINISHED'" class="pulse"></i>
+                                        <md-icon ng-show="build.report.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
+                                        <i ng-show="build.report.state !== 'FINISHED'" class="pulse"></i>
                                     </td>
                                     <td md-cell>
                                         <a href="projects/{{ build.project.name }}" ng-bind="build.project.name"></a>
@@ -119,7 +119,7 @@
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="testrun" md-select-id="name" md-auto-select ng-repeat="testrun in testrunListOne | filter: filter.search | orderBy: testrunsQuery.order | limitTo: testrunsQuery.limit : (testrunsQuery.page -1) * testrunsQuery.limit" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="testrun" md-select-id="name" md-auto-select ng-repeat="testrun in testrunListOne | filter: filter.search | orderBy: testrunsQuery.order | limitTo: testrunsQuery.limit : (testrunsQuery.page -1) * testrunsQuery.limit track by testrun.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
                                         <md-icon ng-if="testrun.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
                                         <i ng-if="testrun.state !== 'FINISHED'" class="pulse"></i>
@@ -194,7 +194,7 @@
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="testrungroup" md-select-id="name" md-auto-select ng-repeat="testrungroup in testrungroupListOne | filter: filter.search | orderBy: testrunGroupsQuery.order | limitTo: testrunGroupsQuery.limit : (testrunGroupsQuery.page -1) * testrunGroupsQuery.limit" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="testrungroup" md-select-id="name" md-auto-select ng-repeat="testrungroup in testrungroupListOne | filter: filter.search | orderBy: testrunGroupsQuery.order | limitTo: testrunGroupsQuery.limit : (testrunGroupsQuery.page -1) * testrunGroupsQuery.limit track by testrungroup.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
                                         <md-icon ng-if="testrungroup.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
                                         <i ng-if="testrungroup.state !== 'FINISHED'" class="pulse"></i>
