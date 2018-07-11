@@ -2616,6 +2616,12 @@ table.md-table th.md-column.md-active,
 table.md-table th.md-column.md-active md-icon {
   color: unset;
 }
+table.md-table td.md-cell {
+  font-size: 16px;
+}
+table.md-table th.md-column {
+  font-size: 15px;
+}
 .sidenav.ng-hide-remove {
   -webkit-animation: bounceInLeft 1s;
   -moz-animation: bounceInLeft 1s;
