@@ -9,104 +9,63 @@
                     </md-tab-label>
                     <md-tab-body>
                         <div layout="row" layout-wrap>
-                            <div layout="row" layout-wrap>
-                                <div layout="column">
-                                    <md-card md-colors="{background: 'background'}">
-                                        <md-card-header>
-                                            <md-card-header-text>
-                                                <span class="md-title">Build Report Information</span>
-                                            </md-card-header-text>
-                                        </md-card-header>
-                                        <md-divider></md-divider>
-                                        <md-card-content>
-                                            <div layout="row" ng-show="routeParams.project">
-                                                <div class="testrun-summary-metadata-key">Project:</div>
-                                                <div class="testrun-summary-metadata-value" ng-bind="routeParams.project"></div>
-                                            </div>
-                                            <div class="testrun-summary-metadata-row" ng-show="routeParams.release">
-                                                <div class="testrun-summary-metadata-key">Release:</div>
-                                                <div class="testrun-summary-metadata-value" ng-bind="routeParams.release"></div>
-                                            </div>
-                                            <div class="testrun-summary-metadata-row" ng-show="routeParams.build">
-                                                <div class="testrun-summary-metadata-key">Build:</div>
-                                                <div class="testrun-summary-metadata-value" ng-bind="routeParams.build"></div>
-                                            </div>
-                                            <div class="testrun-summary-metadata-row" ng-show="testrungroup.state">
-                                                <div class="testrun-summary-metadata-key">Testrun State:</div>
-                                                <div class="testrun-summary-metadata-value" ng-bind="testrungroup.state"></div>
-                                            </div>
-                                            <div class="testrun-summary-metadata-row" ng-show="buildRunTime">
-                                                <div class="testrun-summary-metadata-key">Run Time:</div>
-                                                <div class="testrun-summary-metadata-value" ng-bind="buildRunTime"></div>
-                                            </div>
-                                            <div class="testrun-summary-metadata-row" ng-show="estimatedTimeRemaining">
-                                                <div class="testrun-summary-metadata-key">Time Remaining:</div>
-                                                <div class="testrun-summary-metadata-value" ng-bind="estimatedTimeRemaining"></div>
-                                            </div>
-                                        </md-card-content>
-                                    </md-card>
-                                    <md-card md-colors="{background: 'background'}">
-                                        <md-card-header>
-                                            <md-card-header-text>
-                                                <span class="md-title">Build History</span>
-                                            </md-card-header-text>
-                                        </md-card-header>
-                                        <md-divider></md-divider>
-                                        <md-progress-linear ng-show="buildHistory.length === 0"></md-progress-linear>
-                                        <md-card-content style="max-height: 2.5in; overflow: auto" ng-show="buildHistory.length !== 0">
-                                            <md-list class="md-dense">
-                                                <md-list-item ng-repeat="build in buildHistory" md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {background: 'background-A100'} : ''">
-                                                    <a class="clickable" href="build-report/{{ build.testruns[0].project.name }}/{{ build.testruns[0].release.name }}/{{ build.testruns[0].build.name }}">
-                                                        {{ build.testruns[0].release.name }}.{{ build.testruns[0].build.name }}
-                                                    </a>
-                                                    <div flex></div>
-                                                    <md-icon ng-show="build.state === 'FINISHED'" class="material-icons">check_circle</md-icon>
-                                                    <i ng-if="build.state !== 'FINISHED'" class="pulse"></i>
-                                                </md-list-item>
-                                            </md-list>
-                                        </md-card-content>
-                                    </md-card>
-                                </div>
-                            </div>
-                            <md-card md-colors="{background: 'background'}">
-                                <md-card-header>
-                                    <md-card-header-text>
-                                        <span class="md-title">Results</span>
-                                    </md-card-header-text>
-                                </md-card-header>
-                                <md-divider></md-divider>
-                                <md-card-content>
-                                    <div ng-cloak layout="row">
-                                        <div class="testrun-summary-data">
-                                            <div class="testrun-summary-data-container" flex style="flex-wrap: wrap">
-                                                <md-list flex>
-                                                    <div class="result-status-{{ replaceOnStatus(status, '') }}" ng-repeat="status in testrungroup.groupSummary.statusListOrdered">
-                                                        <md-list-item class="testrun-summary-data-row">
-                                                            <div class="cancel-button" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled && status === 'NO_RESULT'" ng-click="cancelResultsForBuild()"></div>
-                                                            <div class="cancel-button-empty" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled && status !== 'NO_RESULT' && testrungroup.groupSummary.statusListOrdered.includes('NO_RESULT')"></div>
-                                                            <div class="reschedule-button" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled" ng-click="rescheduleStatusForBuild(status)"></div>
-                                                            <div class="testrun-summary-data-status clickable-text" ng-bind="replaceOnStatus(status, ' ')"></div>
-                                                            <div flex></div>
-                                                            <div class="testrun-summary-data-number" ng-bind="testrungroup.groupSummary.resultsByStatus[status]"></div>
-                                                            <div class="testrun-summary-data-percent" ng-bind="'' + (((testrungroup.groupSummary.resultsByStatus[status] * 1.0)/testrungroup.groupSummary.total) * 100).toFixed(1) + '%'"></div>
-                                                        </md-list-item>
-                                                    </div>
-                                                    <md-divider></md-divider>
-                                                    <md-list-item class="testrun-summary-data-row result-status-total">
-                                                        <div class="cancel-button-empty"></div>
-                                                        <div class="cancel-button-empty" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled && testrungroup.groupSummary.statusListOrdered.includes('NO_RESULT')"></div>
-                                                        <div class="testrun-summary-data-status">Total</div>
-                                                        <div flex></div>
-                                                        <div class="testrun-summary-data-number" ng-bind="testrungroup.groupSummary.total"></div>
-                                                    </md-list-item>
-                                                </md-list>
-                                            </div>
+                            <div layout="column" md-colors="{background: 'background-hue-1'}">
+                                <md-card>
+                                    <md-card-header>
+                                        <md-card-header-text>
+                                            <span class="md-title">Build Report Information</span>
+                                        </md-card-header-text>
+                                    </md-card-header>
+                                    <md-divider></md-divider>
+                                    <md-card-content>
+                                        <div layout="row" ng-show="routeParams.project">
+                                            <div class="testrun-summary-metadata-key">Project:</div>
+                                            <div class="testrun-summary-metadata-value" ng-bind="routeParams.project"></div>
                                         </div>
-                                    </div>
-                                </md-card-content>
-                            </md-card>
-                            <div layout="column">
-                                <md-card ng-show="environment.buildReportActions" md-colors="{background: 'background'}">
+                                        <div class="testrun-summary-metadata-row" ng-show="routeParams.release">
+                                            <div class="testrun-summary-metadata-key">Release:</div>
+                                            <div class="testrun-summary-metadata-value" ng-bind="routeParams.release"></div>
+                                        </div>
+                                        <div class="testrun-summary-metadata-row" ng-show="routeParams.build">
+                                            <div class="testrun-summary-metadata-key">Build:</div>
+                                            <div class="testrun-summary-metadata-value" ng-bind="routeParams.build"></div>
+                                        </div>
+                                        <div class="testrun-summary-metadata-row" ng-show="testrungroup.state">
+                                            <div class="testrun-summary-metadata-key">Testrun State:</div>
+                                            <div class="testrun-summary-metadata-value" ng-bind="testrungroup.state"></div>
+                                        </div>
+                                        <div class="testrun-summary-metadata-row" ng-show="buildRunTime">
+                                            <div class="testrun-summary-metadata-key">Run Time:</div>
+                                            <div class="testrun-summary-metadata-value" ng-bind="buildRunTime"></div>
+                                        </div>
+                                        <div class="testrun-summary-metadata-row" ng-show="estimatedTimeRemaining">
+                                            <div class="testrun-summary-metadata-key">Time Remaining:</div>
+                                            <div class="testrun-summary-metadata-value" ng-bind="estimatedTimeRemaining"></div>
+                                        </div>
+                                    </md-card-content>
+                                </md-card>
+                                <md-card>
+                                    <md-card-header>
+                                        <md-card-header-text>
+                                            <span class="md-title">Build History</span>
+                                        </md-card-header-text>
+                                    </md-card-header>
+                                    <md-divider></md-divider>
+                                    <md-progress-linear ng-show="buildHistory.length === 0"></md-progress-linear>
+                                    <md-card-content style="max-height: 2.5in; overflow: auto" ng-show="buildHistory.length !== 0">
+                                        <md-list class="md-dense">
+                                            <md-list-item ng-repeat="build in buildHistory" md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {background: 'background-A100'} : ''">
+                                                <a class="clickable" href="build-report/{{ build.testruns[0].project.name }}/{{ build.testruns[0].release.name }}/{{ build.testruns[0].build.name }}">
+                                                    {{ build.testruns[0].release.name }}.{{ build.testruns[0].build.name }}
+                                                </a>
+                                                <div flex></div>
+                                                <md-icon md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {color: 'background'} : ''" ng-show="build.state === 'FINISHED'" class="material-icons">check_circle</md-icon>
+                                                <i ng-if="build.state !== 'FINISHED'" class="pulse"></i>
+                                            </md-list-item>
+                                        </md-list>
+                                    </md-card-content>
+                                </md-card>
+                                <md-card ng-show="environment.buildReportActions">
                                     <md-card-header>
                                         <md-card-header-text>
                                             <span class="md-title">Actions</span>
@@ -124,6 +83,60 @@
                                     </md-card-content>
                                 </md-card>
                             </div>
+                            <div layout="row" layout-wrap style="justify-content: space-around; flex-grow: 1">
+                                <div layout="column">
+                                    <md-card md-colors="{background: 'background'}">
+                                        <md-card-header>
+                                            <md-card-header-text>
+                                                <span class="md-title">Results</span>
+                                            </md-card-header-text>
+                                        </md-card-header>
+                                        <md-divider></md-divider>
+                                        <md-card-content>
+                                            <div ng-cloak layout="row">
+                                                <div class="testrun-summary-data">
+                                                    <div class="testrun-summary-data-container" flex style="flex-wrap: wrap">
+                                                        <md-list flex>
+                                                            <div class="result-status-{{ replaceOnStatus(status, '') }}" ng-repeat="status in testrungroup.groupSummary.statusListOrdered">
+                                                                <md-list-item class="testrun-summary-data-row">
+                                                                    <div class="cancel-button" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled && status === 'NO_RESULT'" ng-click="cancelResultsForBuild()"></div>
+                                                                    <div class="cancel-button-empty" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled && status !== 'NO_RESULT' && testrungroup.groupSummary.statusListOrdered.includes('NO_RESULT')"></div>
+                                                                    <div class="reschedule-button" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled" ng-click="rescheduleStatusForBuild(status)"></div>
+                                                                    <div class="testrun-summary-data-status clickable-text" ng-bind="replaceOnStatus(status, ' ')"></div>
+                                                                    <div flex></div>
+                                                                    <div class="testrun-summary-data-number" ng-bind="testrungroup.groupSummary.resultsByStatus[status]"></div>
+                                                                    <div class="testrun-summary-data-percent" ng-bind="'' + (((testrungroup.groupSummary.resultsByStatus[status] * 1.0)/testrungroup.groupSummary.total) * 100).toFixed(1) + '%'"></div>
+                                                                </md-list-item>
+                                                            </div>
+                                                            <md-divider></md-divider>
+                                                            <md-list-item class="testrun-summary-data-row result-status-total">
+                                                                <div class="cancel-button-empty"></div>
+                                                                <div class="cancel-button-empty" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled && testrungroup.groupSummary.statusListOrdered.includes('NO_RESULT')"></div>
+                                                                <div class="testrun-summary-data-status">Total</div>
+                                                                <div flex></div>
+                                                                <div class="testrun-summary-data-number" ng-bind="testrungroup.groupSummary.total"></div>
+                                                            </md-list-item>
+                                                        </md-list>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </md-card-content>
+                                    </md-card>
+                                </div>
+                                <div layout="column">
+                                    <md-card md-colors="{background: 'background'}">
+                                        <md-card-header>
+                                            <md-card-header-text>
+                                                <span class="md-title">Overall Summary</span>
+                                            </md-card-header-text>
+                                        </md-card-header>
+                                        <md-divider></md-divider>
+                                        <md-card-content>
+                                            <google-pie-chart class="testrun-summary-chart" data="parallelSummaryData" options="summaryChartOptions"></google-pie-chart>
+                                        </md-card-content>
+                                    </md-card>
+                                </div>
+                            </div>
                         </div>
                     </md-tab-body>
                 </md-tab>
@@ -135,47 +148,37 @@
                     <md-tab-body>
                         <div layout="row" layout-wrap>
                             <div layout="column" flex>
-                                <md-card md-colors="{background: 'background'}">
-                                    <md-card-content>
-                                        <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes">
-                                            <md-tab label="Build Summary">
-                                                <div flex class="testrungroup-chart-container">
-                                                    <div class="testrungroup-parallel-summary-chart-container">
-                                                        <google-pie-chart class="testrungroup-parallel-summary-chart" data="parallelSummaryData" options="summaryChartOptions"></google-pie-chart>
-                                                    </div>
-                                                    <div class="testrungroup-parallel-individual-chart-container">
-                                                        <google-column-chart class="testrungroup-parallel-individual-chart" data="parallelIndividualData" options="individualChartOptions"></google-column-chart>
-                                                    </div>
-                                                </div>
-                                            </md-tab>
-                                            <md-tab label="Release Report" ng-show="releaseData.Mf.length > 1">
-                                                <md-progress-linear ng-show="releaseData.Mf.length === 1"></md-progress-linear>
-                                                <google-line-chart ng-show="releaseData.Mf.length > 1" class="testrungroup-serial-chart" data="releaseData" options="releaseReportOptions"></google-line-chart>
-                                            </md-tab>
-                                        </md-tabs>
-                                    </md-card-content>
-                                </md-card>
+                                <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes">
+                                    <md-tab label="Individual Testruns Summary">
+                                        <div flex class="testrungroup-chart-container">
+                                            <google-column-chart class="testrungroup-parallel-individual-chart" data="parallelIndividualData" options="individualChartOptions"></google-column-chart>
+                                        </div>
+                                    </md-tab>
+                                    <md-tab label="Release Report" ng-show="releaseData.Mf.length > 1">
+                                        <md-progress-linear ng-show="releaseData.Mf.length === 1"></md-progress-linear>
+                                        <google-line-chart ng-show="releaseData.Mf.length > 1" class="testrungroup-serial-chart" data="releaseData" options="releaseReportOptions"></google-line-chart>
+                                    </md-tab>
+                                </md-tabs>
                             </div>
                         </div>
                     </md-tab-body>
                 </md-tab>
             </md-tabs>
         </md-content>
-        <div class="list-action-bar"></div>
         <google-line-chart class="testrungroup-serial-chart" data="serialData" options="serialChartOptions" ng-switch-when="SERIAL"></google-line-chart>
         <md-toolbar layout="row" class="md-accent">
-                <md-toolbar-filler layout layout-align="center center">
-                    <md-icon class="material-icons" style="margin-right: 20px">assessment</md-icon>
-                </md-toolbar-filler>
-                <div class="md-toolbar-tools">
-                    <span style="font-family: 'Audiowide', cursive;">Testruns</span>
-                    <div flex="" class="flex"></div>
-                    <md-button class="md-fab md-mini md-primary" ng-if="editbutton" ng-href="{{ editbutton.href }}">
-                        <md-icon class="material-icons">bug_report</md-icon>
-                        <md-tooltip>{{ editbutton.name }}</md-tooltip>
-                    </md-button>
-                </div>
-            </md-toolbar>
+            <md-toolbar-filler layout layout-align="center center">
+                <md-icon class="material-icons" style="margin-right: 20px">assessment</md-icon>
+            </md-toolbar-filler>
+            <div class="md-toolbar-tools">
+                <span style="font-family: 'Audiowide', cursive;">Testruns</span>
+                <div flex="" class="flex"></div>
+                <md-button class="md-fab md-mini md-primary" ng-if="editbutton" ng-href="{{ editbutton.href }}">
+                    <md-icon class="material-icons">bug_report</md-icon>
+                    <md-tooltip>{{ editbutton.name }}</md-tooltip>
+                </md-button>
+            </div>
+        </md-toolbar>
         <md-progress-linear ng-show="!testrungroup.testruns"></md-progress-linear>
         <md-content ng-show="testrungroup.testruns">
             <md-content style="overflow: auto">
@@ -189,23 +192,23 @@
                         <th slick-list-column class="testruns-list-created-column" sort-property-name="dateCreated" sortable="true">Created</th>
                     </tr>
                     <tbody ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''" style="width: 100%">
-                        <tr class="testruns-list-column-container">
-                            <td class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></td>
-                            <td class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a></td>
-                            <td class="testruns-list-results-column">
-                                <div class="testruns-list-results-container">
-                                    <slick-testrun-stats testrun="testrun"></slick-testrun-stats>
-                                    <slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar>
-                                </div>
-                            </td>
-                            <td class="testruns-list-environment-column" ng-bind="testrun.config.name"></td>
-                            <td class="testruns-list-build-column">{{ testrun.release.name }} Build {{ testrun.build.name }}</td>
-                            <td layout="row" style="align-items: center" class="testruns-list-created-column">
-                                <div class="testruns-list-created-column" ng-bind="testrun.dateCreated | date:'medium'"></div>
-                                <div flex></div>
-                                <md-button ng-show="isBuildReport" class="md-raised md-primary" ng-href="tps-report/{{ testrun.project.name }}/{{ testrun.release.name }}/{{ testrun.testplan.name }}">TPS Report</md-button>
-                            </td>
-                        </tr>
+                    <tr class="testruns-list-column-container">
+                        <td class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></td>
+                        <td class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a></td>
+                        <td class="testruns-list-results-column">
+                            <div class="testruns-list-results-container">
+                                <slick-testrun-stats testrun="testrun"></slick-testrun-stats>
+                                <slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar>
+                            </div>
+                        </td>
+                        <td class="testruns-list-environment-column" ng-bind="testrun.config.name"></td>
+                        <td class="testruns-list-build-column">{{ testrun.release.name }} Build {{ testrun.build.name }}</td>
+                        <td layout="row" style="align-items: center" class="testruns-list-created-column">
+                            <div class="testruns-list-created-column" ng-bind="testrun.dateCreated | date:'medium'"></div>
+                            <div flex></div>
+                            <md-button ng-show="isBuildReport" class="md-raised md-primary" ng-href="tps-report/{{ testrun.project.name }}/{{ testrun.release.name }}/{{ testrun.testplan.name }}">TPS Report</md-button>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </md-content>

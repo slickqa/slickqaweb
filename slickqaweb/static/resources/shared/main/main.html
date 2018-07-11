@@ -54,7 +54,7 @@
                                         <a href="projects/{{ build.project.name }}" ng-bind="build.project.name"></a>
                                     </td>
                                     <td md-cell>
-                                        <a href="build-report/{{ build.project.name }}/{{ build.release.name }}/{{ build.build.name }}">{{ build.release.name ? build.release.name + ' Build ' + build.build.name : build.build.id }}</a>
+                                        <a href="build-report/{{ build.project.name }}/{{ build.release.name }}/{{ build.build.name }}">{{ build.release.name ? build.release.name + ' Build ' + build.build.name : build.release.id + ' Build ' + build.build.id }}</a>
                                     </td>
                                     <td md-cell ng-if="build.report" ng-bind="build.report.testruns.length"></td>
                                     <td md-cell ng-if="build.report.groupSummary">

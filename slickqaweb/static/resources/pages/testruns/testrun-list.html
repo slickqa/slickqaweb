@@ -5,7 +5,8 @@
             <md-input-container>
                 <label>Project</label>
                 <md-select ng-model="project">
-                    <md-option ng-repeat="p in projects | orderBy: 'name' | unique: 'name'" ng-value="p" ng-selected="p.name === project.name || p.name === project">{{ p.name }}</md-option>
+                    <md-progress-circular md-diameter="20px" ng-show="projects.length === 0"></md-progress-circular>
+                    <md-option ng-show="projects.length !== 0" ng-repeat="p in projects | orderBy: 'name' | unique: 'name'" ng-value="p" ng-selected="p.name === project.name || p.name === project">{{ p.name }}</md-option>
                 </md-select>
             </md-input-container>
         </div>
@@ -13,7 +14,8 @@
             <md-input-container>
                 <label>Release</label>
                 <md-select ng-model="release">
-                    <md-option ng-repeat="r in releases | orderBy: 'name' | unique: 'name'" ng-value="r" ng-selected="r.name === release.name || r.name === release">{{ r.name }}</md-option>
+                    <md-progress-circular md-diameter="20px" ng-show="releases.length === 0"></md-progress-circular>
+                    <md-option ng-show="releases.length !== 0" ng-repeat="r in releases | orderBy: 'name' | unique: 'name'" ng-value="r" ng-selected="r.name === release.name || r.name === release">{{ r.name }}</md-option>
                 </md-select>
             </md-input-container>
         </div>
@@ -21,7 +23,8 @@
             <md-input-container>
                 <label>Testplan</label>
                 <md-select ng-model="testplan">
-                    <md-option ng-repeat="t in testplans | orderBy: 'name' | unique: 'name'" ng-value="t" ng-selected="t.name === testplan.name || t.name === testplan">{{ t.name }}</md-option>
+                    <md-progress-circular md-diameter="20px" ng-show="testplans.length === 0"></md-progress-circular>
+                    <md-option ng-show="testplans.length !== 0" ng-repeat="t in testplans | orderBy: 'name' | unique: 'name'" ng-value="t" ng-selected="t.name === testplan.name || t.name === testplan">{{ t.name }}</md-option>
                 </md-select>
             </md-input-container>
         </div>
