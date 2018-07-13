@@ -62,7 +62,8 @@
             </md-tab-label>
             <md-tab-body>
                 <div layout="row" layout-wrap>
-                    <div layout="column" md-colors="{background: 'background-hue-1'}">
+                    <div layout="row" layout-wrap style="justify-content: space-between; flex-grow: 1">
+                        <div layout="column" md-colors="{background: 'background-hue-1'}">
                         <md-card>
                             <md-card-header style="padding: 2px 16px;">
                                 <md-button ng-show="testrun.build.name" class="md-fab md-mini md-primary" ng-href="{{ goToBuildReportButton.href }}" style="margin-right: 20px">
@@ -163,7 +164,6 @@
                             </md-card-content>
                         </md-card>
                     </div>
-                    <div layout="row" layout-wrap style="justify-content: space-around; flex-grow: 1">
                         <div layout="column">
                             <md-card md-colors="{background: 'background'}">
                                 <md-card-header>
