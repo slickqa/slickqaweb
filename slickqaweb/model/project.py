@@ -121,7 +121,7 @@ class Project(Document):
                                         release.builds.append(build)
                                         project.save()
                                         build_id = build.id
-                                if get_all_builds and limit:
-                                    build_id = release.builds[-limit:]
+                            elif get_all_builds and limit:
+                                build_id = release.builds[-limit:]
 
         return project_id, release_id, build_id
