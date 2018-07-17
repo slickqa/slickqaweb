@@ -23,7 +23,13 @@ add_resource("/projects", "Access to and modification of projects in slick.")
 @standard_query_parameters
 def get_projects():
     """Query for available projects in slick"""
-    return JsonResponse(queryFor(Project))
+    if 'dashboard' in request.args:
+        limit = 25
+        if 'limit' in request.args:
+            limit = int(request.args['limit'])
+        return JsonResponse(Project.objects.fields('name', slice__releases=[0, limit], slice__releases__builds=[0, limit]))
+    else:
+        return JsonResponse(queryFor(Project))
 
 
 def get_project(project_name_or_id):
@@ -45,11 +51,6 @@ def get_project(project_name_or_id):
 @argument_doc('project_name', "The name or id of the project to find.")
 def get_project_by_name(project_name):
     """Find a project by name or id"""
-    if 'dashboard' in request.args:
-        limit = 25
-        if 'limit' in request.args:
-            limit = int(request.args['limit'])
-        return JsonResponse(Project.objects.fields('name', slice__releases=[0, limit], slice__releases__builds=[0, limit]))
     return JsonResponse(get_project(project_name))
 
 
