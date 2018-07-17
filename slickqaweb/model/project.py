@@ -23,7 +23,7 @@ class Project(Document):
     meta = {'collection': 'projects'}
 
     @staticmethod
-    def lookup_project_release_build_ids(project_name, release_name, build_name, create_if_missing=False):
+    def lookup_project_release_build_ids(project_name, release_name, build_name, create_if_missing=False, get_all_builds=False, limit=15):
         """Lookup and return a tuple containing project release and build id given their names.
         :param project_name: The name of the project to look up
         :type project_name: str
@@ -92,34 +92,36 @@ class Project(Document):
                             if possible_release.name == release_name:
                                 release = possible_release
                                 break
+                    else:
+                        if create_if_missing:
+                            release = Release()
+                            release.id = bson.ObjectId()
+                            release.name = release_name
+                            release.builds = []
+                            build = Build()
+                            build.built = datetime.datetime.utcnow()
+                            build.name = build_name
+                            build.id = bson.ObjectId()
+                            release.builds.append(build)
+                            project.releases.append(release)
+                            project.save()
+                    if release is not None:
+                        release_id = release.id
+                        if build_name is not None:
+                            for possible_build in release.builds:
+                                if possible_build.name == build_name:
+                                    build_id = possible_build.id
+                                    break
                         else:
                             if create_if_missing:
-                                release = Release()
-                                release.id = bson.ObjectId()
-                                release.name = release_name
-                                release.builds = []
                                 build = Build()
                                 build.built = datetime.datetime.utcnow()
                                 build.name = build_name
                                 build.id = bson.ObjectId()
                                 release.builds.append(build)
-                                project.releases.append(release)
                                 project.save()
-                        if release is not None:
-                            release_id = release.id
-                            if build_name is not None:
-                                for possible_build in release.builds:
-                                    if possible_build.name == build_name:
-                                        build_id = possible_build.id
-                                        break
-                                else:
-                                    if create_if_missing:
-                                        build = Build()
-                                        build.built = datetime.datetime.utcnow()
-                                        build.name = build_name
-                                        build.id = bson.ObjectId()
-                                        release.builds.append(build)
-                                        project.save()
-                                        build_id = build.id
+                                build_id = build.id
+                            elif get_all_builds and limit:
+                                build_id = release.builds[-limit:]
 
         return project_id, release_id, build_id

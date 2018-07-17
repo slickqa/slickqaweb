@@ -28,7 +28,7 @@ angular.module('slickApp')
                 templateUrl: 'static/resources/pages/unittest/unittests-python.html',
                 controller: 'UnitTestsPythonCtrl'
             });
-        nav.addSection('Slick Testing', false, 'slick-testing.png');
+        nav.addSection('Slick Testing', false, 'assignment_turned_in');
         nav.addLink('Slick Testing', 'Javascript Unit Tests', 'unittests/javascript');
         nav.addLink('Slick Testing', 'Python Unit Tests', 'unittests/python');
     }])

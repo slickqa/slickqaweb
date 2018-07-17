@@ -1,3 +1,5 @@
+import json
+
 from .standardResponses import JsonResponse, read_request
 from .project import get_project
 from slickqaweb.utils import is_provided, is_not_provided
@@ -639,6 +641,17 @@ def get_queue_statistics():
     result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
     return JsonResponse(result['result'])
 
+@app.route('/api/results/queue/running')
+def get_queue_running():
+    # Default is by build
+    query = {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}
+    if 'by-id' in request.args:
+        query = {'result': '$_id'}
+    elif 'by-project' in request.args:
+        query = {'project': '$project.name'}
+    conn = connection.get_connection()
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'RUNNING', 'attributes.scheduled': 'true'}}, {'$group': {'_id': query, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    return JsonResponse(result['result'])
 
 @app.route('/api/results/<result_id>/files', methods=['POST'])
 @accepts(StoredFile)

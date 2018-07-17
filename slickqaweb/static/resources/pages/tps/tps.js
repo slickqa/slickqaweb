@@ -17,7 +17,7 @@ angular.module('slickApp')
         $scope.testrunList = {};
         $scope.serialChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-            backgroundColor: "#000000",
+            backgroundColor: "none",
             legend: {
                 textStyle: {
                     color: "#ffffff"
@@ -33,12 +33,18 @@ angular.module('slickApp')
             rest.one('tps', $routeParams.project).one($routeParams.release, $routeParams.testplan).get().then(function (tpsreport) {
                 $scope.serialChartOptions = {
                     chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-                    backgroundColor: "#000000",
+                    backgroundColor: "none",
                     legend: {
                         textStyle: {
                             color: "#ffffff"
                         }
                     },
+                    vAxis: {
+                        minValue: 0,
+                        maxValue: 100,
+                        format: '#\'%\''
+                    },
+                    lineWidth: 5,
                     colors: []
                 };
                 $scope.testrungroup = tpsreport;
@@ -57,8 +63,9 @@ angular.module('slickApp')
                     });
                     _.each(testrungroup.testruns, function (testrun) {
                         var row = [new Date(testrun.dateCreated)];
+                        let sum = Object.values(testrun.summary.resultsByStatus).reduce((a, b) => a + b, 0);
                         _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                            row.push(testrun.summary.resultsByStatus[status]);
+                            row.push(testrun.summary.resultsByStatus[status] / sum * 100);
                         });
                         $scope.serialData.addRow(row);
                     });

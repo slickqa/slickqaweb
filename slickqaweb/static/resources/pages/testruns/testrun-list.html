@@ -1,30 +1,59 @@
 <div class="slickview">
     <div class="testruns-list-filter">
-        <div class="button edit-button" ng-show="!isEmpty(user)" ng-click="toggleEdit()">Edit</div>
-        <div class="testruns-list-filter-project">Project: <select ng-model="project" ng-options="p.name for p in projects"></select></div>
-        <div class="testruns-list-filter-release">Release: <select ng-model="release" ng-options="r.name for r in releases"></select></div>
-        <div class="testruns-list-filter-testplan">Testplan: <select ng-model="testplan" ng-options="t.name for t in testplans"></select></div>
-    </div>
-    <slick-list-header model="testrunList" search="on" pagination="on" default-sort="dateCreated" default-sort-reverse="true" default-page-size="25">
-        <slick-list-columns class="testruns-list-column-container">
-            <slick-list-column class="testruns-list-edit-column" sortable="false" ng-show="editOn">Edit</slick-list-column>
-            <slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</slick-list-column>
-            <slick-list-column class="testruns-list-results-column" sortable="false">Results</slick-list-column>
-            <slick-list-column class="testruns-list-environment-column" sort-property-name="config.name" sortable="true">Environment</slick-list-column>
-            <slick-list-column class="testruns-list-build-column" sort-property-name="build.name" sortable="true">Build</slick-list-column>
-            <slick-list-column class="testruns-list-created-column" sort-property-name="dateCreated" sortable="true">Created</slick-list-column>
-        </slick-list-columns>
-    </slick-list-header>
-    <div class="testruns-list-row-container">
-        <div ng-repeat="testrun in testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row">
-            <div class="testruns-list-column-container">
-                <div class="testruns-list-edit-column" ng-show="editOn"><span class="button" ng-click="deleteTestrun(testrun)">Delete</span></div>
-                <div class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}">{{ getDisplayName(testrun) }}</a></div>
-                <div class="testruns-list-results-column"><div class="testruns-list-results-container"><slick-testrun-stats testrun="testrun"></slick-testrun-stats><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div></div>
-                <div class="testruns-list-environment-column">{{ testrun.config.name}}</div>
-                <div class="testruns-list-build-column">{{ testrun.release.name }}-{{ testrun.build.name }}</div>
-                <div class="testruns-list-created-column">{{ testrun.dateCreated | date:'MMM d, y h:mm:ss a'}}</div>
-            </div>
+        <md-button class="md-raised" ng-show="!isEmpty(user)" ng-click="toggleEdit()">Edit</md-button>
+        <div class="testruns-list-filter-project">
+            <md-input-container>
+                <label>Project</label>
+                <md-select ng-model="project">
+                    <md-progress-circular md-diameter="20px" ng-show="projects.length === 0"></md-progress-circular>
+                    <md-option ng-show="projects.length !== 0" ng-repeat="p in projects | orderBy: 'name' | unique: 'name'" ng-value="p" ng-selected="p.name === project.name || p.name === project">{{ p.name }}</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div class="testruns-list-filter-release">
+            <md-input-container>
+                <label>Release</label>
+                <md-select ng-model="release">
+                    <md-progress-circular md-diameter="20px" ng-show="releases.length === 0"></md-progress-circular>
+                    <md-option ng-show="releases.length !== 0" ng-repeat="r in releases | orderBy: 'name' | unique: 'name'" ng-value="r" ng-selected="r.name === release.name || r.name === release">{{ r.name }}</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div class="testruns-list-filter-testplan">
+            <md-input-container>
+                <label>Testplan</label>
+                <md-select ng-model="testplan">
+                    <md-progress-circular md-diameter="20px" ng-show="testplans.length === 0"></md-progress-circular>
+                    <md-option ng-show="testplans.length !== 0" ng-repeat="t in testplans | orderBy: 'name' | unique: 'name'" ng-value="t" ng-selected="t.name === testplan.name || t.name === testplan">{{ t.name }}</md-option>
+                </md-select>
+            </md-input-container>
         </div>
     </div>
+    <table slick-list-header model="testrunList" search="on" pagination="on" default-sort="dateCreated" default-sort-reverse="true" default-page-size="25">
+        <tr slick-list-columns class="testruns-list-column-container">
+            <th slick-list-column class="testruns-list-edit-column" sortable="false" ng-show="editOn">Edit</th>
+            <th slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</th>
+            <th slick-list-column class="testruns-list-results-column" sortable="false">Results</th>
+            <th slick-list-column class="testruns-list-environment-column" sort-property-name="config.name" sortable="true">Environment</th>
+            <th slick-list-column class="testruns-list-build-column" sort-property-name="build.name" sortable="true">Build</th>
+            <th slick-list-column class="testruns-list-created-column" sort-property-name="dateCreated" sortable="true">Created</th>
+        </tr>
+        <tbody ng-repeat="testrun in testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+        <tr class="testruns-list-column-container">
+            <td ng-show="editOn">
+                <md-button class="md-raised md-primary" ng-click="deleteTestrun(testrun)">Delete</md-button>
+            </td>
+            <td class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}">{{ getDisplayName(testrun) }}</a></td>
+            <td class="testruns-list-results-column">
+                <div class="testruns-list-results-container">
+                    <slick-testrun-stats testrun="testrun"></slick-testrun-stats>
+                    <slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar>
+                </div>
+            </td>
+            <td class="testruns-list-environment-column">{{ testrun.config.name }}</td>
+            <td class="testruns-list-build-column">{{ testrun.release.name }}-{{ testrun.build.name }}</td>
+            <td class="testruns-list-created-column">{{ testrun.dateCreated | date:'MMM d, y h:mm:ss a'}}</td>
+        </tr>
+        </tbody>
+    </table>
 </div>

@@ -174,7 +174,7 @@ angular.module('slickApp')
 
 
     }])
-    .controller('TestcaseTreeCtrl', ['$scope', 'NameBasedRestangular', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookieStore', function ($scope, projrest, rest, nav, $routeParams, $location, $cookieStore) {
+    .controller('TestcaseTreeCtrl', ['$scope', 'NameBasedRestangular', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookies', function ($scope, projrest, rest, nav, $routeParams, $location, $cookies) {
         // --------------- Initialize Variables used in the Page -------------------
         $scope.projects = [];
         $scope.project = null;
@@ -187,9 +187,9 @@ angular.module('slickApp')
         // determine if we have a pre-selected project
         if ($routeParams['project']) {
             $scope.selectedProjectName = $routeParams['project'];
-            $cookieStore.put('slick-last-project-used', $routeParams['project']);
-        } else if ($cookieStore.get('slick-last-project-used')) {
-            $scope.selectedProjectName =  $cookieStore.get('slick-last-project-used');
+            $cookies.put('slick-last-project-used', $routeParams['project']);
+        } else if ($cookies.get('slick-last-project-used')) {
+            $scope.selectedProjectName =  $cookies.get('slick-last-project-used');
         }
 
         // Get the list of projects, sorted by last updated

@@ -10,12 +10,12 @@ angular.module('slickApp')
         $scope.nav = nav;
         $scope.slickHomeUrl = document.baseURI;
 
-        $scope.toggleShow = function(group, $event) {
+        $scope.toggleShow = function (group, $event) {
             group.show = !group.show;
             $event.preventDefault();
         };
 
-        $scope.toggleMode = function($event) {
+        $scope.toggleMode = function ($event) {
             nav.toggleMode();
             $event.preventDefault();
         };

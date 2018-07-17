@@ -49,15 +49,15 @@ angular.module('slickApp')
 
             $scope.summaryChartOptions = {
                 chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
-                backgroundColor: "#000000",
-                pieSliceBorderColor: "#000000",
+                backgroundColor: "none",
+                pieSliceBorderColor: "none",
                 legend: 'none',
                 colors: []
             };
 
             $scope.individualChartOptions = {
                 chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
-                backgroundColor: "#000000",
+                backgroundColor: "none",
                 isStacked: true,
                 legend: 'none',
                 hAxis: {
@@ -71,7 +71,7 @@ angular.module('slickApp')
 
             $scope.serialChartOptions = {
                 chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-                backgroundColor: "#000000",
+                backgroundColor: "none",
                 legend: {
                     textStyle: {
                         color: "#ffffff"
@@ -95,12 +95,12 @@ angular.module('slickApp')
 
 
                     _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        $scope.parallelSummaryData.addRow([status.replace("_", " "), testrungroup.groupSummary.resultsByStatus[status]]);
-                        var color = getStyle(status.replace("_", "") + "-element", "color");
+                        $scope.parallelSummaryData.addRow([replaceOnStatus(status, " "), testrungroup.groupSummary.resultsByStatus[status]]);
+                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                         $scope.summaryChartOptions.colors.push(color);
                         $scope.individualChartOptions.colors.push(color);
 
-                        $scope.parallelIndividualData.addColumn('number', status.replace("_", " "))
+                        $scope.parallelIndividualData.addColumn('number', replaceOnStatus(status, " "))
                     });
 
                     _.each(testrungroup.testruns, function (testrun) {
@@ -117,9 +117,9 @@ angular.module('slickApp')
                         return testrun.dateCreated;
                     });
                     _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        var color = getStyle(status.replace("_", "") + "-element", "color");
+                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                         $scope.serialChartOptions.colors.push(color);
-                        $scope.serialData.addColumn('number', status.replace("_", " "))
+                        $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
                     });
                     _.each(testrungroup.testruns, function (testrun) {
                         var row = [new Date(testrun.dateCreated)];
@@ -170,7 +170,7 @@ angular.module('slickApp')
             });
         };
     }])
-    .controller('EditTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookieStore', function($scope, rest, nav, $routeParams, $cookieStore) {
+    .controller('EditTestrunGroupCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookies', function($scope, rest, nav, $routeParams, $cookies) {
         $scope.testrungroup = {};
         $scope.testrungroupTestrunList = {};
         $scope.availableTestrunList = {};
@@ -192,9 +192,9 @@ angular.module('slickApp')
         rest.all('projects').getList().then(function(projects) {
             $scope.projects = _.sortBy(projects, "lastUpdated");
             $scope.projects.reverse();
-            if ($cookieStore.get('slick-last-project-used')) {
+            if ($cookies.get('slick-last-project-used')) {
                 $scope.project = _.find(projects, function(project) {
-                    return $cookieStore.get('slick-last-project-used') == project.name;
+                    return $cookies.get('slick-last-project-used') === project.name;
                 });
             }
         });
@@ -263,15 +263,15 @@ angular.module('slickApp')
 
         $scope.summaryChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
-            backgroundColor: "#000000",
-            pieSliceBorderColor: "#000000",
+            backgroundColor: "none",
+            pieSliceBorderColor: "none",
             legend: 'none',
             colors: []
         };
 
         $scope.individualChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
-            backgroundColor: "#000000",
+            backgroundColor: "none",
             isStacked: true,
             legend: 'none',
             hAxis: {
@@ -285,7 +285,7 @@ angular.module('slickApp')
 
         $scope.serialChartOptions = {
             chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-            backgroundColor: "#000000",
+            backgroundColor: "none",
             legend: {
                 textStyle: {
                     color: "#ffffff"
@@ -332,9 +332,9 @@ angular.module('slickApp')
                     return testrun.dateCreated;
                 });
                 _.each(testrungroup.groupSummary.statusListOrdered, function(status) {
-                    var color = getStyle(status.replace("_", "") + "-element", "color");
+                    var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
                     $scope.serialChartOptions.colors.push(color);
-                    $scope.serialData.addColumn('number', status.replace("_", " "))
+                    $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
                 });
                 _.each(testrungroup.testruns, function(testrun) {
                     var row = [new Date(testrun.dateCreated)];

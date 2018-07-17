@@ -33,3 +33,6 @@ shared/filter-half/first-half.js
 shared/filter-half/last-half.js
 pages/email/email.js
 pages/result-list/result-list.js
+pages/tps/release-report.js
+shared/main/sidenav.js
+shared/environment.js

@@ -7,7 +7,6 @@
 angular.module("slickApp")
     .directive("slickListHeader", function() {
         return {
-            restrict: 'E',
             transclude: true,
             replace: true,
             templateUrl: "static/resources/shared/slick-list/slick-list-header.html",
@@ -75,11 +74,10 @@ angular.module("slickApp")
     })
     .directive("slickListColumns", function() {
         return {
-            restrict: 'E',
             transclude: true,
             replace: true,
             require: "^slickListHeader",
-            template: "<div class=\"slick-list-columns\" ng-transclude></div>",
+            template: "<tr style=\"border-bottom: 2px solid\" class=\"slick-list-columns\" ng-transclude></tr>",
             scope: {},
             controller: function($scope) {
             //controller: function($scope) {
@@ -112,7 +110,6 @@ angular.module("slickApp")
     })
     .directive("slickListColumn", function() {
         return {
-            restrict: 'E',
             transclude: true,
             replace: true,
             require: "^slickListColumns",
@@ -120,7 +117,7 @@ angular.module("slickApp")
                sortable: "@",
                sortPropertyName: "@"
             },
-            template: "<div class=\"slick-list-column\" ng-click=\"setOrderBy()\"><span ng-transclude></span><img class=\"slick-list-column-sort-image\" src=\"static/images/sort-down.png\" ng-show=\"currentlySorted() && !sortReversed()\" /><img class=\"slick-list-column-sort-image\" src=\"static/images/sort-up.png\" ng-show=\"currentlySorted() && sortReversed()\" /></div>",
+            template: "<th align=\"left\" class=\"slick-list-column\" ng-click=\"setOrderBy()\"><span ng-transclude></span><img class=\"slick-list-column-sort-image\" src=\"static/images/sort-down.png\" ng-show=\"currentlySorted() && !sortReversed()\" /><img class=\"slick-list-column-sort-image\" src=\"static/images/sort-up.png\" ng-show=\"currentlySorted() && sortReversed()\" /></th>",
             link: function(scope, element, attrs, slickListColumnsController) {
                 var sortable = scope.sortable == "yes" || scope.sortable == "on" || scope.sortable == "true";
                 if(sortable) {

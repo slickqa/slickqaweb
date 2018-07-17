@@ -6,11 +6,17 @@ function replaceOnStatus(status, replace_with) {
     return status.replace(_replace_underscore_regexp, replace_with)
 }
 
-angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'restangular', 'ngSanitize' ])
+angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'ngMaterial', 'ngAria', 'ngMdIcons', 'md.data.table', 'restangular', 'ngSanitize' ])
   .config(['$locationProvider', 'RestangularProvider', function ($locationProvider, RestangularProvider) {
     $locationProvider.html5Mode(true);
     RestangularProvider.setBaseUrl("api/");
-  }]);
+  }])
+    .config(function($mdThemingProvider) {
+        $mdThemingProvider.theme('default')
+            .primaryPalette("red")
+            .accentPalette("blue-grey")
+            .dark()
+    });
 
 angular.module('slickLoginApp', []);
 

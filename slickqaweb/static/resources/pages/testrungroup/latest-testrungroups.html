@@ -4,7 +4,7 @@
         <form name="newTestrungroup">
             Name: <input type="text" ng-model="newtr.name" required>
             Type: <select ng-model="newtr.grouptype" ng-options="t for t in grouptypes"></select>
-            <span class="button" ng-click="addTestrunGroup()" ng-show="newTestrungroup.$dirty">Add</span>
+            <md-button class="md-raised md-primary" ng-click="addTestrunGroup()" ng-show="newTestrungroup.$dirty">Add</md-button>
         </form>
     </div>
     <slick-list-header model="groupList" search="on" pagination="on" default-sort="created" default-sort-reverse="true" default-page-size="25">
@@ -21,7 +21,7 @@
         <div ng-repeat="trgroup in testrungroups | slickListFilter:groupList track by trgroup.id" class="testrungroups-list-row">
             <div class="testrungroups-list-column-container">
                 <div class="testrungroups-list-name-column"><a href="testrungroup/{{ trgroup.id }}">{{ trgroup.name }}</a></div>
-                <div class="testrungroups-list-actions-column"><a class="button" href="testrungroup/{{ trgroup.id }}/edit">Edit</a> <span class="button" ng-click="deleteTestrunGroup(trgroup)">Delete</span></div>
+                <md-button class="md-raised md-primary" ng-href="testrungroup/{{ trgroup.id }}/edit">Edit</md-button> <md-button class="md-raised md-primary" ng-click="deleteTestrunGroup(trgroup)">Delete</md-button></div>
                 <div class="testrungroups-list-overall-results-column"><slick-testrun-group-stats testrungroup="trgroup"></slick-testrun-group-stats></div>
                 <div class="testrungroups-list-testrun-count-column" ng-bind="trgroup.testruns.length"></div>
                 <div class="testrungroups-list-grouptype-column" ng-bind="trgroup.grouptype"></div>

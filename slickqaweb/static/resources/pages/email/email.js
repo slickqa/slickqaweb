@@ -55,7 +55,7 @@ angular.module('slickApp')
             }
         };
     }])
-    .controller('EmailSubscriptionCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookieStore', function($scope, rest, nav, $routeParams, $location, $cookieStore) {
+    .controller('EmailSubscriptionCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$location', '$cookies', function($scope, rest, nav, $routeParams, $location, $cookies) {
         $scope.subscriptionsFor = '';
         $scope.subscription = {};
         $scope.availableSubscriptions = [];
@@ -89,8 +89,8 @@ angular.module('slickApp')
         $scope.editSubscriptions = function() {
             $location.search("for", $scope.emailAddress);
         };
-        if ($cookieStore.get('slick-last-project-used')) {
-            $scope.selectedProjectName =  $cookieStore.get('slick-last-project-used');
+        if ($cookies.get('slick-last-project-used')) {
+            $scope.selectedProjectName =  $cookies.get('slick-last-project-used');
         }
 
         if($routeParams.for) {

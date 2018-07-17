@@ -1,124 +1,244 @@
 <div class="slickview">
-    <div class="landing-recent-info">
-        <div class="landing-recent-info-image-box">
-            <img src="static/images/recent-testruns.png" alt="recent testruns image" />
-        </div>
-        <div class="landing-recent-info-box">
-            <div class="landing-recent-info-title">Recent Testruns</div>
-            <div class="landing-recent-info-table-box">
-                <div class="landing-recent-info-table1-box">
-                    <slick-list-header model="testrunTableOne" search="off" pagination="off" sort="off">
-                        <slick-list-columns class="landing-testrun-column-container">
-                            <slick-list-column class="landing-testrun-project-column" sortable="false">Project</slick-list-column>
-                            <slick-list-column class="landing-testrun-name-column" sortable="false">Testrun</slick-list-column>
-                            <slick-list-column class="landing-testrun-build-column" sortable="false">Build</slick-list-column>
-                            <slick-list-column class="landing-testrun-results-column" sortable="false">Results</slick-list-column>
-                        </slick-list-columns>
-                    </slick-list-header>
-                    <div class="landing-testrun-column-container landing-testrun-row" ng-repeat="testrun in testrunListOne |slickListFilter:testrunTableOne track by testrun.id">
-                        <div class="landing-testrun-project-column"><a href="projects/{{testrun.project.name}}" ng-bind="testrun.project.name"></a></div>
-                        <div class="landing-testrun-name-column"><a href="testruns/{{testrun.id}}" ng-bind="testrun.name"></a></div>
-                        <div class="landing-testrun-build-column">{{testrun.release.name}} Build {{testrun.build.name}}</div>
-                        <div class="landing-testrun-results-column"><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div>
-                    </div>
-                </div>
-                <div class="landing-recent-info-table2-box">
-                    <slick-list-header model="testrunTableTwo" search="off" pagination="off" sort="off">
-                        <slick-list-columns class="landing-testrun-column-container">
-                            <slick-list-column class="landing-testrun-project-column" sortable="false">Project</slick-list-column>
-                            <slick-list-column class="landing-testrun-name-column" sortable="false">Testrun</slick-list-column>
-                            <slick-list-column class="landing-testrun-build-column" sortable="false">Build</slick-list-column>
-                            <slick-list-column class="landing-testrun-results-column" sortable="false">Results</slick-list-column>
-                        </slick-list-columns>
-                    </slick-list-header>
-                    <div class="landing-testrun-column-container landing-testrun-row" ng-repeat="testrun in testrunListTwo |slickListFilter:testrunTableTwo track by testrun.id">
-                        <div class="landing-testrun-project-column"><a href="projects/{{testrun.project.name}}" ng-bind="testrun.project.name"></a></div>
-                        <div class="landing-testrun-name-column"><a href="testruns/{{testrun.id}}" ng-bind="testrun.name"></a></div>
-                        <div class="landing-testrun-build-column">{{testrun.release.name}} Build {{testrun.build.name}}</div>
-                        <div class="landing-testrun-results-column"><slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="landing-recent-info">
-        <div class="landing-recent-info-image-box">
-            <img src="static/images/recent-builds.png" alt="recent builds image" />
-        </div>
-        <div class="landing-recent-info-box">
-            <div class="landing-recent-info-title">Recent Builds</div>
-            <div class="landing-recent-info-table-box">
-                <div class="landing-recent-info-table1-box">
-                    <slick-list-header model="buildTableOne" search="off" pagination="off" sort="off">
-                        <slick-list-columns class="landing-build-column-container">
-                            <slick-list-column class="landing-build-project-column" sortable="false">Project</slick-list-column>
-                            <slick-list-column class="landing-build-build-column" sortable="false">Build</slick-list-column>
-                            <slick-list-column class="landing-build-testruns-column" sortable="false">Testruns</slick-list-column>
-                            <slick-list-column class="landing-build-results-column" sortable="false">Results</slick-list-column>
-                        </slick-list-columns>
-                    </slick-list-header>
-                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListOne |slickListFilter:buildTableOne track by build.build.id">
-                        <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
-                        <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
-                        <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
-                        <div class="landing-build-results-column"><div ng-if="build.report.groupSummary"><slick-testrun-statusbar summary="build.report.groupSummary" size="normal"></slick-testrun-statusbar></div></div>
-                    </div>
-                </div>
-                <div class="landing-recent-info-table2-box">
-                    <slick-list-header model="buildTableTwo" search="off" pagination="off" sort="off">
-                        <slick-list-columns class="landing-build-column-container">
-                            <slick-list-column class="landing-build-project-column" sortable="false">Project</slick-list-column>
-                            <slick-list-column class="landing-build-build-column" sortable="false">Build</slick-list-column>
-                            <slick-list-column class="landing-build-testruns-column" sortable="false">Testruns</slick-list-column>
-                            <slick-list-column class="landing-build-results-column" sortable="false">Results</slick-list-column>
-                        </slick-list-columns>
-                    </slick-list-header>
-                    <div class="landing-build-column-container landing-build-row" ng-repeat="build in buildListTwo |slickListFilter:buildTableTwo track by build.build.id">
-                        <div class="landing-build-project-column"><a href="projects/{{build.project.name}}" ng-bind="build.project.name"></a></div>
-                        <div class="landing-build-build-column"><a href="build-report/{{build.project.name}}/{{build.release.name}}/{{build.build.name}}">{{build.release.name}} Build {{build.build.name}}</a></div>
-                        <div class="landing-build-testruns-column"><div ng-if="build.report" ng-bind="build.report.testruns.length"></div></div>
-                        <div class="landing-build-results-column"><div ng-if="build.report.groupSummary"><slick-testrun-statusbar summary="build.report.groupSummary" size="normal"></slick-testrun-statusbar></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="landing-recent-info">
-        <div class="landing-recent-info-image-box">
-            <img src="static/images/recent-testrun-groups.png" alt="recent testrun groups image" />
-        </div>
-        <div class="landing-recent-info-box">
-            <div class="landing-recent-info-title">Recent Testrun Groups</div>
-            <div class="landing-recent-info-table-box">
-                <div class="landing-recent-info-table1-box" ng-show="testrungroupListOne.length > 0">
-                    <slick-list-header model="testrungroupTableOne" search="off" pagination="off" sort="off">
-                        <slick-list-columns class="landing-testrungroup-column-container">
-                            <slick-list-column class="landing-testrungroup-name-column" sortable="false">Name</slick-list-column>
-                            <slick-list-column class="landing-testrungroup-testruns-column" sortable="false">Testruns</slick-list-column>
-                            <slick-list-column class="landing-testrungroup-results-column" sortable="false">Results</slick-list-column>
-                        </slick-list-columns>
-                    </slick-list-header>
-                    <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListOne |slickListFilter:testrungroupTableOne track by testrungroup.id">
-                        <div class="landing-testrungroup-name-column"><a href="testrungroup/{{testrungroup.id}}" ng-bind="testrungroup.name"></a></div>
-                        <div class="landing-testrungroup-testruns-column" ng-bind="testrungroup.testruns.length"></div>
-                        <div class="landing-testrungroup-results-column"><slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar></div>
-                    </div>
-                </div>
-                <div class="landing-recent-info-table2-box">
-                    <slick-list-header model="testrungroupTableTwo" search="off" pagination="off" sort="off" ng-show="testrungroupListTwo.length > 0">
-                        <slick-list-columns class="landing-testrungroup-column-container">
-                            <slick-list-column class="landing-testrungroup-name-column" sortable="false">Name</slick-list-column>
-                            <slick-list-column class="landing-testrungroup-testruns-column" sortable="false">Testruns</slick-list-column>
-                            <slick-list-column class="landing-testrungroup-results-column" sortable="false">Results</slick-list-column>
-                        </slick-list-columns>
-                    </slick-list-header>
-                    <div class="landing-testrungroup-column-container landing-testrungroup-row" ng-repeat="testrungroup in testrungroupListTwo |slickListFilter:testrungroupTableTwo track by testrungroup.id">
-                        <div class="landing-testrungroup-name-column"><a href="testrungroup/{{testrungroup.id}}" ng-bind="testrungroup.name"></a></div>
-                        <div class="landing-testrungroup-testruns-column" ng-bind="testrungroup.testruns.length"></div>
-                        <div class="landing-testrungroup-results-column"><slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <md-content style="width: 100%">
+        <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes" md-selected="selectedIndex">
+            <md-tab md-on-select="onTabSelected(buildsQuery.index)">
+                <md-tab-label>
+                    <md-icon class="material-icons">view_list</md-icon>
+                    <md-tooltip>Recent Builds</md-tooltip>
+                </md-tab-label>
+                <md-tab-body>
+                    <md-toolbar layout="row" class="md-accent">
+                        <md-toolbar-filler layout layout-align="center center">
+                            <md-icon class="material-icons" style="margin-right: 20px">view_list</md-icon>
+                        </md-toolbar-filler>
+                        <div class="md-toolbar-tools">
+                            <span style="font-family: 'Audiowide', cursive;">Builds</span>
+                            <div flex="" class="flex"></div>
+                            <md-input-container>
+                                <label>Limit</label>
+                                <md-select ng-model="buildsQuery.queryLimit">
+                                    <md-option ng-repeat="limitItem in limits" ng-value="limitItem" ng-selected="limitItem === buildsQuery.queryLimit">{{ limitItem }}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Project</label>
+                                <md-select ng-model="project">
+                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
+                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project">{{ projectItem.name }}</md-option>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                    </md-toolbar>
+                    <md-progress-linear ng-show="buildListOne.length === 0"></md-progress-linear>
+                    <md-content ng-show="buildListOne.length !== 0">
+                        <md-table-container>
+                            <table md-table>
+                                <thead md-head md-order="buildsQuery.order" md-on-reorder="setBuildsSort">
+                                <tr md-row>
+                                    <th md-column md-order-by="report.state" style="text-align: center">Status</th>
+                                    <th md-column md-order-by="project.name">Project</th>
+                                    <th md-column md-order-by="build.name">Build</th>
+                                    <th md-column md-numerical md-order-by="report.testruns.length">Testruns</th>
+                                    <th md-column>Results</th>
+                                    <th md-column md-numerical md-order-by="report.testruns[0].dateCreated">Created</th>
+                                    <th md-column md-numerical md-order-by="report.testruns[0].runFinished - report.testruns[0].dateCreated">Duration</th>
+                                </tr>
+                                </thead>
+                                <tbody md-body>
+                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildListOne | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                    <td md-cell style="text-align: center">
+                                        <md-icon ng-show="build.report.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
+                                        <i ng-show="build.report.state !== 'FINISHED'" class="pulse"></i>
+                                    </td>
+                                    <td md-cell>
+                                        <a href="projects/{{ build.project.name }}" ng-bind="build.project.name"></a>
+                                    </td>
+                                    <td md-cell>
+                                        <a href="build-report/{{ build.project.name }}/{{ build.release.name }}/{{ build.build.name }}">{{ build.release.name ? build.release.name + ' Build ' + build.build.name : build.release.id + ' Build ' + build.build.id }}</a>
+                                    </td>
+                                    <td md-cell ng-if="build.report" ng-bind="build.report.testruns.length"></td>
+                                    <td md-cell ng-if="build.report.groupSummary">
+                                        <slick-testrun-statusbar summary="build.report.groupSummary" size="normal"></slick-testrun-statusbar>
+                                    </td>
+                                    <td md-cell>
+                                        <span>{{ build.report.testruns[0].dateCreated | date:'medium' }}</span>
+                                    </td>
+                                    <td md-cell>
+                                        <span ng-if="build.report.state === 'FINISHED'">{{ getDurationString(build.report.testruns[0].runFinished - build.report.testruns[0].dateCreated, true) }}</span>
+                                        <span ng-if="build.report.state !== 'FINISHED'">{{ getDurationString(currentTimeMillis - build.report.testruns[0].dateCreated, true) }}</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </md-table-container>
+                        <md-table-pagination md-limit="buildsQuery.limit" md-limit-options="limits" md-page="buildsQuery.page" md-total="{{ buildListOne.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
+                    </md-content>
+                </md-tab-body>
+            </md-tab>
+            <md-tab md-on-select="onTabSelected(testrunsQuery.index)">
+                <md-tab-label>
+                    <md-icon class="material-icons">assessment</md-icon>
+                    <md-tooltip>Recent Testruns</md-tooltip>
+                </md-tab-label>
+                <md-tab-body>
+                    <md-toolbar layout="row" class="md-accent">
+                        <md-toolbar-filler layout layout-align="center center">
+                            <md-icon class="material-icons" style="margin-right: 20px">assessment</md-icon>
+                        </md-toolbar-filler>
+                        <div class="md-toolbar-tools">
+                            <span style="font-family: 'Audiowide', cursive;">Testruns</span>
+                            <div flex="" class="flex"></div>
+                            <md-input-container>
+                                <label>Limit</label>
+                                <md-select ng-model="testrunsQuery.queryLimit">
+                                    <md-option ng-repeat="limitItem in limits" ng-value="limitItem" ng-selected="limitItem === testrunsQuery.queryLimit">{{ limitItem }}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Project</label>
+                                <md-select ng-model="project">
+                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
+                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project">{{ projectItem.name }}</md-option>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                    </md-toolbar>
+                    <md-progress-linear ng-show="testrunListOne.length === 0"></md-progress-linear>
+                    <md-content ng-show="testrunListOne.length !== 0">
+                        <md-table-container>
+                            <table md-table ng-model="selected" md-progress="promise">
+                                <thead md-head md-order="testrunsQuery.order" md-on-reorder="setTestrunsSort">
+                                <tr md-row>
+                                    <th md-column md-order-by="state" style="text-align: center">Status</th>
+                                    <th md-column md-order-by="project.name">Project</th>
+                                    <th md-column md-order-by="name">Testrun</th>
+                                    <th md-column md-order-by="build.name">Build</th>
+                                    <th md-column>Results</th>
+                                    <th md-column md-numerical md-order-by="dateCreated">Created</th>
+                                    <th md-column md-numerical md-order-by="runlength">Duration</th>
+                                </tr>
+                                </thead>
+                                <tbody md-body>
+                                <tr md-row md-select="testrun" md-select-id="name" md-auto-select ng-repeat="testrun in testrunListOne | filter: filter.search | orderBy: testrunsQuery.order | limitTo: testrunsQuery.limit : (testrunsQuery.page -1) * testrunsQuery.limit track by testrun.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                    <td md-cell style="text-align: center">
+                                        <md-icon ng-if="testrun.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
+                                        <i ng-if="testrun.state !== 'FINISHED'" class="pulse"></i>
+                                    </td>
+                                    <td md-cell>
+                                        <a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a>
+                                    </td>
+                                    <td md-cell>
+                                        <a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a>
+                                    </td>
+                                    <td md-cell>
+                                        <a href="build-report/{{ testrun.project.name }}/{{ testrun.release.name }}/{{ testrun.build.name }}">{{ testrun.release.name }} Build {{ testrun.build.name }}</a>
+                                    </td>
+                                    <td md-cell>
+                                        <slick-testrun-statusbar summary="testrun.summary" size="normal"></slick-testrun-statusbar>
+                                    </td>
+                                    <td md-cell>
+                                        <span>{{ testrun.dateCreated | date:'medium' }}</span>
+                                    </td>
+                                    <td md-cell>
+                                        <span ng-if="testrun.state === 'FINISHED'">{{ getDurationString(testrun.runFinished - testrun.runStarted, true) }}</span>
+                                        <span ng-if="testrun.state !== 'FINISHED'">{{ getDurationString(currentTimeMillis - testrun.runStarted, true) }}</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </md-table-container>
+                        <md-table-pagination md-limit="testrunsQuery.limit" md-limit-options="limits" md-page="testrunsQuery.page" md-total="{{ testrunListOne.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
+                    </md-content>
+                </md-tab-body>
+            </md-tab>
+            <md-tab md-on-select="onTabSelected(testrunGroupsQuery.index)">
+                <md-tab-label>
+                    <md-icon class="material-icons">playlist_add_check</md-icon>
+                    <md-tooltip>Recent Testrun Groups</md-tooltip>
+                </md-tab-label>
+                <md-tab-body>
+                    <md-toolbar layout="row" class="md-accent">
+                        <md-toolbar-filler layout layout-align="center center">
+                            <md-icon class="material-icons" style="margin-right: 20px">playlist_add_check</md-icon>
+                        </md-toolbar-filler>
+                        <div class="md-toolbar-tools">
+                            <span style="font-family: 'Audiowide', cursive;">Testrun Groups</span>
+                            <div flex="" class="flex"></div>
+                            <md-input-container>
+                                <label>Limit</label>
+                                <md-select ng-model="testrunGroupsQuery.queryLimit">
+                                    <md-option ng-repeat="limitItem in limits" ng-value="limitItem" ng-selected="limitItem === testrunGroupsQuery.queryLimit">{{ limitItem }}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Project</label>
+                                <md-select ng-model="project">
+                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
+                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project">{{ projectItem.name }}</md-option>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                    </md-toolbar>
+                    <md-progress-linear ng-show="testrungroupListOne.length === 0"></md-progress-linear>
+                    <md-content ng-show="testrungroupListOne.length !== 0">
+                        <md-table-container>
+                            <table md-table ng-model="selected" md-progress="promise">
+                                <thead md-head md-order="testrunGroupsQuery.order" md-on-reorder="setTestrunGroupsSort">
+                                <tr md-row>
+                                    <th md-column md-order-by="state" style="text-align: center">Status</th>
+                                    <th md-column md-order-by="name">Name</th>
+                                    <th md-column md-numerical md-order-by="testruns.length">Testruns</th>
+                                    <th md-column>Results</th>
+                                    <th md-column md-numerical md-order-by="created">Created</th>
+                                    <th md-column>Duration</th>
+                                </tr>
+                                </thead>
+                                <tbody md-body>
+                                <tr md-row md-select="testrungroup" md-select-id="name" md-auto-select ng-repeat="testrungroup in testrungroupListOne | filter: filter.search | orderBy: testrunGroupsQuery.order | limitTo: testrunGroupsQuery.limit : (testrunGroupsQuery.page -1) * testrunGroupsQuery.limit track by testrungroup.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                    <td md-cell style="text-align: center">
+                                        <md-icon ng-if="testrungroup.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
+                                        <i ng-if="testrungroup.state !== 'FINISHED'" class="pulse"></i>
+                                    </td>
+                                    <td md-cell>
+                                        <a href="testrungroup/{{ testrungroup.id }}" ng-bind="testrungroup.name"></a>
+                                    </td>
+                                    <td md-cell ng-bind="testrungroup.testruns.length"></td>
+                                    <td md-cell>
+                                        <slick-testrun-statusbar summary="testrungroup.groupSummary" size="normal"></slick-testrun-statusbar>
+                                    </td>
+                                    <td md-cell>
+                                        <span>{{ testrungroup.created | date:'medium' }}</span>
+                                    </td>
+                                    <td md-cell>
+                                        <span ng-if="testrungroup.state === 'FINISHED'">{{ getDurationString(testrungroup.testruns[0].runFinished - testrungroup.testruns[0].dateCreated, true) }}</span>
+                                        <span ng-if="testrungroup.state !== 'FINISHED'">{{ getDurationString(currentTimeMillis - testrungroup.testruns[0].dateCreated, true) }}</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </md-table-container>
+                        <md-table-pagination md-limit="testrunGroupsQuery.limit" md-limit-options="limits" md-page="testrunGroupsQuery.page" md-total="{{ testrungroupListOne.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
+                    </md-content>
+                </md-tab-body>
+            </md-tab>
+            <md-tab ng-show="environment.iframeConfig" ng-repeat="iframe in environment.iframeConfig" md-on-select="onTabSelected($index + 3)">
+                <md-tab-label>
+                    <md-icon class="material-icons">{{ iframe.icon }}</md-icon>
+                    <md-tooltip>{{ iframe.title }}</md-tooltip>
+                </md-tab-label>
+                <md-tab-body>
+                    <md-toolbar layout="row" class="md-accent">
+                        <md-toolbar-filler layout layout-align="center center">
+                            <md-icon class="material-icons" style="margin-right: 20px">{{ iframe.icon }}</md-icon>
+                        </md-toolbar-filler>
+                        <div class="md-toolbar-tools">
+                            <span style="font-family: 'Audiowide', cursive;">{{ iframe.title }}</span>
+                            <div flex="" class="flex"></div>
+                        </div>
+                    </md-toolbar>
+                    <iframe ng-if="isTabSelected($index + 3)" ng-src="{{ iframe.url }}" style="width: {{ iframe.width }}; height: {{ iframe.height }}"></iframe>
+                </md-tab-body>
+            </md-tab>
+        </md-tabs>
+    </md-content>
 </div>
