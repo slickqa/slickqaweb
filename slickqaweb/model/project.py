@@ -92,35 +92,35 @@ class Project(Document):
                             if possible_release.name == release_name:
                                 release = possible_release
                                 break
-                    else:
-                        if create_if_missing:
-                            release = Release()
-                            release.id = bson.ObjectId()
-                            release.name = release_name
-                            release.builds = []
-                            build = Build()
-                            build.built = datetime.datetime.utcnow()
-                            build.name = build_name
-                            build.id = bson.ObjectId()
-                            release.builds.append(build)
-                            project.releases.append(release)
-                            project.save()
-                    if release is not None:
-                        release_id = release.id
-                        if build_name is not None:
-                            for possible_build in release.builds:
-                                if possible_build.name == build_name:
-                                    build_id = possible_build.id
-                                    break
                         else:
                             if create_if_missing:
+                                release = Release()
+                                release.id = bson.ObjectId()
+                                release.name = release_name
+                                release.builds = []
                                 build = Build()
                                 build.built = datetime.datetime.utcnow()
                                 build.name = build_name
                                 build.id = bson.ObjectId()
                                 release.builds.append(build)
+                                project.releases.append(release)
                                 project.save()
-                                build_id = build.id
+                        if release is not None:
+                            release_id = release.id
+                            if build_name is not None:
+                                for possible_build in release.builds:
+                                    if possible_build.name == build_name:
+                                        build_id = possible_build.id
+                                        break
+                                else:
+                                    if create_if_missing:
+                                        build = Build()
+                                        build.built = datetime.datetime.utcnow()
+                                        build.name = build_name
+                                        build.id = bson.ObjectId()
+                                        release.builds.append(build)
+                                        project.save()
+                                        build_id = build.id
                             elif get_all_builds and limit:
                                 build_id = release.builds[-limit:]
 

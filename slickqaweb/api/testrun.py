@@ -112,11 +112,11 @@ def add_testrun():
         if project is not None:
             release = get_release(project, new_tr.release.name)
             if release is None:
-                release = get_release(project, new_tr.release.id)
+                release = get_release(project, new_tr.release.releaseId)
             if release is not None:
                 build = get_build(release, new_tr.build.name)
                 if build is None:
-                    build = get_build(release, new_tr.build.id)
+                    build = get_build(release, new_tr.build.buildId)
         if build is not None and is_provided(build, 'description'):
             new_tr.info = build.description
 
