@@ -645,12 +645,26 @@ def get_queue_statistics():
 def get_queue_running():
     # Default is by build
     query = {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}
-    if 'by-id' in request.args:
+    if 'byId' in request.args:
         query = {'result': '$_id'}
-    elif 'by-project' in request.args:
+    elif 'byProject' in request.args:
         query = {'project': '$project.name'}
     conn = connection.get_connection()
-    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'RUNNING', 'attributes.scheduled': 'true'}}, {'$group': {'_id': query, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'RUNNING'}}, {'$group': {'_id': query, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    return JsonResponse(result['result'])
+
+@app.route('/api/results/queue/finished')
+def get_queue_finished():
+    # Default is by build
+    query = {'project': '$project.name', 'status': '$status'}
+    days = 1
+    if 'days' in request.args:
+        days = int(request.args['days'])
+    conn = connection.get_connection()
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([
+        {'$match': {'runstatus': 'FINISHED', 'recorded': {'$gte': datetime.datetime.utcnow() + datetime.timedelta(-days), '$lt': datetime.datetime.utcnow()}}},
+        {'$group': {'_id': query, 'count': {'$sum': 1}}}
+    ])
     return JsonResponse(result['result'])
 
 @app.route('/api/results/<result_id>/files', methods=['POST'])

@@ -3,7 +3,9 @@
 var _replace_underscore_regexp = new RegExp('_', 'g')
 
 function replaceOnStatus(status, replace_with) {
-    return status.replace(_replace_underscore_regexp, replace_with)
+    if (status) {
+        return status.replace(_replace_underscore_regexp, replace_with)
+    }
 }
 
 angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'ngMaterial', 'ngAria', 'ngMdIcons', 'md.data.table', 'restangular', 'ngSanitize' ])
@@ -697,12 +699,17 @@ angular.module('slickApp')
             //    Don't log again but still catch.
         }
 
+        $scope.replaceOnStatus = replaceOnStatus;
         $scope.testrunTableOne = {};
         $scope.testrunTableTwo = {};
         $scope.testrunListOne = [];
         $scope.testrunListTwo = [];
 
         $scope.getDurationString = getDurationString;
+
+        $scope.objToValues = function (obj) {
+            return Object.values(obj);
+        };
 
         $scope.testrungroupTableOne = {};
         $scope.testrungroupTableTwo = {};
@@ -787,10 +794,47 @@ angular.module('slickApp')
             $scope.testrunGroupsQuery.order = order;
         };
 
+        $scope.statsForProjects = [];
+
         $scope.currentTimeMillis = new Date().getTime();
+        let statsByProject = {};
+        $scope.getStatsForProjects = function () {
+            rest.one('results').one('queue', 'running').get({byProject: "true"}).then(function (resultsByProject) {
+                _.each(resultsByProject, function (project) {
+                    statsByProject[project._id.project] = statsByProject[project._id.project] || {};
+                    statsByProject[project._id.project]['running'] = project;
+                    statsByProject[project._id.project]['running']['title'] = "Running Now";
+                });
+            });
+            _.each([1, 7, 14, 30], function (days) {
+                rest.one('results').one('queue', 'finished').get({days: days}).then(function (finishedByProject) {
+                    _.each(finishedByProject, function (project) {
+                        statsByProject[project._id.project] = statsByProject[project._id.project] || {};
+                        statsByProject[project._id.project][days] = statsByProject[project._id.project][days] || {};
+                        statsByProject[project._id.project][days]['title'] = days !== 1 ? `Past ${days} days` : "Today";
+                        statsByProject[project._id.project][days][project._id.status] = project;
+                        statsByProject[project._id.project]['running'] = statsByProject[project._id.project]['running'] || {count: 0, _id: {project: project._id.project}};
+                        statsByProject[project._id.project]['running']['title'] = "Running Now";
+                    });
+                });
+            });
+            let statsForProjectsList = [];
+            _.each(Object.values(statsByProject), function (stat) {
+                $scope.getHealthData(stat.running._id.project, "Health");
+                _.each(stat, function (rangeValue, rangeKey) {
+                    if (rangeKey !== 'running') {
+                        stat[rangeKey].total = Object.values(rangeValue).filter((status) => status && status.count !== undefined).reduce(function (sum, derp) {
+                            return sum + derp.count
+                        }, 0)
+                    }
+                });
+                statsForProjectsList.push(stat)
+            });
+            $scope.statsForProjects = statsForProjectsList;
+        };
 
         $scope.fetchData = function () {
-
+            $scope.getStatsForProjects();
             $scope.currentTimeMillis = new Date().getTime();
             var testrunsQuery = {orderby: '-dateCreated', limit: $scope.testrunsQuery.queryLimit};
             if ($scope.project) {
@@ -828,7 +872,7 @@ angular.module('slickApp')
             }
 
             if (!$scope.projects) {
-                rest.all('projects').getList().then(function (projects) {
+                rest.all('projects').getList({dashboard: true, limit: $scope.buildsQuery.limit}).then(function (projects) {
                     $scope.projects = projects;
                     if (!$scope.project) {
                         _.each(projects, function (project) {
@@ -863,6 +907,62 @@ angular.module('slickApp')
                     processBuildList(buildList);
                 });
             }
+        };
+
+        $scope.healthReportOptionsByProject = {};
+        $scope.healthDataByProject = {};
+
+        let params = {limit: $scope.buildsQuery.queryLimit, groupType: "PARALLEL"};
+        if ($routeParams["limit"]) {
+            params.limit = $routeParams["limit"];
+        }
+
+        $scope.getHealthData = function (project, release) {
+            rest.one('release-report', project).one(release).get(params).then(function (releaseReport) {
+                $scope.healthReportOptionsByProject[project] = {
+                    chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+                    backgroundColor: "none",
+                    vAxis: {
+                        minValue: 0,
+                        maxValue: 100,
+                        format: '#\'%\''
+                    },
+                    lineWidth: 5,
+                    legend: {
+                        textStyle: {
+                            color: "#ffffff"
+                        }
+                    },
+                    colors: []
+                };
+                if (releaseReport.hasOwnProperty('name')) {
+                    $scope.healthDataByProject[project] = new google.visualization.DataTable();
+                    $scope.healthDataByProject[project].addColumn('date', 'Recorded');
+                    let gotXAndY = false;
+                    _.each(releaseReport.builds.sort(function (a, b) {
+                        return (a.testruns[0].dateCreated > b.testruns[0].dateCreated) ? 1 : ((b.testruns[0].dateCreated > a.testruns[0].dateCreated) ? -1 : 0);
+                    }), function (build) {
+                        let row = [new Date(build.testruns[0].dateCreated)];
+                        let sum = Object.values(build.groupSummary.resultsByStatus).reduce((a, b) => a + b, 0);
+                        if (!gotXAndY) {
+                            _.each(Object.keys(build.groupSummary.resultsByStatus).sort(), function (status) {
+                                let color = getStyle(replaceOnStatus(status, "") + "-element", "color");
+                                $scope.healthReportOptionsByProject[project].colors.push(color);
+                                $scope.healthDataByProject[project].addColumn('number', replaceOnStatus(status, " "));
+                            });
+                            gotXAndY = true;
+                            //$scope.healthDataByProject[project].addColumn('string', 'Build');
+                        }
+                        _.each(Object.keys(build.groupSummary.resultsByStatus).sort(), function (status) {
+                            row.push(build.groupSummary.resultsByStatus[status] / sum * 100);
+                        });
+                        // row.push(`${build.testruns[0].project.name}/${build.testruns[0].release.name}/${build.testruns[0].build.name}`);
+                        $scope.healthDataByProject[project].addRow(row);
+                    });
+                }
+            }, function errorCallback(error) {
+                console.log(error)
+            });
         };
 
         $scope.stopRefresh = function () {

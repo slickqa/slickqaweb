@@ -69,7 +69,7 @@ def get_build_reports(project_name, release_name):
     report['builds'] = []
     report['grouptype'] = groupType
     if build_id is None:
-        return JsonResponse(None)
+        return JsonResponse({})
     for build_object in build_id:
         testrun_group = TestrunGroup()
         testrun_group.name = "Build Report for {} {} Build {}".format(project_name, release_name, build_object.name)
