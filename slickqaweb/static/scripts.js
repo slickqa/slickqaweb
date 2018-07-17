@@ -3690,22 +3690,3 @@ angular.module('slickApp')
     }]);
 
 
-const environment = {
-    iframeConfig: [
-        {
-            icon: "video_label",
-            title: "SmartLab",
-            url: "http://10.1.44.2/",
-            width: "100%",
-            height: "100vh"
-        },
-    ],
-    buildReportActions: [
-        {
-            title: "Send Results to TestRail",
-            href: "http://tp-qa-jenkins.vivint.com/view/SmartLab%20Tools/job/Send%20Results%20to%20TestRail/build?delay=0sec"
-        }
-    ]
-};
-
-
