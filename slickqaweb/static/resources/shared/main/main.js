@@ -5,7 +5,8 @@ angular.module('slickApp')
         $routeProvider
             .when('/', {
                 templateUrl: 'static/resources/shared/main/main.html',
-                controller: 'MainCtrl'
+                controller: 'MainCtrl',
+                reloadOnSearch: false
             });
     }])
     .filter('unique', function () {
@@ -27,7 +28,7 @@ angular.module('slickApp')
         allowed.push("self");
         $sceDelegateProvider.resourceUrlWhitelist(allowed);
     })
-    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', function ($scope, rest, $interval, $routeParams, $cookies) {
+    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', '$location', function ($scope, rest, $interval, $routeParams, $cookies, $location) {
         try {
             $scope.environment = environment;
         } catch (e) {
@@ -96,8 +97,6 @@ angular.module('slickApp')
             };
         }
 
-        $scope.selectedIndex = parseInt($cookies.get("selectedIndex")) || 0;
-
         if (!$scope.testrunGroupsQuery) {
             $scope.testrunGroupsQuery = {
                 index: 2,
@@ -108,13 +107,53 @@ angular.module('slickApp')
             };
         }
 
+        $scope.tabNameToIndex = function(tabName) {
+            switch (tabName) {
+                case 'Builds':
+                    return 0;
+                case 'Testruns':
+                    return 1;
+                case 'TestrunGroups':
+                    return 2;
+                case 'Statistics':
+                    return 3;
+                default: return parseInt(tabName);
+            }
+        };
+
+        $scope.statTabNameToIndex = function(statTabName) {
+            if ($scope.statsForProjects) {
+                let index = $scope.statsForProjects.findIndex(function (stat) {
+                    return stat.running._id.project === statTabName || 0;
+                });
+                if (index !== -1) {
+                    return index;
+                } else {
+                    return 0;
+                }
+            }
+        };
+
+        $scope.selectedIndex = $scope.tabNameToIndex($location.search().mainTab) || $scope.tabNameToIndex($cookies.get("selectedIndex")) || 0;
+
         $scope.onTabSelected = function (index) {
-            $cookies.put("selectedIndex", index)
-            $scope.selectedIndex = index;
+            $cookies.put("selectedIndex", index);
+            $location.search("mainTab", index);
+            $scope.selectedIndex = $scope.tabNameToIndex(index);
         };
 
         $scope.isTabSelected = function (index) {
             return index === $scope.selectedIndex;
+        };
+
+        $scope.onStatTabSelected = function (index) {
+            $cookies.put("selectedStatIndex", index);
+            $location.search("statsTab", index);
+            $scope.selectedStatIndex = $scope.statTabNameToIndex(index);
+        };
+
+        $scope.isStatTabSelected = function (index) {
+            return index === $scope.selectedStatIndex;
         };
 
         $scope.setBuildsSort = function (order) {
@@ -165,7 +204,8 @@ angular.module('slickApp')
                 });
                 statsForProjectsList.push(stat)
             });
-            $scope.statsForProjects = statsForProjectsList;
+            $scope.statsForProjects = _.sortBy(statsForProjectsList, 'running._id.project');
+            $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
         };
 
         $scope.fetchData = function () {

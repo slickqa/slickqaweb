@@ -670,7 +670,8 @@ angular.module('slickApp')
         $routeProvider
             .when('/', {
                 templateUrl: 'static/resources/shared/main/main.html',
-                controller: 'MainCtrl'
+                controller: 'MainCtrl',
+                reloadOnSearch: false
             });
     }])
     .filter('unique', function () {
@@ -692,7 +693,7 @@ angular.module('slickApp')
         allowed.push("self");
         $sceDelegateProvider.resourceUrlWhitelist(allowed);
     })
-    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', function ($scope, rest, $interval, $routeParams, $cookies) {
+    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', '$location', function ($scope, rest, $interval, $routeParams, $cookies, $location) {
         try {
             $scope.environment = environment;
         } catch (e) {
@@ -761,8 +762,6 @@ angular.module('slickApp')
             };
         }
 
-        $scope.selectedIndex = parseInt($cookies.get("selectedIndex")) || 0;
-
         if (!$scope.testrunGroupsQuery) {
             $scope.testrunGroupsQuery = {
                 index: 2,
@@ -773,13 +772,53 @@ angular.module('slickApp')
             };
         }
 
+        $scope.tabNameToIndex = function(tabName) {
+            switch (tabName) {
+                case 'Builds':
+                    return 0;
+                case 'Testruns':
+                    return 1;
+                case 'TestrunGroups':
+                    return 2;
+                case 'Statistics':
+                    return 3;
+                default: return parseInt(tabName);
+            }
+        };
+
+        $scope.statTabNameToIndex = function(statTabName) {
+            if ($scope.statsForProjects) {
+                let index = $scope.statsForProjects.findIndex(function (stat) {
+                    return stat.running._id.project === statTabName || 0;
+                });
+                if (index !== -1) {
+                    return index;
+                } else {
+                    return 0;
+                }
+            }
+        };
+
+        $scope.selectedIndex = $scope.tabNameToIndex($location.search().mainTab) || $scope.tabNameToIndex($cookies.get("selectedIndex")) || 0;
+
         $scope.onTabSelected = function (index) {
-            $cookies.put("selectedIndex", index)
-            $scope.selectedIndex = index;
+            $cookies.put("selectedIndex", index);
+            $location.search("mainTab", index);
+            $scope.selectedIndex = $scope.tabNameToIndex(index);
         };
 
         $scope.isTabSelected = function (index) {
             return index === $scope.selectedIndex;
+        };
+
+        $scope.onStatTabSelected = function (index) {
+            $cookies.put("selectedStatIndex", index);
+            $location.search("statsTab", index);
+            $scope.selectedStatIndex = $scope.statTabNameToIndex(index);
+        };
+
+        $scope.isStatTabSelected = function (index) {
+            return index === $scope.selectedStatIndex;
         };
 
         $scope.setBuildsSort = function (order) {
@@ -830,7 +869,8 @@ angular.module('slickApp')
                 });
                 statsForProjectsList.push(stat)
             });
-            $scope.statsForProjects = statsForProjectsList;
+            $scope.statsForProjects = _.sortBy(statsForProjectsList, 'running._id.project');
+            $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
         };
 
         $scope.fetchData = function () {
@@ -1596,7 +1636,8 @@ angular.module('slickApp')
         $routeProvider
             .when('/testruns', {
                 templateUrl: 'static/resources/pages/testruns/testrun-list.html',
-                controller: 'TestrunListCtrl'
+                controller: 'TestrunListCtrl',
+                reloadOnSearch: false
             })
             .when('/testruns/:testrunid', {
                 templateUrl: 'static/resources/pages/testruns/testrun-summary.html',
@@ -1605,9 +1646,9 @@ angular.module('slickApp')
         nav.addLink('Reports', 'Testruns', 'testruns');
     }])
     .controller('TestrunListCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$cookies', '$location', 'UserService', function ($scope, rest, nav, $routeParams, $cookies, $location, user) {
-        $scope.project = null;
-        $scope.release = null;
-        $scope.testplan = null;
+        $scope.project = undefined;
+        $scope.release = undefined;
+        $scope.testplan = undefined;
 
         $scope.projects = [];
         $scope.releases = [];
@@ -1617,47 +1658,58 @@ angular.module('slickApp')
         $scope.editOn = false;
 
 
-        if (!$routeParams["project"] && $cookies.get('slick-last-project-used')) {
+        if (!$location.search()["project"] && $cookies.get('slick-last-project-used')) {
             $location.search("project", $cookies.get('slick-last-project-used'));
         }
         $scope.$watch('project', function (newValue, oldValue) {
-            if (newValue && oldValue !== newValue) {
+            if ((!oldValue && newValue) || (newValue && oldValue.name !== newValue.name)) {
                 $location.search("project", newValue.name || newValue);
-                $location.search("release", null);
-                $location.search("testplanId", null);
+                $location.search("release", undefined);
+                $location.search("testplanId", undefined);
+                $scope.getProjectCallback = $scope.getProject(newValue.name || newValue).then(function () {
+                    $scope.fetchTestruns();
+                });
             }
         });
 
         nav.setTitle("Testruns");
-        rest.all('projects').getList().then(function (projects) {
-            $scope.projects = _.sortBy(projects, "lastUpdated");
-            $scope.projects.reverse();
-            if ($routeParams["project"]) {
+        rest.all('projects').getList({dashboard: true, limit: 25}).then(function (projects) {
+            if ($scope.projects.length !== projects.length) {
+                $scope.projects = _.sortBy(projects, "lastUpdated");
+                $scope.projects.reverse();
+            }
+            if ($location.search()["project"]) {
                 $scope.project = _.find(projects, function (project) {
-                    return $routeParams["project"] === project.name;
+                    return $location.search()["project"] === project.name;
                 });
                 if ($scope.project) {
                     $scope.releases = $scope.project.releases;
-                    if ($routeParams["release"]) {
+                    if ($location.search()["release"]) {
                         $scope.release = _.find($scope.releases, function (release) {
-                            return $routeParams["release"] === release.name;
+                            return $location.search()["release"] === release.name;
                         });
                     }
                     $scope.$watch('release', function (newValue, oldValue) {
                         if (newValue) {
                             $location.search('release', newValue.name || newValue);
+                            $scope.getProjectCallback.then(function() {
+                                $scope.fetchTestruns();
+                            });
                         }
                     });
                     rest.all('testplans').getList({q: "eq(project.id,\"" + $scope.project.id + "\")"}).then(function (testplans) {
                         $scope.testplans = testplans;
-                        if ($routeParams["testplanid"]) {
+                        if ($location.search()["testplanid"]) {
                             $scope.testplan = _.find($scope.testplans, function (testplan) {
-                                return $routeParams["testplanid"] === testplan.id;
+                                return $location.search()["testplanid"] === testplan.id;
                             });
                         }
                         $scope.$watch('testplan', function (newValue, oldValue) {
                             if (newValue) {
                                 $location.search("testplanid", newValue.id || newValue);
+                                $scope.getProjectCallback.then(function() {
+                                    $scope.fetchTestruns();
+                                });
                             }
                         });
                     });
@@ -1668,14 +1720,14 @@ angular.module('slickApp')
 
         $scope.fetchTestruns = function (full) {
             var testrunQuery = [];
-            if ($routeParams["project"] || $scope.project) {
-                testrunQuery.push("eq(project.name,\"" + $routeParams["project"] + "\")");
+            if ($location.search()["project"] || $scope.project) {
+                testrunQuery.push("eq(project.name,\"" + $location.search()["project"] + "\")");
             }
-            if ($routeParams["release"] || $scope.release) {
-                testrunQuery.push("eq(release.name,\"" + $routeParams["release"] + "\")");
+            if ($location.search()["release"] || $scope.release) {
+                testrunQuery.push("eq(release.name,\"" + $location.search()["release"] + "\")");
             }
-            if ($routeParams["testplanid"]) {
-                testrunQuery.push("eq(testplanId,\"" + $routeParams["testplanid"] + "\")");
+            if ($location.search()["testplanid"]) {
+                testrunQuery.push("eq(testplanId,\"" + $location.search()["testplanid"] + "\")");
             }
 
             var q = "";
@@ -1719,6 +1771,28 @@ angular.module('slickApp')
             }
         };
         $scope.fetchTestruns(false);
+
+        $scope.getProject = function (project) {
+            return rest.one('projects', project).get().then(function (projectObject) {
+                $scope.project = projectObject;
+                if ($scope.project) {
+                    $scope.releases = $scope.project.releases;
+                    if ($location.search()["release"]) {
+                        $scope.release = _.find($scope.releases, function (release) {
+                            return $location.search()["release"] === release.name;
+                        });
+                    }
+                    rest.all('testplans').getList({q: "eq(project.id,\"" + $scope.project.id + "\")"}).then(function (testplans) {
+                        $scope.testplans = testplans;
+                        if ($location.search()["testplanid"]) {
+                            $scope.testplan = _.find($scope.testplans, function (testplan) {
+                                return $location.search()["testplanid"] === testplan.id;
+                            });
+                        }
+                    });
+                }
+            });
+        };
 
         $scope.testrunList = {}; // Model for the list header and filter
 

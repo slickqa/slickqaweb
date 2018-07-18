@@ -1,7 +1,7 @@
 <div class="slickview">
     <md-content style="width: 100%">
         <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes" md-selected="selectedIndex">
-            <md-tab md-on-select="onTabSelected(buildsQuery.index)">
+            <md-tab md-on-select="onTabSelected('Builds')">
                 <md-tab-label>
                     <md-icon class="material-icons">view_list</md-icon>
                     <md-tooltip>Recent Builds</md-tooltip>
@@ -75,7 +75,7 @@
                     </md-content>
                 </md-tab-body>
             </md-tab>
-            <md-tab md-on-select="onTabSelected(testrunsQuery.index)">
+            <md-tab md-on-select="onTabSelected('Testruns')">
                 <md-tab-label>
                     <md-icon class="material-icons">assessment</md-icon>
                     <md-tooltip>Recent Testruns</md-tooltip>
@@ -151,7 +151,7 @@
                     </md-content>
                 </md-tab-body>
             </md-tab>
-            <md-tab md-on-select="onTabSelected(testrunGroupsQuery.index)">
+            <md-tab md-on-select="onTabSelected('TestrunGroups')">
                 <md-tab-label>
                     <md-icon class="material-icons">playlist_add_check</md-icon>
                     <md-tooltip>Recent Testrun Groups</md-tooltip>
@@ -221,7 +221,7 @@
                     </md-content>
                 </md-tab-body>
             </md-tab>
-            <md-tab md-on-select="onTabSelected(3)">
+            <md-tab md-on-select="onTabSelected('Statistics')">
                 <md-tab-label>
                     <md-icon class="material-icons">trending_up</md-icon>
                     <md-tooltip>Statistics</md-tooltip>
@@ -238,8 +238,8 @@
                     </md-toolbar>
                     <md-progress-linear ng-show="statsForProjects.length === 0"></md-progress-linear>
                     <md-tab-body ng-show="statsForProjects.length !== 0">
-                        <md-tabs>
-                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'running._id.project' track by $index">
+                        <md-tabs md-selected="selectedStatIndex">
+                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'running._id.project' track by $index" md-on-select="onStatTabSelected(stat.running._id.project)">
                                 <md-tab-label>
                                     <span>{{ stat.running._id.project }}</span>
                                 </md-tab-label>
