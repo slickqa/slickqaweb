@@ -72,11 +72,10 @@ def get_build_reports(project_name, release_name):
         return JsonResponse({})
     for build_object in build_id:
         testrun_group = TestrunGroup()
-        testrun_group.name = "Build Report for {} {} Build {}".format(project_name, release_name, build_object.name)
+        testrun_group.name = "Build Report for {} {} Build {}".format(project_name, release_name, build_object['name'])
         testrun_group.grouptype = groupType
-        testrun_group.testruns = Testrun.objects(build__buildId=build_object.id).order_by("-dateCreated")
+        testrun_group.testruns = Testrun.objects(build__buildId=build_object['id']).order_by("-dateCreated")
         report['builds'].append(testrun_group)
-
     return JsonResponse(report)
 
 @app.route('/api/build-report/<project_name>/<release_name>/recent-builds')
