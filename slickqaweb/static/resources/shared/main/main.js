@@ -222,9 +222,9 @@ angular.module('slickApp')
         };
 
         $scope.checkForStatsForProject();
-
+        let fetchCount = 1;
         $scope.fetchData = function () {
-            if ($scope.selectedIndex === $scope.tabNameToIndex('Statistics')) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex('Statistics') || fetchCount === 1) {
                 $scope.getStatsForProjects().then(function(response) {
                     $scope.statsForProjects = response;
                     $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
@@ -239,12 +239,12 @@ angular.module('slickApp')
             $cookies.putObject("buildsQuery", $scope.buildsQuery);
             $cookies.putObject("testrunsQuery", $scope.testrunsQuery);
             $cookies.putObject("testrunGroupsQuery", $scope.testrunGroupsQuery);
-            if ($scope.selectedIndex === $scope.tabNameToIndex('Testruns')) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex('Testruns') || fetchCount === 1) {
                 rest.all('testruns').getList(testrunsQuery).then(function (testruns) {
                     $scope.testrunListOne = testruns
                 });
             }
-            if ($scope.selectedIndex === $scope.tabNameToIndex('TestrunGroups')) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex('TestrunGroups') || fetchCount === 1) {
                 rest.all('testrungroups').getList({orderby: '-created', limit: $scope.testrunGroupsQuery.queryLimit}).then(function (testrungroups) {
                     $scope.testrungroupListOne = testrungroups
                 });
@@ -268,6 +268,7 @@ angular.module('slickApp')
                         $scope.buildListOne[index] = buildInfo;
                     });
                 });
+                fetchCount += 1;
             }
 
             if (!$scope.projects) {
@@ -282,7 +283,7 @@ angular.module('slickApp')
                                 });
                             });
                         });
-                        if ($scope.selectedIndex === $scope.tabNameToIndex('Builds')) {
+                        if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || fetchCount === 1) {
                             processBuildList(buildList);
                         }
                     } else {
@@ -293,7 +294,7 @@ angular.module('slickApp')
                                     buildList.push({build: build, project: project, release: release});
                                 });
                             });
-                            if ($scope.selectedIndex === $scope.tabNameToIndex('Builds')) {
+                            if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || fetchCount === 1) {
                                 processBuildList(buildList);
                             }
                         });
@@ -307,7 +308,7 @@ angular.module('slickApp')
                             buildList.push({build: build, project: project, release: release});
                         });
                     });
-                    if ($scope.selectedIndex === $scope.tabNameToIndex('Builds')) {
+                    if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || fetchCount === 1) {
                         processBuildList(buildList);
                     }
                 });
