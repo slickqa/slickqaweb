@@ -11,79 +11,87 @@
                         <div layout="row" layout-wrap>
                             <div layout="row" layout-wrap style="justify-content: space-between; flex-grow: 1">
                                 <div layout="column" md-colors="{background: 'background-hue-1'}">
-                                <md-card>
-                                    <md-card-header>
-                                        <md-card-header-text>
-                                            <span class="md-title">Build Report Information</span>
-                                        </md-card-header-text>
-                                    </md-card-header>
-                                    <md-divider></md-divider>
-                                    <md-card-content>
-                                        <div layout="row" ng-show="routeParams.project">
-                                            <div class="testrun-summary-metadata-key">Project:</div>
-                                            <div class="testrun-summary-metadata-value" ng-bind="routeParams.project"></div>
-                                        </div>
-                                        <div class="testrun-summary-metadata-row" ng-show="routeParams.release">
-                                            <div class="testrun-summary-metadata-key">Release:</div>
-                                            <div class="testrun-summary-metadata-value" ng-bind="routeParams.release"></div>
-                                        </div>
-                                        <div class="testrun-summary-metadata-row" ng-show="routeParams.build">
-                                            <div class="testrun-summary-metadata-key">Build:</div>
-                                            <div class="testrun-summary-metadata-value" ng-bind="routeParams.build"></div>
-                                        </div>
-                                        <div class="testrun-summary-metadata-row" ng-show="testrungroup.state">
-                                            <div class="testrun-summary-metadata-key">Testrun State:</div>
-                                            <div class="testrun-summary-metadata-value" ng-bind="testrungroup.state"></div>
-                                        </div>
-                                        <div class="testrun-summary-metadata-row" ng-show="buildRunTime">
-                                            <div class="testrun-summary-metadata-key">Run Time:</div>
-                                            <div class="testrun-summary-metadata-value" ng-bind="buildRunTime"></div>
-                                        </div>
-                                        <div class="testrun-summary-metadata-row" ng-show="estimatedTimeRemaining">
-                                            <div class="testrun-summary-metadata-key">Time Remaining:</div>
-                                            <div class="testrun-summary-metadata-value" ng-bind="estimatedTimeRemaining"></div>
-                                        </div>
-                                    </md-card-content>
-                                </md-card>
-                                <md-card>
-                                    <md-card-header>
-                                        <md-card-header-text>
-                                            <span class="md-title">Build History</span>
-                                        </md-card-header-text>
-                                    </md-card-header>
-                                    <md-divider></md-divider>
-                                    <md-progress-linear ng-show="buildHistory.length === 0"></md-progress-linear>
-                                    <md-card-content style="max-height: 2.5in; overflow: auto" ng-show="buildHistory.length !== 0">
-                                        <md-list class="md-dense">
-                                            <md-list-item ng-repeat="build in buildHistory track by $index" md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {background: 'background-A100'} : ''">
-                                                <a class="clickable" href="build-report/{{ build.testruns[0].project.name }}/{{ build.testruns[0].release.name }}/{{ build.testruns[0].build.name }}">
-                                                    {{ build.testruns[0].release.name }}.{{ build.testruns[0].build.name }}
-                                                </a>
-                                                <div flex></div>
-                                                <md-icon md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {color: 'background'} : ''" ng-show="build.state === 'FINISHED'" class="material-icons">check_circle</md-icon>
-                                                <i ng-if="build.state !== 'FINISHED'" class="pulse"></i>
-                                            </md-list-item>
-                                        </md-list>
-                                    </md-card-content>
-                                </md-card>
-                                <md-card ng-show="environment.buildReportActions">
-                                    <md-card-header>
-                                        <md-card-header-text>
-                                            <span class="md-title">Actions</span>
-                                        </md-card-header-text>
-                                    </md-card-header>
-                                    <md-divider></md-divider>
-                                    <md-card-content>
-                                        <md-list class="md-dense">
-                                            <md-list-item ng-repeat="action in environment.buildReportActions">
-                                                <md-button ng-href="{{ action.href }}" target="_blank">
-                                                    {{ action.title }}
-                                                </md-button>
-                                            </md-list-item>
-                                        </md-list>
-                                    </md-card-content>
-                                </md-card>
-                            </div>
+                                    <md-card>
+                                        <md-card-header>
+                                            <md-card-header-text>
+                                                <span class="md-title">Build Report Information</span>
+                                            </md-card-header-text>
+                                        </md-card-header>
+                                        <md-divider></md-divider>
+                                        <md-card-content>
+                                            <div layout="row" ng-show="routeParams.project">
+                                                <div class="testrun-summary-metadata-key">Project:</div>
+                                                <div class="testrun-summary-metadata-value" ng-bind="routeParams.project"></div>
+                                            </div>
+                                            <div class="testrun-summary-metadata-row" ng-show="routeParams.release">
+                                                <div class="testrun-summary-metadata-key">Release:</div>
+                                                <div class="testrun-summary-metadata-value" ng-bind="routeParams.release"></div>
+                                            </div>
+                                            <div class="testrun-summary-metadata-row" ng-show="routeParams.build">
+                                                <div class="testrun-summary-metadata-key">Build:</div>
+                                                <div class="testrun-summary-metadata-value" ng-bind="routeParams.build"></div>
+                                            </div>
+                                            <div class="testrun-summary-metadata-row" ng-show="testrungroup.testruns[0].config">
+                                                <div class="testrun-summary-metadata-key">Environment:</div>
+                                                <div class="testrun-summary-metadata-value" ng-bind="testrungroup.testruns[0].config.name"></div>
+                                            </div>
+                                            <div class="testrun-summary-metadata-row" ng-show="testrungroup.testruns[0].dateCreated">
+                                                <div class="testrun-summary-metadata-key">Created:</div>
+                                                <div class="testrun-summary-metadata-value" ng-bind="testrungroup.testruns[0].dateCreated |date: 'medium'"></div>
+                                            </div>
+                                            <div class="testrun-summary-metadata-row" ng-show="testrungroup.state">
+                                                <div class="testrun-summary-metadata-key">Build State:</div>
+                                                <div class="testrun-summary-metadata-value" ng-bind="testrungroup.state"></div>
+                                            </div>
+                                            <div class="testrun-summary-metadata-row" ng-show="buildRunTime">
+                                                <div class="testrun-summary-metadata-key">Run Time:</div>
+                                                <div class="testrun-summary-metadata-value" ng-bind="buildRunTime"></div>
+                                            </div>
+                                            <div class="testrun-summary-metadata-row" ng-show="estimatedTimeRemaining">
+                                                <div class="testrun-summary-metadata-key">Time Remaining:</div>
+                                                <div class="testrun-summary-metadata-value" ng-bind="estimatedTimeRemaining"></div>
+                                            </div>
+                                        </md-card-content>
+                                    </md-card>
+                                    <md-card>
+                                        <md-card-header>
+                                            <md-card-header-text>
+                                                <span class="md-title">Build History</span>
+                                            </md-card-header-text>
+                                        </md-card-header>
+                                        <md-divider></md-divider>
+                                        <md-progress-linear ng-show="buildHistory.length === 0"></md-progress-linear>
+                                        <md-card-content style="max-height: 2.5in; overflow: auto" ng-show="buildHistory.length !== 0">
+                                            <md-list class="md-dense">
+                                                <md-list-item ng-repeat="build in buildHistory track by $index" md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {background: 'background-A100'} : ''">
+                                                    <a class="clickable" href="build-report/{{ build.testruns[0].project.name }}/{{ build.testruns[0].release.name }}/{{ build.testruns[0].build.name }}">
+                                                        {{ build.testruns[0].release.name }}.{{ build.testruns[0].build.name }}
+                                                    </a>
+                                                    <div flex></div>
+                                                    <md-icon md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {color: 'background'} : ''" ng-show="build.state === 'FINISHED'" class="material-icons">check_circle</md-icon>
+                                                    <i ng-if="build.state !== 'FINISHED'" class="pulse"></i>
+                                                </md-list-item>
+                                            </md-list>
+                                        </md-card-content>
+                                    </md-card>
+                                    <md-card ng-show="environment.buildReportActions">
+                                        <md-card-header>
+                                            <md-card-header-text>
+                                                <span class="md-title">Actions</span>
+                                            </md-card-header-text>
+                                        </md-card-header>
+                                        <md-divider></md-divider>
+                                        <md-card-content>
+                                            <md-list class="md-dense">
+                                                <md-list-item ng-repeat="action in environment.buildReportActions">
+                                                    <md-button ng-href="{{ action.href }}" target="_blank">
+                                                        {{ action.title }}
+                                                    </md-button>
+                                                </md-list-item>
+                                            </md-list>
+                                        </md-card-content>
+                                    </md-card>
+                                </div>
                                 <div layout="column">
                                     <md-card md-colors="{background: 'background'}">
                                         <md-card-header>
