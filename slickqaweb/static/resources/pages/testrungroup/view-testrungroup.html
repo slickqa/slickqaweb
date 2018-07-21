@@ -55,7 +55,7 @@
                                     <md-progress-linear ng-show="buildHistory.length === 0"></md-progress-linear>
                                     <md-card-content style="max-height: 2.5in; overflow: auto" ng-show="buildHistory.length !== 0">
                                         <md-list class="md-dense">
-                                            <md-list-item ng-repeat="build in buildHistory" md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {background: 'background-A100'} : ''">
+                                            <md-list-item ng-repeat="build in buildHistory track by $index" md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {background: 'background-A100'} : ''">
                                                 <a class="clickable" href="build-report/{{ build.testruns[0].project.name }}/{{ build.testruns[0].release.name }}/{{ build.testruns[0].build.name }}">
                                                     {{ build.testruns[0].release.name }}.{{ build.testruns[0].build.name }}
                                                 </a>

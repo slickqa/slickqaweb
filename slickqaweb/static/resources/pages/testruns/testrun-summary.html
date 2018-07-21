@@ -152,7 +152,7 @@
                             <md-progress-linear ng-show="testrunHistory.length === 0"></md-progress-linear>
                             <md-card-content style="max-height: 2.5in; overflow: auto" ng-show="testrunHistory.length !== 0">
                                 <md-list class="md-dense">
-                                    <md-list-item ng-repeat="testrunHistoryItem in testrunHistory" md-colors="testrunHistoryItem.id === testrun.id ? {background: 'background-A100'} : ''">
+                                    <md-list-item ng-repeat="testrunHistoryItem in testrunHistory track by $index" md-colors="testrunHistoryItem.id === testrun.id ? {background: 'background-A100'} : ''">
                                         <a class="clickable" href="testruns/{{ testrunHistoryItem.id }}">
                                             {{ testrunHistoryItem.release.name }}.{{ testrunHistoryItem.build.name }}
                                         </a>
