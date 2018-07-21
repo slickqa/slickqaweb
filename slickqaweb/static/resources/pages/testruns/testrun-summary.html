@@ -430,6 +430,10 @@
                                         <span ng-show="!$last">,</span>
                                 </span>
                     </fieldset>
+                    <fieldset style="margin-bottom: 5px" class="standard" ng-show="resultGraphs[result.id]">
+                        <legend>Graph</legend>
+                        <google-line-chart class="testrungroup-serial-chart" data="resultGraphs[result.id].data" options="resultGraphs[result.id].options"></google-line-chart>
+                    </fieldset>
                     <fieldset style="margin-bottom: 5px" class="standard">
                         <legend>Testcase</legend>
                         <md-toolbar md-colors="{background: 'accent-A200'}">

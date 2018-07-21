@@ -403,7 +403,7 @@ angular.module('slickApp')
                         $scope.tpsReportOptions.colors.push(color);
                         $scope.tpsData.addColumn('number', replaceOnStatus(status, " "))
                     });
-                    _.each(testrungroup.testruns, function (testrun) {
+                    _.each(testrungroup.testruns, function (testrun, index) {
                         $scope.testrunHistory.unshift(testrun)
                         var row = [new Date(testrun.dateCreated)];
                         let sum = Object.values(testrun.summary.resultsByStatus).reduce((a, b) => a + b, 0);
@@ -411,6 +411,7 @@ angular.module('slickApp')
                             row.push(testrun.summary.resultsByStatus[status] / sum * 100);
                         });
                         $scope.tpsData.addRow(row);
+                        $scope.tpsData.setRowProperties(index, {testrun: testrun.id});
                     });
                 } else {
                     refresh_promise = $timeout($scope.getTPSReportData, 500);
@@ -418,6 +419,40 @@ angular.module('slickApp')
             }, function errorCallback() {
                 refresh_promise = $timeout($scope.getTPSReportData, 3000);
             });
+        };
+
+        $scope.resultGraphs = {};
+
+        $scope.getGraphDataFromResult = function (result) {
+            let reportOptions = {
+                chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+                backgroundColor: "none",
+                legend: {
+                    textStyle: {
+                        color: "#ffffff"
+                    },
+                },
+                vAxis: {
+                    minValue: 0,
+                    maxValue: 100,
+                    format: '#\'%\''
+                },
+                lineWidth: 5,
+                colors: []
+            };
+            let reportData = new google.visualization.DataTable();
+            reportData.addColumn('date', 'Recorded');
+            _.each(result.attributes.graph.columns, function (column) {
+                reportData.addColumn(column.type, column.name)
+            });
+            _.each(result.attributes.graph.values, function (value) {
+                let row = [new Date(value.date)];
+                _.each(value.measurements, function (measurement) {
+                    row.push(measurement);
+                });
+                reportData.addRow(row);
+            });
+            $scope.resultGraphs[result.id] = {options: reportOptions, data: reportData}
         };
 
         $scope.fetchTestrun();
@@ -450,6 +485,9 @@ angular.module('slickApp')
                     _.each(results, function (result) {
                         if (result.started) {
                             result.recorded = result.started;
+                        }
+                        if (result.attributes.graph) {
+                            $scope.getGraphDataFromResult(result)
                         }
                         $scope.results.push(result);
                     });

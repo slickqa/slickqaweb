@@ -349,7 +349,7 @@ angular.module('slickApp')
                     let gotXAndY = false;
                     _.each(releaseReport.builds.sort(function (a, b) {
                         return (a.testruns[0].dateCreated > b.testruns[0].dateCreated) ? 1 : ((b.testruns[0].dateCreated > a.testruns[0].dateCreated) ? -1 : 0);
-                    }), function (build) {
+                    }), function (build, index) {
                         let row = [new Date(build.testruns[0].dateCreated)];
                         let sum = Object.values(build.groupSummary.resultsByStatus).reduce((a, b) => a + b, 0);
                         if (!gotXAndY) {
@@ -366,6 +366,7 @@ angular.module('slickApp')
                         });
                         // row.push(`${build.testruns[0].project.name}/${build.testruns[0].release.name}/${build.testruns[0].build.name}`);
                         $scope.healthDataByProject[project].addRow(row);
+                        $scope.healthDataByProject[project].setRowProperties(index, {project: build.testruns[0].project.name, release: build.testruns[0].release.name, build: build.testruns[0].build.name})
                     });
                     if (!healthIntervals[project]) {
                         healthIntervals[project] = $interval(function () {

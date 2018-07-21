@@ -1014,7 +1014,7 @@ angular.module('slickApp')
                     let gotXAndY = false;
                     _.each(releaseReport.builds.sort(function (a, b) {
                         return (a.testruns[0].dateCreated > b.testruns[0].dateCreated) ? 1 : ((b.testruns[0].dateCreated > a.testruns[0].dateCreated) ? -1 : 0);
-                    }), function (build) {
+                    }), function (build, index) {
                         let row = [new Date(build.testruns[0].dateCreated)];
                         let sum = Object.values(build.groupSummary.resultsByStatus).reduce((a, b) => a + b, 0);
                         if (!gotXAndY) {
@@ -1031,6 +1031,7 @@ angular.module('slickApp')
                         });
                         // row.push(`${build.testruns[0].project.name}/${build.testruns[0].release.name}/${build.testruns[0].build.name}`);
                         $scope.healthDataByProject[project].addRow(row);
+                        $scope.healthDataByProject[project].setRowProperties(index, {project: build.testruns[0].project.name, release: build.testruns[0].release.name, build: build.testruns[0].build.name})
                     });
                     if (!healthIntervals[project]) {
                         healthIntervals[project] = $interval(function () {
@@ -2074,7 +2075,7 @@ angular.module('slickApp')
                         $scope.tpsReportOptions.colors.push(color);
                         $scope.tpsData.addColumn('number', replaceOnStatus(status, " "))
                     });
-                    _.each(testrungroup.testruns, function (testrun) {
+                    _.each(testrungroup.testruns, function (testrun, index) {
                         $scope.testrunHistory.unshift(testrun)
                         var row = [new Date(testrun.dateCreated)];
                         let sum = Object.values(testrun.summary.resultsByStatus).reduce((a, b) => a + b, 0);
@@ -2082,6 +2083,7 @@ angular.module('slickApp')
                             row.push(testrun.summary.resultsByStatus[status] / sum * 100);
                         });
                         $scope.tpsData.addRow(row);
+                        $scope.tpsData.setRowProperties(index, {testrun: testrun.id});
                     });
                 } else {
                     refresh_promise = $timeout($scope.getTPSReportData, 500);
@@ -2089,6 +2091,40 @@ angular.module('slickApp')
             }, function errorCallback() {
                 refresh_promise = $timeout($scope.getTPSReportData, 3000);
             });
+        };
+
+        $scope.resultGraphs = {};
+
+        $scope.getGraphDataFromResult = function (result) {
+            let reportOptions = {
+                chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+                backgroundColor: "none",
+                legend: {
+                    textStyle: {
+                        color: "#ffffff"
+                    },
+                },
+                vAxis: {
+                    minValue: 0,
+                    maxValue: 100,
+                    format: '#\'%\''
+                },
+                lineWidth: 5,
+                colors: []
+            };
+            let reportData = new google.visualization.DataTable();
+            reportData.addColumn('date', 'Recorded');
+            _.each(result.attributes.graph.columns, function (column) {
+                reportData.addColumn(column.type, column.name)
+            });
+            _.each(result.attributes.graph.values, function (value) {
+                let row = [new Date(value.date)];
+                _.each(value.measurements, function (measurement) {
+                    row.push(measurement);
+                });
+                reportData.addRow(row);
+            });
+            $scope.resultGraphs[result.id] = {options: reportOptions, data: reportData}
         };
 
         $scope.fetchTestrun();
@@ -2121,6 +2157,9 @@ angular.module('slickApp')
                     _.each(results, function (result) {
                         if (result.started) {
                             result.recorded = result.started;
+                        }
+                        if (result.attributes.graph) {
+                            $scope.getGraphDataFromResult(result)
                         }
                         $scope.results.push(result);
                     });
@@ -2476,6 +2515,18 @@ angular.module('slickApp')
             },
             link: function postLink(scope, element, attrs) {
                 var chart = new google.visualization.LineChart(element[0]);
+                function goToBuildReport() {
+                    var selectedItem = chart.getSelection()[0];
+                    if (selectedItem) {
+                        var properties = scope.data.getRowProperties(selectedItem.row);
+                        if (properties.project) {
+                            window.location.href = ['build-report', properties.project, properties.release, properties.build].join('/')
+                        } else if(properties.testrun) {
+                            window.location.href = ['testruns', properties.testrun].join('/')
+                        }
+                    }
+                }
+                google.visualization.events.addListener(chart, 'select', goToBuildReport);
                 chart.draw(scope.data, scope.options);
 
                 scope.$watch('data', function(newValue, oldValue) {
@@ -3122,7 +3173,7 @@ angular.module('slickApp')
                     refresh_promise = $timeout($scope.getReleaseData, 3000);
                     _.each(releaseReport.builds.sort(function (a, b) {
                         return (a.testruns[0].dateCreated > b.testruns[0].dateCreated) ? 1 : ((b.testruns[0].dateCreated > a.testruns[0].dateCreated) ? -1 : 0);
-                    }), function (build) {
+                    }), function (build, index) {
                         $scope.buildHistory.unshift(build);
                         let row = [new Date(build.testruns[0].dateCreated)];
                         let sum = Object.values(build.groupSummary.resultsByStatus).reduce((a, b) => a + b, 0);
@@ -3140,6 +3191,7 @@ angular.module('slickApp')
                         });
                         // row.push(`${build.testruns[0].project.name}/${build.testruns[0].release.name}/${build.testruns[0].build.name}`);
                         $scope.releaseData.addRow(row);
+                        $scope.releaseData.setRowProperties(index, {project: build.testruns[0].project.name, release: build.testruns[0].release.name, build: build.testruns[0].build.name})
                     });
                 } else {
                     refresh_promise = $timeout($scope.getReleaseData, 500);
@@ -3289,13 +3341,14 @@ angular.module('slickApp')
                         $scope.serialChartOptions.colors.push(color);
                         $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
                     });
-                    _.each(testrungroup.testruns, function (testrun) {
+                    _.each(testrungroup.testruns, function (testrun, index) {
                         var row = [new Date(testrun.dateCreated)];
                         let sum = Object.values(testrun.summary.resultsByStatus).reduce((a, b) => a + b, 0);
                         _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
                             row.push(testrun.summary.resultsByStatus[status] / sum * 100);
                         });
                         $scope.serialData.addRow(row);
+                        $scope.serialData.setRowProperties(index, {testrun: testrun.id});
                     });
                 } else {
                     refresh_promise = $timeout($scope.getTPSReportData, 500);

@@ -221,7 +221,7 @@ angular.module('slickApp')
                     refresh_promise = $timeout($scope.getReleaseData, 3000);
                     _.each(releaseReport.builds.sort(function (a, b) {
                         return (a.testruns[0].dateCreated > b.testruns[0].dateCreated) ? 1 : ((b.testruns[0].dateCreated > a.testruns[0].dateCreated) ? -1 : 0);
-                    }), function (build) {
+                    }), function (build, index) {
                         $scope.buildHistory.unshift(build);
                         let row = [new Date(build.testruns[0].dateCreated)];
                         let sum = Object.values(build.groupSummary.resultsByStatus).reduce((a, b) => a + b, 0);
@@ -239,6 +239,7 @@ angular.module('slickApp')
                         });
                         // row.push(`${build.testruns[0].project.name}/${build.testruns[0].release.name}/${build.testruns[0].build.name}`);
                         $scope.releaseData.addRow(row);
+                        $scope.releaseData.setRowProperties(index, {project: build.testruns[0].project.name, release: build.testruns[0].release.name, build: build.testruns[0].build.name})
                     });
                 } else {
                     refresh_promise = $timeout($scope.getReleaseData, 500);

@@ -61,13 +61,14 @@ angular.module('slickApp')
                         $scope.serialChartOptions.colors.push(color);
                         $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
                     });
-                    _.each(testrungroup.testruns, function (testrun) {
+                    _.each(testrungroup.testruns, function (testrun, index) {
                         var row = [new Date(testrun.dateCreated)];
                         let sum = Object.values(testrun.summary.resultsByStatus).reduce((a, b) => a + b, 0);
                         _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
                             row.push(testrun.summary.resultsByStatus[status] / sum * 100);
                         });
                         $scope.serialData.addRow(row);
+                        $scope.serialData.setRowProperties(index, {testrun: testrun.id});
                     });
                 } else {
                     refresh_promise = $timeout($scope.getTPSReportData, 500);
