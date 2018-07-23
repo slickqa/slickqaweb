@@ -432,20 +432,13 @@ angular.module('slickApp')
                         color: "#ffffff"
                     },
                 },
-                vAxis: {
-                    minValue: 0,
-                    maxValue: 100,
-                    format: '#\'%\''
-                },
                 lineWidth: 5,
-                colors: []
             };
             let reportData = new google.visualization.DataTable();
-            reportData.addColumn('date', 'Recorded');
-            _.each(result.attributes.graph.columns, function (column) {
+            _.each(result.graph.columns, function (column) {
                 reportData.addColumn(column.type, column.name)
             });
-            _.each(result.attributes.graph.values, function (value) {
+            _.each(result.graph.values, function (value) {
                 let row = [new Date(value.date)];
                 _.each(value.measurements, function (measurement) {
                     row.push(measurement);
@@ -486,7 +479,7 @@ angular.module('slickApp')
                         if (result.started) {
                             result.recorded = result.started;
                         }
-                        if (result.attributes.graph) {
+                        if (result.graph) {
                             $scope.getGraphDataFromResult(result)
                         }
                         $scope.results.push(result);

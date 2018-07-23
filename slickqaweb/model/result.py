@@ -14,6 +14,7 @@ from .buildReference import BuildReference
 from .resultReference import ResultReference
 from .storedFile import StoredFile
 from .logEntry import LogEntry
+from .graph import Graph
 
 class Result(Document):
     testrun = EmbeddedDocumentField(TestrunReference)
@@ -38,6 +39,7 @@ class Result(Document):
     hostname = StringField()
     requirements = ListField(StringField())
     links = ListField(EmbeddedDocumentField(Link))
+    graph = EmbeddedDocumentField(Graph)
     meta = {'collection': 'results'}
 
 # These are the result statuses that are "non final" meaning we are expecting updates
