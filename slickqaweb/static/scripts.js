@@ -2097,7 +2097,6 @@ angular.module('slickApp')
 
         $scope.getGraphDataFromResult = function (result) {
             let reportOptions = {
-                title: result.testcase.name,
                 chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
                 backgroundColor: "none",
                 hAxis: {
