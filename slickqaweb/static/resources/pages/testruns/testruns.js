@@ -339,7 +339,7 @@ angular.module('slickApp')
                         name: "Back to Build Report"
                     };
                     $scope.goToTPSReportButton = {
-                        href: `tps-report/${testrun.project.name}/${testrun.release.name}/${testrun.testplan.name}`,
+                        href: testrun.testplan ? `tps-report/${testrun.project.name}/${testrun.release.name}/${testrun.testplan.name}` : undefined,
                         name: "TPS Report"
                     };
                     $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
