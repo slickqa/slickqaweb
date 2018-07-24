@@ -414,7 +414,7 @@ angular.module('slickApp')
                         $scope.tpsData.setRowProperties(index, {testrun: testrun.id});
                     });
                 } else {
-                    refresh_promise = $timeout($scope.getTPSReportData, 500);
+                    refresh_promise = $timeout($scope.getTPSReportData, 15000);
                 }
             }, function errorCallback() {
                 refresh_promise = $timeout($scope.getTPSReportData, 3000);
