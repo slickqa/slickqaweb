@@ -274,7 +274,7 @@ angular.module('slickApp')
             if (!$scope.projects) {
                 rest.all('projects').getList({dashboard: true, limit: $scope.buildsQuery.limit}).then(function (projects) {
                     $scope.projects = projects;
-                    if (!$scope.project) {
+                    if (!$scope.project || $scope.project === 'All') {
                         _.each(projects, function (project) {
                             _.each(project.releases, function (release) {
                                 _.each(release.builds, function (build) {
