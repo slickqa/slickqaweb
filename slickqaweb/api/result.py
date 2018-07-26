@@ -505,7 +505,7 @@ def cancel_individual_result(result_id):
         increment_skipped_status_by = "inc__summary__resultsByStatus__SKIPPED"
         Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_skipped_status_by: 1})
         testrun = Testrun.objects(id=orig.testrun.testrunId).first()
-        if testrun.summary.resultsByStatus.NO_RESULT == 0:
+        if testrun and testrun.summary.resultsByStatus.NO_RESULT == 0:
             # finish testrun
             testrun.runFinished = datetime.datetime.utcnow()
             testrun.state = "FINISHED"
