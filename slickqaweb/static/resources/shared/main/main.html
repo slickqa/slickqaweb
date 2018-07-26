@@ -45,7 +45,7 @@
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildListOne | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildListOne | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit track by $index" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
                                         <md-icon ng-show="build.report.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
                                         <i ng-show="build.report.state !== 'FINISHED'" class="pulse"></i>

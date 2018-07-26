@@ -914,7 +914,9 @@ angular.module('slickApp')
                     $scope.testrungroupListOne = testrungroups
                 });
             }
+        };
 
+        $scope.fetchBuildsData = function() {
             // recent builds are a little tricky
             var buildList = [];
 
@@ -927,13 +929,19 @@ angular.module('slickApp')
                     }
                 });
                 buildList.reverse();
+                let tempBuildList = [];
+                let promises = [];
                 _.each(buildList.slice(0, $scope.buildsQuery.queryLimit), function (buildInfo, index) {
-                    rest.one('build-report', buildInfo.project.name).one(buildInfo.release.name, buildInfo.build.name).get().then(function (buildReport) {
+                    promises.push(rest.one('build-report', buildInfo.project.name).one(buildInfo.release.name, buildInfo.build.name).get().then(function (buildReport) {
                         buildInfo.report = buildReport;
-                        $scope.buildListOne[index] = buildInfo;
-                    });
+                        tempBuildList.push(buildInfo)
+                    }))
                 });
-                fetchCount += 1;
+                Promise.all(promises).then(function() {
+                    $scope.buildListOne = tempBuildList;
+                    fetchCount += 1;
+                    $scope.fetchBuildsData();
+                })
             }
 
             if (!$scope.projects || $scope.project === 'All') {
@@ -1062,6 +1070,7 @@ angular.module('slickApp')
         });
 
         $scope.fetchData();
+        $scope.fetchBuildsData();
         stop = $interval($scope.fetchData, 3000);
         window.scope = $scope;
     }]);
