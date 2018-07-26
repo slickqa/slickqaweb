@@ -271,7 +271,7 @@ angular.module('slickApp')
                 fetchCount += 1;
             }
 
-            if (!$scope.projects) {
+            if (!$scope.projects || $scope.project === 'All') {
                 rest.all('projects').getList({dashboard: true, limit: $scope.buildsQuery.limit}).then(function (projects) {
                     $scope.projects = projects;
                     if (!$scope.project || $scope.project === 'All') {
