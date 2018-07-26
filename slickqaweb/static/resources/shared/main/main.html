@@ -23,7 +23,7 @@
                             <md-input-container>
                                 <label>Project</label>
                                 <md-select ng-model="project">
-                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
+                                    <md-option ng-value="'All'" ng-selected="project === 'All'" ng-click="fetchData()">All</md-option>
                                     <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project" ng-click="fetchData()">{{ projectItem.name }}</md-option>
                                 </md-select>
                             </md-input-container>
@@ -97,7 +97,7 @@
                             <md-input-container>
                                 <label>Project</label>
                                 <md-select ng-model="project">
-                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
+                                    <md-option ng-value="'All'" ng-selected="project === 'All'" ng-click="fetchData()">All</md-option>
                                     <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project" ng-click="fetchData()">{{ projectItem.name }}</md-option>
                                 </md-select>
                             </md-input-container>
@@ -173,7 +173,7 @@
                             <md-input-container>
                                 <label>Project</label>
                                 <md-select ng-model="project">
-                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
+                                    <md-option ng-value="'All'" ng-selected="project === 'All'" ng-click="fetchData()">All</md-option>
                                     <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project" ng-click="fetchData()">{{ projectItem.name }}</md-option>
                                 </md-select>
                             </md-input-container>
