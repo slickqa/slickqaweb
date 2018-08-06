@@ -28,12 +28,14 @@ angular.module('slickApp')
         allowed.push("self");
         $sceDelegateProvider.resourceUrlWhitelist(allowed);
     })
-    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', '$location', function ($scope, rest, $interval, $routeParams, $cookies, $location) {
+    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', '$location', 'NavigationService', function ($scope, rest, $interval, $routeParams, $cookies, $location, nav) {
         try {
             $scope.environment = environment;
         } catch (e) {
             //    Don't log again but still catch.
         }
+
+        nav.setTitle("Slick");
 
         $scope.replaceOnStatus = replaceOnStatus;
         $scope.testrunTableOne = {};
@@ -63,6 +65,7 @@ angular.module('slickApp')
         }
 
         var stop;
+        var builds;
         var check;
 
         // $scope.testrunChartOptions = {
@@ -139,6 +142,11 @@ angular.module('slickApp')
         $scope.selectedIndex = $scope.tabNameToIndex($location.search().mainTab) || $scope.tabNameToIndex($cookies.get("selectedIndex")) || 0;
 
         $scope.onTabSelected = function (index) {
+            switch (index) {
+                case 'Builds':
+                    $scope.fetchBuildsData();
+                    break;
+            }
             $cookies.put("selectedIndex", index);
             $location.search("mainTab", index);
             $scope.selectedIndex = $scope.tabNameToIndex(index);
@@ -183,30 +191,30 @@ angular.module('slickApp')
                     statsByProject[project._id.project]['running']['title'] = "Running Now";
                 });
                 _.each([1, 7, 14, 30], function (days) {
-                rest.one('results').one('queue', 'finished').get({days: days}).then(function (finishedByProject) {
-                    _.each(finishedByProject, function (project) {
-                        statsByProject[project._id.project] = statsByProject[project._id.project] || {};
-                        statsByProject[project._id.project][days] = statsByProject[project._id.project][days] || {};
-                        statsByProject[project._id.project][days]['title'] = days !== 1 ? `Past ${days} days` : "Today";
-                        statsByProject[project._id.project][days][project._id.status] = project;
-                        statsByProject[project._id.project]['running'] = statsByProject[project._id.project]['running'] || {count: 0, _id: {project: project._id.project}};
-                        statsByProject[project._id.project]['running']['title'] = "Running Now";
+                    rest.one('results').one('queue', 'finished').get({days: days}).then(function (finishedByProject) {
+                        _.each(finishedByProject, function (project) {
+                            statsByProject[project._id.project] = statsByProject[project._id.project] || {};
+                            statsByProject[project._id.project][days] = statsByProject[project._id.project][days] || {};
+                            statsByProject[project._id.project][days]['title'] = days !== 1 ? `Past ${days} days` : "Today";
+                            statsByProject[project._id.project][days][project._id.status] = project;
+                            statsByProject[project._id.project]['running'] = statsByProject[project._id.project]['running'] || {count: 0, _id: {project: project._id.project}};
+                            statsByProject[project._id.project]['running']['title'] = "Running Now";
+                        });
                     });
                 });
-            });
-            let statsForProjectsList = [];
-            _.each(Object.values(statsByProject), function (stat) {
-                _.each(stat, function (rangeValue, rangeKey) {
-                    if (rangeKey !== 'running') {
-                        stat[rangeKey].total = Object.values(rangeValue).filter((status) => status && status.count !== undefined).reduce(function (sum, derp) {
-                            return sum + derp.count
-                        }, 0)
-                    }
+                let statsForProjectsList = [];
+                _.each(Object.values(statsByProject), function (stat) {
+                    _.each(stat, function (rangeValue, rangeKey) {
+                        if (rangeKey !== 'running') {
+                            stat[rangeKey].total = Object.values(rangeValue).filter((status) => status && status.count !== undefined).reduce(function (sum, derp) {
+                                return sum + derp.count
+                            }, 0)
+                        }
+                    });
+                    statsForProjectsList.push(stat)
                 });
-                statsForProjectsList.push(stat)
-            });
-            $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
-            return _.sortBy(statsForProjectsList, 'running._id.project');
+                $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
+                return _.sortBy(statsForProjectsList, 'running._id.project');
             });
         };
 
@@ -222,36 +230,38 @@ angular.module('slickApp')
         };
 
         $scope.checkForStatsForProject();
-        let fetchCount = 1;
+        let firstFetch = true;
         $scope.fetchData = function () {
-            if ($scope.selectedIndex === $scope.tabNameToIndex('Statistics') || fetchCount === 1) {
-                $scope.getStatsForProjects().then(function(response) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex('Statistics') || firstFetch) {
+                $scope.getStatsForProjects().then(function (response) {
                     $scope.statsForProjects = response;
                     $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
                 });
             }
             $scope.currentTimeMillis = new Date().getTime();
             var testrunsQuery = {orderby: '-dateCreated', limit: $scope.testrunsQuery.queryLimit};
-            if ($scope.project) {
+            if ($scope.project && $scope.project !== 'All') {
                 testrunsQuery["project.name"] = $scope.project;
                 $cookies.put("projectFilter", $scope.project)
             }
             $cookies.putObject("buildsQuery", $scope.buildsQuery);
             $cookies.putObject("testrunsQuery", $scope.testrunsQuery);
             $cookies.putObject("testrunGroupsQuery", $scope.testrunGroupsQuery);
-            if ($scope.selectedIndex === $scope.tabNameToIndex('Testruns') || fetchCount === 1) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex('Testruns') || firstFetch) {
                 rest.all('testruns').getList(testrunsQuery).then(function (testruns) {
                     $scope.testrunListOne = testruns
                 });
             }
-            if ($scope.selectedIndex === $scope.tabNameToIndex('TestrunGroups') || fetchCount === 1) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex('TestrunGroups') || firstFetch) {
                 rest.all('testrungroups').getList({orderby: '-created', limit: $scope.testrunGroupsQuery.queryLimit}).then(function (testrungroups) {
                     $scope.testrungroupListOne = testrungroups
                 });
             }
+            firstFetch = false;
         };
 
-        $scope.fetchBuildsData = function() {
+        let firstBuildsFetch = true;
+        $scope.fetchBuildsData = function () {
             // recent builds are a little tricky
             var buildList = [];
 
@@ -266,60 +276,58 @@ angular.module('slickApp')
                 buildList.reverse();
                 let tempBuildList = [];
                 let promises = [];
-                _.each(buildList.slice(0, $scope.buildsQuery.queryLimit), function (buildInfo, index) {
+                _.each(buildList.slice(0, $scope.buildsQuery.queryLimit), function (buildInfo) {
                     promises.push(rest.one('build-report', buildInfo.project.name).one(buildInfo.release.name, buildInfo.build.name).get().then(function (buildReport) {
                         buildInfo.report = buildReport;
                         tempBuildList.push(buildInfo)
                     }))
                 });
-                Promise.all(promises).then(function() {
+                Promise.all(promises).then(function () {
                     $scope.buildListOne = tempBuildList;
-                    fetchCount += 1;
-                    $scope.fetchBuildsData();
-                })
+                    setTimeout($scope.fetchBuildsData, 3000)
+                });
+                firstBuildsFetch = false;
             }
 
             if (!$scope.projects || $scope.project === 'All') {
-                rest.all('projects').getList({dashboard: true, limit: $scope.buildsQuery.limit}).then(function (projects) {
+                rest.all('projects').getList({dashboard: true, limit: $scope.buildsQuery.limit, orderby: '-releases.builds.built'}).then(function (projects) {
                     $scope.projects = projects;
-                    if (!$scope.project || $scope.project === 'All') {
-                        _.each(projects, function (project) {
-                            _.each(project.releases, function (release) {
-                                _.each(release.builds, function (build) {
-                                    // This creates a flat list that we can sort
-                                    buildList.push({build: build, project: project, release: release});
+                    if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || firstBuildsFetch) {
+                        if (!$scope.project || $scope.project === 'All') {
+                            _.each(projects, function (project) {
+                                _.each(project.releases, function (release) {
+                                    _.each(release.builds, function (build) {
+                                        // This creates a flat list that we can sort
+                                        buildList.push({build: build, project: project, release: release});
+                                    });
                                 });
                             });
-                        });
-                        if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || fetchCount === 1) {
                             processBuildList(buildList);
-                        }
-                    } else {
-                        rest.one('projects', $scope.project).get().then(function (project) {
-                            _.each(project.releases, function (release) {
-                                _.each(release.builds, function (build) {
-                                    // This creates a flat list that we can sort
-                                    buildList.push({build: build, project: project, release: release});
+                        } else {
+                            rest.one('projects', $scope.project).get().then(function (project) {
+                                _.each(project.releases, function (release) {
+                                    _.each(release.builds, function (build) {
+                                        // This creates a flat list that we can sort
+                                        buildList.push({build: build, project: project, release: release});
+                                    });
                                 });
-                            });
-                            if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || fetchCount === 1) {
                                 processBuildList(buildList);
-                            }
-                        });
+                            });
+                        }
                     }
                 });
             } else if ($scope.project) {
-                rest.one('projects', $scope.project).get().then(function (project) {
-                    _.each(project.releases, function (release) {
-                        _.each(release.builds, function (build) {
-                            // This creates a flat list that we can sort
-                            buildList.push({build: build, project: project, release: release});
+                if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || firstBuildsFetch) {
+                    rest.one('projects', $scope.project).get().then(function (project) {
+                        _.each(project.releases, function (release) {
+                            _.each(release.builds, function (build) {
+                                // This creates a flat list that we can sort
+                                buildList.push({build: build, project: project, release: release});
+                            });
                         });
-                    });
-                    if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || fetchCount === 1) {
                         processBuildList(buildList);
-                    }
-                });
+                    });
+                }
             }
         };
 

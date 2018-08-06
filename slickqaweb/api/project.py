@@ -1,18 +1,21 @@
-from slickqaweb.app import app
-from slickqaweb.model.project import Project
-from slickqaweb.model.release import Release
-from slickqaweb.model.component import Component
-from slickqaweb.model.build import Build
-from slickqaweb.model.serialize import deserialize_that
-from flask import Response, request
-from .standardResponses import JsonResponse, read_request
-from .apidocs import accepts, returns, argument_doc, add_resource, standard_query_parameters
-from slickqaweb.model.query import queryFor
-from slickqaweb import events
-from bson import ObjectId
 import datetime
 import types
+
 import mongoengine
+from bson import ObjectId
+from flask import request
+from mongoengine import connection
+
+from slickqaweb import events
+from slickqaweb.app import app
+from slickqaweb.model.build import Build
+from slickqaweb.model.component import Component
+from slickqaweb.model.project import Project
+from slickqaweb.model.query import queryFor
+from slickqaweb.model.release import Release
+from slickqaweb.model.serialize import deserialize_that
+from .apidocs import accepts, returns, argument_doc, add_resource, standard_query_parameters
+from .standardResponses import JsonResponse, read_request
 
 add_resource("/projects", "Access to and modification of projects in slick.")
 
@@ -24,10 +27,17 @@ add_resource("/projects", "Access to and modification of projects in slick.")
 def get_projects():
     """Query for available projects in slick"""
     if 'dashboard' in request.args:
-        limit = 25
-        if 'limit' in request.args:
-            limit = int(request.args['limit'])
-        return JsonResponse(Project.objects.fields('name', slice__releases=[0, limit], slice__releases__builds=[0, limit]))
+        conn = connection.get_connection()
+        result = conn[app.config['MONGODB_DBNAME']]['projects'].aggregate([
+            {
+                '$project': {
+                    'name': '$name',
+                    'releases': '$releases',
+                    'count': {'$size': "$releases.builds"}
+                }
+            }
+        ])
+        return JsonResponse(result['result'])
     else:
         return JsonResponse(queryFor(Project))
 

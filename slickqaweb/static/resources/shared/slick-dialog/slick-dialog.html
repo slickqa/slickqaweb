@@ -10,7 +10,7 @@
                         <h2 ng-bind="title"></h2>
                         <span flex></span>
                         <md-button class="md-icon-button">
-                            <md-icon class="material-icons" ng-click="show = !show">cancel</md-icon>
+                            <md-icon class="material-icons" ng-click="buttonCallback({buttonName: buttonNames[buttonNames.length-1]})">cancel</md-icon>
                         </md-button>
                     </div>
                 </md-toolbar>
