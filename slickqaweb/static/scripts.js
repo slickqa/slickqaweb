@@ -905,7 +905,7 @@ angular.module('slickApp')
             }
             $scope.currentTimeMillis = new Date().getTime();
             var testrunsQuery = {orderby: '-dateCreated', limit: $scope.testrunsQuery.queryLimit};
-            if ($scope.project && $scope.project !== 'All') {
+            if ($scope.project) {
                 testrunsQuery["project.name"] = $scope.project;
                 $cookies.put("projectFilter", $scope.project)
             }
