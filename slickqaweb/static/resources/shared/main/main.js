@@ -158,9 +158,9 @@ angular.module('slickApp')
         };
 
         $scope.onStatTabSelected = function (index) {
-            $cookies.put("selectedStatIndex", index);
-            $location.search("statsTab", index);
-            $scope.selectedStatIndex = $scope.statTabNameToIndex(index);
+            // $cookies.put("selectedStatIndex", index);
+            // $location.search("statsTab", index);
+            // $scope.selectedStatIndex = $scope.statTabNameToIndex(index);
         };
 
         $scope.isStatTabSelected = function (index) {

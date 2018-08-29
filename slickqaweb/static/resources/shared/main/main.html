@@ -238,8 +238,8 @@
                     </md-toolbar>
                     <md-progress-linear ng-show="statsForProjects.length === 0"></md-progress-linear>
                     <md-tab-body ng-show="statsForProjects.length !== 0">
-                        <md-tabs md-selected="selectedStatIndex">
-                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'running._id.project' track by $index" md-on-select="onStatTabSelected(stat.running._id.project)">
+                        <md-tabs>
+                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'running._id.project' track by $index">
                                 <md-tab-label>
                                     <span>{{ stat.running._id.project }}</span>
                                 </md-tab-label>
