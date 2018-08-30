@@ -693,7 +693,7 @@ angular.module('slickApp')
         allowed.push("self");
         $sceDelegateProvider.resourceUrlWhitelist(allowed);
     })
-    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', '$location', 'NavigationService', function ($scope, rest, $interval, $routeParams, $cookies, $location, nav) {
+    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$timeout', '$routeParams', '$cookies', '$location', 'NavigationService', function ($scope, rest, $interval, $timeout, $routeParams, $cookies, $location, nav) {
         try {
             $scope.environment = environment;
         } catch (e) {
@@ -886,6 +886,7 @@ angular.module('slickApp')
         $scope.checkForStatsForProject = function () {
             if ($scope.statsForProjects && $scope.statsForProjects.length !== 0) {
                 $interval.cancel(check);
+                check = undefined;
                 _.each($scope.statsForProjects, function (stat) {
                     $scope.getHealthData(stat.running._id.project, "Health");
                 })
@@ -949,7 +950,7 @@ angular.module('slickApp')
                 });
                 Promise.all(promises).then(function () {
                     $scope.buildListOne = tempBuildList;
-                    setTimeout($scope.fetchBuildsData, 3000)
+                    builds = $timeout($scope.fetchBuildsData, 3000)
                 });
                 firstBuildsFetch = false;
             }
@@ -1066,11 +1067,21 @@ angular.module('slickApp')
             if (angular.isDefined(stop)) {
                 $interval.cancel(stop);
                 stop = undefined;
-                _.each(Object.keys(healthIntervals), function (key) {
+            }
+            if (angular.isDefined(builds)) {
+                $timeout.cancel(builds);
+                builds = undefined;
+            }
+            if (angular.isDefined(check)) {
+                $interval.cancel(check);
+                check = undefined;
+            }
+            _.each(Object.keys(healthIntervals), function (key) {
+                if (angular.isDefined(healthIntervals[key])) {
                     $interval.cancel(healthIntervals[key]);
                     healthIntervals[key] = undefined;
-                })
-            }
+                }
+            })
         };
 
         $scope.$on('$destroy', function () {
@@ -1860,8 +1871,8 @@ angular.module('slickApp')
 
         $scope.expandedResults = {};
 
-        $scope.isExpanded = function (testcaseId) {
-            return !!$scope.expandedResults[testcaseId];
+        $scope.isExpanded = function (resultId) {
+            return !!$scope.expandedResults[resultId];
         };
 
         $scope.statusToIcon = function (status) {
@@ -1930,7 +1941,7 @@ angular.module('slickApp')
         }
         $scope.show = $cookies.getObject('testrunShowFilter');
 
-        $scope.testcases = {}
+        $scope.testcases = {};
 
         $scope.testcase = {
             name: "",
@@ -2352,10 +2363,10 @@ angular.module('slickApp')
             }
         };
 
-        $scope.showTestcase = function (testcaseId, $event) {
+        $scope.showTestcase = function (result, $event) {
             $event.preventDefault();
-            rest.one('testcases', testcaseId).get().then(function (testcase) {
-                $scope.expandedResults[testcase.name] = $scope.expandedResults[testcase.name] ? !$scope.expandedResults[testcase.name] : true;
+            rest.one('testcases', result.testcase.testcaseId).get().then(function (testcase) {
+                $scope.expandedResults[result.id] = $scope.expandedResults[result.id] ? !$scope.expandedResults[result.id] : true;
                 $scope.testcase = testcase;
                 $scope.testcases[testcase.name] = testcase
             });

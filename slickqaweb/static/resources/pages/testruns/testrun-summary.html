@@ -372,9 +372,9 @@
                     </md-button>
                 </td>
                 <td class="result-list-name-column">
-                    <a href="testcases/{{ result.testcase.testcaseId }}" ng-click="showTestcase(result.testcase.testcaseId, $event)">
-                        <md-icon class="material-icons" ng-show="!isExpanded(result.testcase.name)">chevron_right</md-icon>
-                        <md-icon class="material-icons" ng-show="isExpanded(result.testcase.name)">expand_more</md-icon>
+                    <a href="testcases/{{ result.testcase.testcaseId }}" ng-click="showTestcase(result, $event)">
+                        <md-icon class="material-icons" ng-show="!isExpanded(result.id)">chevron_right</md-icon>
+                        <md-icon class="material-icons" ng-show="isExpanded(result.id)">expand_more</md-icon>
                         <span style="vertical-align: middle" ng-bind="result.testcase.name"></span>
                     </a>
                 </td>
@@ -414,7 +414,7 @@
                     </fieldset>
                 </td>
             </tr>
-            <tr class="result-expanded" ng-show="isExpanded(result.testcase.name)">
+            <tr class="result-expanded" ng-show="isExpanded(result.id)">
                 <td colspan="9" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                     <fieldset style="margin-bottom: 5px" class="standard" ng-show="result.files.length !== 0">
                         <legend>Files ({{ result.files.length }})</legend>

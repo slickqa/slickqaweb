@@ -28,7 +28,7 @@ angular.module('slickApp')
         allowed.push("self");
         $sceDelegateProvider.resourceUrlWhitelist(allowed);
     })
-    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$routeParams', '$cookies', '$location', 'NavigationService', function ($scope, rest, $interval, $routeParams, $cookies, $location, nav) {
+    .controller('MainCtrl', ['$scope', 'Restangular', '$interval', '$timeout', '$routeParams', '$cookies', '$location', 'NavigationService', function ($scope, rest, $interval, $timeout, $routeParams, $cookies, $location, nav) {
         try {
             $scope.environment = environment;
         } catch (e) {
@@ -221,6 +221,7 @@ angular.module('slickApp')
         $scope.checkForStatsForProject = function () {
             if ($scope.statsForProjects && $scope.statsForProjects.length !== 0) {
                 $interval.cancel(check);
+                check = undefined;
                 _.each($scope.statsForProjects, function (stat) {
                     $scope.getHealthData(stat.running._id.project, "Health");
                 })
@@ -284,7 +285,7 @@ angular.module('slickApp')
                 });
                 Promise.all(promises).then(function () {
                     $scope.buildListOne = tempBuildList;
-                    setTimeout($scope.fetchBuildsData, 3000)
+                    builds = $timeout($scope.fetchBuildsData, 3000)
                 });
                 firstBuildsFetch = false;
             }
@@ -401,11 +402,21 @@ angular.module('slickApp')
             if (angular.isDefined(stop)) {
                 $interval.cancel(stop);
                 stop = undefined;
-                _.each(Object.keys(healthIntervals), function (key) {
+            }
+            if (angular.isDefined(builds)) {
+                $timeout.cancel(builds);
+                builds = undefined;
+            }
+            if (angular.isDefined(check)) {
+                $interval.cancel(check);
+                check = undefined;
+            }
+            _.each(Object.keys(healthIntervals), function (key) {
+                if (angular.isDefined(healthIntervals[key])) {
                     $interval.cancel(healthIntervals[key]);
                     healthIntervals[key] = undefined;
-                })
-            }
+                }
+            })
         };
 
         $scope.$on('$destroy', function () {

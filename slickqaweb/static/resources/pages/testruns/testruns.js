@@ -171,8 +171,8 @@ angular.module('slickApp')
 
         $scope.expandedResults = {};
 
-        $scope.isExpanded = function (testcaseId) {
-            return !!$scope.expandedResults[testcaseId];
+        $scope.isExpanded = function (resultId) {
+            return !!$scope.expandedResults[resultId];
         };
 
         $scope.statusToIcon = function (status) {
@@ -241,7 +241,7 @@ angular.module('slickApp')
         }
         $scope.show = $cookies.getObject('testrunShowFilter');
 
-        $scope.testcases = {}
+        $scope.testcases = {};
 
         $scope.testcase = {
             name: "",
@@ -663,10 +663,10 @@ angular.module('slickApp')
             }
         };
 
-        $scope.showTestcase = function (testcaseId, $event) {
+        $scope.showTestcase = function (result, $event) {
             $event.preventDefault();
-            rest.one('testcases', testcaseId).get().then(function (testcase) {
-                $scope.expandedResults[testcase.name] = $scope.expandedResults[testcase.name] ? !$scope.expandedResults[testcase.name] : true;
+            rest.one('testcases', result.testcase.testcaseId).get().then(function (testcase) {
+                $scope.expandedResults[result.id] = $scope.expandedResults[result.id] ? !$scope.expandedResults[result.id] : true;
                 $scope.testcase = testcase;
                 $scope.testcases[testcase.name] = testcase
             });
