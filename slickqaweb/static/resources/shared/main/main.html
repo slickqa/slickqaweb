@@ -239,22 +239,44 @@
                     <md-progress-linear ng-show="statsForProjects.length === 0"></md-progress-linear>
                     <md-tab-body ng-show="statsForProjects.length !== 0">
                         <md-tabs>
-                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'running._id.project' track by $index">
+                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'title' track by $index">
                                 <md-tab-label>
-                                    <span>{{ stat.running._id.project }}</span>
+                                    <span>{{ stat.title }}</span>
                                 </md-tab-label>
                                 <md-tab-body>
-                                    <fieldset class="standard" ng-show="healthDataByProject[stat.running._id.project].Mf.length > 1">
-                                        <legend>{{ stat.running._id.project }} Health</legend>
+                                    <fieldset class="standard" ng-show="healthDataByProject[stat.title].Mf.length > 1">
+                                        <legend>{{ stat.title }} {{ stat.activeRelease }}</legend>
                                         <md-content layout="row">
-                                            <md-progress-linear ng-show="healthDataByProject[stat.running._id.project].Mf.length === 1"></md-progress-linear>
-                                            <google-line-chart style="width: 100%" ng-show="healthDataByProject[stat.running._id.project].Mf.length > 1" class="testrungroup-serial-chart" data="healthDataByProject[stat.running._id.project]" options="healthReportOptionsByProject[stat.running._id.project]"></google-line-chart>
+                                            <md-progress-linear ng-show="healthDataByProject[stat.title].Mf.length === 1"></md-progress-linear>
+                                            <google-line-chart style="width: 100%" ng-show="healthDataByProject[stat.title].Mf.length > 1" class="testrungroup-serial-chart" data="healthDataByProject[stat.title]" options="healthReportOptionsByProject[stat.title]"></google-line-chart>
                                             <md-input-container>
                                                 <label>Limit</label>
                                                 <md-select ng-model="buildsQuery.queryLimit">
                                                     <md-option ng-repeat="limitItem in limits" ng-value="limitItem" ng-selected="limitItem === buildsQuery.queryLimit">{{ limitItem }}</md-option>
                                                 </md-select>
                                             </md-input-container>
+                                            <md-input-container>
+                                                <label>Release</label>
+                                                <md-select ng-model="stat.activeRelease">
+                                                    <md-option ng-if="isObject(release)" ng-repeat="release in objToValues(stat)" ng-value="release.title" ng-selected="release.title === stat.activeRelease">{{ release.title }}</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </md-content>
+                                    </fieldset>
+                                    <fieldset class="standard" ng-if="testcasesByProject[stat.title]">
+                                        <legend>Recently Automated tests</legend>
+                                        <md-content layout="row">
+                                            <md-card ng-repeat="(key, value) in testcasesByProject[stat.title]">
+                                                <md-card-header>
+                                                    <md-card-header-text>
+                                                        <span class="md-title">{{ value.title }}</span>
+                                                    </md-card-header-text>
+                                                </md-card-header>
+                                                <md-divider></md-divider>
+                                                <md-card-content align="center">
+                                                    <span style="font-size: 20px">{{ value.count._id.count || "None" }}</span>
+                                                </md-card-content>
+                                            </md-card>
                                         </md-content>
                                     </fieldset>
                                     <fieldset class="standard">
@@ -263,15 +285,15 @@
                                             <md-card>
                                                 <md-card-header>
                                                     <md-card-header-text>
-                                                        <span class="md-title">{{ stat.running.title }}</span>
+                                                        <span class="md-title">{{ stat[stat.activeRelease].running.title }}</span>
                                                     </md-card-header-text>
                                                 </md-card-header>
                                                 <md-divider></md-divider>
                                                 <md-card-content align="center">
-                                                    <span style="font-size: 20px">{{ stat.running.count || "None" }}</span>
+                                                    <span style="font-size: 20px">{{ stat[stat.activeRelease].running.count || "None" }}</span>
                                                 </md-card-content>
                                             </md-card>
-                                            <md-card ng-repeat="(key, value) in stat" ng-show="key !== 'running'">
+                                            <md-card ng-repeat="(key, value) in stat[stat.activeRelease]" ng-show="key !== 'running' && isObject(value)">
                                                 <md-card-header>
                                                     <md-card-header-text>
                                                         <span class="md-title">{{ value.title }}</span>
@@ -287,7 +309,7 @@
                                     <fieldset class="standard">
                                         <legend>Succes Rate</legend>
                                         <md-content layout="row">
-                                            <md-card ng-repeat="(key, value) in stat" ng-show="key !== 'running'">
+                                            <md-card ng-repeat="(key, value) in stat[stat.activeRelease]" ng-show="key !== 'running' && isObject(value)">
                                                 <md-card-header>
                                                     <md-card-header-text>
                                                         <span class="md-title">{{ value.title }}</span>

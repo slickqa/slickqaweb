@@ -656,7 +656,7 @@ def get_queue_running():
 @app.route('/api/results/queue/finished')
 def get_queue_finished():
     # Default is by build
-    query = {'project': '$project.name', 'status': '$status'}
+    query = {'project': '$project.name', 'release': '$release.name', 'status': '$status'}
     days = 1
     if 'days' in request.args:
         days = int(request.args['days'])

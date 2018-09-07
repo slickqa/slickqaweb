@@ -45,10 +45,17 @@ angular.module('slickApp')
 
         $scope.getDurationString = getDurationString;
 
-        $scope.objToValues = function (obj) {
-            return Object.values(obj);
+        $scope.isObject = function(obj) {
+            return typeof obj === 'object'
         };
 
+        $scope.objToValues = function (obj) {
+            if (obj) {
+                return Object.values(obj);
+            } else {
+                return []
+            }
+        };
         $scope.testrungroupTableOne = {};
         $scope.testrungroupTableTwo = {};
         $scope.testrungroupListOne = [];
@@ -129,7 +136,7 @@ angular.module('slickApp')
         $scope.statTabNameToIndex = function (statTabName) {
             if ($scope.statsForProjects) {
                 let index = $scope.statsForProjects.findIndex(function (stat) {
-                    return stat.running._id.project === statTabName || 0;
+                    return stat.title === statTabName || 0;
                 });
                 if (index !== -1) {
                     return index;
@@ -183,38 +190,65 @@ angular.module('slickApp')
 
         $scope.currentTimeMillis = new Date().getTime();
         let statsByProject = {};
+        $scope.testcasesByProject = {};
         $scope.getStatsForProjects = function () {
             return rest.one('results').one('queue', 'running').get({byProject: "true"}).then(function (resultsByProject) {
                 _.each(resultsByProject, function (project) {
+                    if (!project._id.release || project._id.release === "") {
+                        return;
+                    }
                     statsByProject[project._id.project] = statsByProject[project._id.project] || {};
-                    statsByProject[project._id.project]['running'] = project;
-                    statsByProject[project._id.project]['running']['title'] = "Running Now";
+                    statsByProject[project._id.project]['title'] = project._id.project;
+                    statsByProject[project._id.project]['activeRelease'] = statsByProject[project._id.project]['activeRelease'] || project._id.release;
+                    statsByProject[project._id.project][project._id.release] = statsByProject[project._id.project][project._id.release] || {};
+                    statsByProject[project._id.project][project._id.release]['title'] = project._id.release;
+                    statsByProject[project._id.project][project._id.release]['running'] = project;
+                    statsByProject[project._id.project][project._id.release]['running']['title'] = "Running Now";
                 });
                 _.each([1, 7, 14, 30], function (days) {
                     rest.one('results').one('queue', 'finished').get({days: days}).then(function (finishedByProject) {
                         _.each(finishedByProject, function (project) {
+                            if (!project._id.release || project._id.release === "") {
+                                return;
+                            }
                             statsByProject[project._id.project] = statsByProject[project._id.project] || {};
-                            statsByProject[project._id.project][days] = statsByProject[project._id.project][days] || {};
-                            statsByProject[project._id.project][days]['title'] = days !== 1 ? `Past ${days} days` : "Today";
-                            statsByProject[project._id.project][days][project._id.status] = project;
-                            statsByProject[project._id.project]['running'] = statsByProject[project._id.project]['running'] || {count: 0, _id: {project: project._id.project}};
-                            statsByProject[project._id.project]['running']['title'] = "Running Now";
+                            statsByProject[project._id.project]['title'] = project._id.project;
+                            statsByProject[project._id.project]['activeRelease'] = statsByProject[project._id.project]['activeRelease'] || project._id.release;
+                            statsByProject[project._id.project][project._id.release] = statsByProject[project._id.project][project._id.release] || {};
+                            statsByProject[project._id.project][project._id.release]['title'] = project._id.release;
+                            statsByProject[project._id.project][project._id.release][days] = statsByProject[project._id.project][project._id.release][days] || {};
+                            statsByProject[project._id.project][project._id.release][days]['title'] = days !== 1 ? `Past ${days} days` : "Today";
+                            statsByProject[project._id.project][project._id.release][days][project._id.status] = project;
+                            statsByProject[project._id.project][project._id.release]['running'] = statsByProject[project._id.project][project._id.release]['running'] || {count: 0, _id: {project: project._id.project}};
+                            statsByProject[project._id.project][project._id.release]['running']['title'] = "Running Now";
                         });
                     });
+                    rest.one('testcases').one('recently-created').get({days: days}).then(function (createdByProject) {
+                    _.each(createdByProject, function (project) {
+                        $scope.testcasesByProject[project._id.project] = $scope.testcasesByProject[project._id.project] || {};
+                        $scope.testcasesByProject[project._id.project][days] = $scope.testcasesByProject[project._id.project][days] || {};
+                        $scope.testcasesByProject[project._id.project][days]['title'] = days !== 1 ? `Past ${days} days` : "Today";
+                        $scope.testcasesByProject[project._id.project][days]['count'] = project
+                    });
+                });
                 });
                 let statsForProjectsList = [];
                 _.each(Object.values(statsByProject), function (stat) {
-                    _.each(stat, function (rangeValue, rangeKey) {
-                        if (rangeKey !== 'running') {
-                            stat[rangeKey].total = Object.values(rangeValue).filter((status) => status && status.count !== undefined).reduce(function (sum, derp) {
-                                return sum + derp.count
-                            }, 0)
-                        }
+                    _.each(stat, function (releaseValue, releaseKey) {
+                        _.each(releaseValue, function (rangeValue, rangeKey) {
+                            if (rangeKey !== 'running') {
+                                if (typeof stat[releaseKey][rangeKey] === "object") {
+                                    stat[releaseKey][rangeKey].total = Object.values(rangeValue).filter((status) => status && status.count !== undefined).reduce(function (sum, derp) {
+                                        return sum + derp.count
+                                    }, 0);
+                                }
+                            }
+                        });
                     });
                     statsForProjectsList.push(stat)
                 });
                 $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
-                return _.sortBy(statsForProjectsList, 'running._id.project');
+                return _.sortBy(statsForProjectsList, 'title');
             });
         };
 
@@ -223,7 +257,7 @@ angular.module('slickApp')
                 $interval.cancel(check);
                 check = undefined;
                 _.each($scope.statsForProjects, function (stat) {
-                    $scope.getHealthData(stat.running._id.project, "Health");
+                    $scope.getHealthData(stat.title, stat.activeRelease);
                 })
             } else if (!check) {
                 check = $interval($scope.checkForStatsForProject, 500)
@@ -388,7 +422,9 @@ angular.module('slickApp')
                     if (!healthIntervals[project]) {
                         healthIntervals[project] = $interval(function () {
                             if ($scope.selectedIndex === $scope.tabNameToIndex('Statistics')) {
-                                $scope.getHealthData(project, release);
+                                $scope.getHealthData(project, $scope.statsForProjects[$scope.statsForProjects.findIndex(function (stat) {
+                                    return stat.title === project || 0;
+                                })].activeRelease);
                             }
                         }, 10000);
                     }

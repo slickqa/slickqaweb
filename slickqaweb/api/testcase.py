@@ -1,3 +1,5 @@
+import datetime
+
 __author__ = 'slambson'
 
 from slickqaweb.app import app
@@ -7,7 +9,7 @@ from slickqaweb.model.query import queryFor
 from flask import request
 from .standardResponses import JsonResponse, read_request
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
-from mongoengine import ListField, ReferenceField
+from mongoengine import ListField, ReferenceField, connection
 
 add_resource('/testcases', 'Add, update, and delete testcases.')
 
@@ -30,6 +32,20 @@ def get_testcases():
 def get_testcase_by_id(testcase_id):
     """Retrieve a testcase by it's id."""
     return JsonResponse(Testcase.objects(id=testcase_id).first())
+
+@app.route('/api/testcases/recently-created')
+def get_testcases_created():
+    # Default is by build
+    query = {'project': '$project.name'}
+    days = 1
+    if 'days' in request.args:
+        days = int(request.args['days'])
+    conn = connection.get_connection()
+    result = conn[app.config['MONGODB_DBNAME']]['testcases'].aggregate([
+        {'$match': {'created': {'$gte': datetime.datetime.utcnow() + datetime.timedelta(-days), '$lt': datetime.datetime.utcnow()}}},
+        {'$group': {'_id': query, 'count': {'$sum': 1}}}
+    ])
+    return JsonResponse(result['result'])
 
 
 @app.route('/api/testcases', methods=["POST"])

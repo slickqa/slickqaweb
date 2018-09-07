@@ -1,6 +1,6 @@
 pymongo==2.8
 Flask
-mongoengine
+mongoengine==0.15.0
 Flask-gzip
 CherryPy
 watchdog
