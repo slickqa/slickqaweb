@@ -301,6 +301,7 @@ def add_result(testrun_id=None):
         return Response('Existing testcase not found, please provide a testcase name if you want one to be created.\n', status=400, mimetype="text/plain")
     elif testcase is None:
         testcase = Testcase()
+        testcase.created = datetime.datetime.utcnow()
         testcase.name = new_result.testcase.name
         if is_provided(new_result.testcase, 'automationId'):
             testcase.automationId = new_result.testcase.automationId
