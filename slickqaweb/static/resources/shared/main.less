@@ -5,15 +5,15 @@
 @c-structural-top: #454545;
 @c-structural-bottom: #282828;
 
-@c-status-pass: #008000;
-@c-status-fail: #ff0000;
-@c-status-broken: #ffac00;
-@c-status-nottested: #1e90ff;
+@c-status-pass: #00b352;
+@c-status-fail: #f96565;
+@c-status-broken: #ffd377;
+@c-status-nottested: #6EA9FF;
 @c-status-noresult: #c0c0c0;
-@c-status-skip: #bdb76b;
+@c-status-skip: #A06744;
 @c-status-cancelled: #a0522d;
 @c-status-total: unset;
-@c-status-passedonretry: #006000;
+@c-status-passedonretry: #247549;
 //@import url(http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic&subset=latin,latin-ext);
 
 @font: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
@@ -28,9 +28,9 @@ img {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: @c-status-noresult;
+  background: #55be9c;
   cursor: pointer;
-  box-shadow: 0 0 0 @c-status-noresult;
+  box-shadow: 0 0 0 #55be9c;
   animation: pulse 2s infinite;
 }
 .pulse:hover {
@@ -39,27 +39,27 @@ img {
 
 @-webkit-keyframes pulse {
   0% {
-    -webkit-box-shadow: 0 0 0 0 rgba(192,192,192, 0.4);
+    -webkit-box-shadow: 0 0 0 0 rgba(85,190,156, 0.4);
   }
   70% {
-      -webkit-box-shadow: 0 0 0 10px rgba(192,192,192, 0);
+      -webkit-box-shadow: 0 0 0 10px rgba(85,190,156, 0);
   }
   100% {
-      -webkit-box-shadow: 0 0 0 0 rgba(192,192,192, 0);
+      -webkit-box-shadow: 0 0 0 0 rgba(85,190,156, 0);
   }
 }
 @keyframes pulse {
   0% {
-    -moz-box-shadow: 0 0 0 0 rgba(192,192,192, 0.4);
-    box-shadow: 0 0 0 0 rgba(192,192,192, 0.4);
+    -moz-box-shadow: 0 0 0 0 rgba(85,190,156, 0.4);
+    box-shadow: 0 0 0 0 rgba(85,190,156, 0.4);
   }
   70% {
-      -moz-box-shadow: 0 0 0 10px rgba(192,192,192, 0);
-      box-shadow: 0 0 0 10px rgba(192,192,192, 0);
+      -moz-box-shadow: 0 0 0 10px rgba(85,190,156, 0);
+      box-shadow: 0 0 0 10px rgba(85,190,156, 0);
   }
   100% {
-      -moz-box-shadow: 0 0 0 0 rgba(192,192,192, 0);
-      box-shadow: 0 0 0 0 rgba(192,192,192, 0);
+      -moz-box-shadow: 0 0 0 0 rgba(85,190,156, 0);
+      box-shadow: 0 0 0 0 rgba(85,190,156, 0);
   }
 }
 

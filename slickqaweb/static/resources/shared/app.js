@@ -105,3 +105,38 @@ function getEstimatedTimeRemaining(report, type) {
         return "";
     }
 }
+
+function statusToIcon(status) {
+    switch (status) {
+        case 'PASS':
+            return 'check_circle';
+        case 'PASSED_ON_RETRY':
+            return 'check_circle';
+        case 'FAIL':
+            return 'cancel';
+        case 'BROKEN_TEST':
+            return 'error';
+        case 'NO_RESULT':
+            return 'help';
+        case 'SKIPPED':
+            return 'watch_later';
+        case 'NOT_TESTED':
+            return 'pause_circle_filled';
+    }
+}
+
+function summaryToStatus(summary) {
+    if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED === summary.total) {
+        return 'PASS';
+    } else if (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED === summary.total) {
+        return 'PASSED_ON_RETRY';
+    } else if (summary.resultsByStatus.FAIL) {
+        return 'FAIL';
+    } else if (summary.resultsByStatus.BROKEN_TEST) {
+        return 'BROKEN_TEST';
+    } else if (summary.resultsByStatus.NOT_TESTED && !summary.resultsByStatus.SKIPPED) {
+        return 'NOT_TESTED';
+    } else if (summary.resultsByStatus.SKIPPED) {
+        return 'SKIPPED';
+    }
+}

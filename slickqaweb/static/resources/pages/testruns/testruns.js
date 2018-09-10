@@ -175,24 +175,8 @@ angular.module('slickApp')
             return !!$scope.expandedResults[resultId];
         };
 
-        $scope.statusToIcon = function (status) {
-            switch (status) {
-                case 'PASS':
-                    return 'check_circle';
-                case 'PASSED_ON_RETRY':
-                    return 'check_circle';
-                case 'FAIL':
-                    return 'cancel';
-                case 'BROKEN_TEST':
-                    return 'error';
-                case 'NO_RESULT':
-                    return 'help';
-                case 'SKIPPED':
-                    return 'watch_later';
-                case 'NOT_TESTED':
-                    return 'pause_circle_filled';
-            }
-        };
+        $scope.statusToIcon = statusToIcon;
+        $scope.calculateTestrunStatus = summaryToStatus;
 
         $scope.testrun = {};
         $scope.results = [];
@@ -266,7 +250,7 @@ angular.module('slickApp')
         $scope.topContributors = {};
         $scope.keyLength = function (obj) {
             return Object.keys(obj).length;
-        }
+        };
 
         $scope.fetchTestrun = function () {
             rest.one('testruns', $routeParams["testrunid"]).get().then(function (testrun) {

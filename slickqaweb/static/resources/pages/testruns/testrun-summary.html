@@ -157,8 +157,7 @@
                                             {{ testrunHistoryItem.release.name }}.{{ testrunHistoryItem.build.name }}
                                         </a>
                                         <div flex></div>
-                                        <md-icon md-colors="testrunHistoryItem.id === testrun.id ? {color: 'background'} : ''" ng-show="testrunHistoryItem.state === 'FINISHED'" class="material-icons">check_circle</md-icon>
-                                        <i ng-if="testrunHistoryItem.state !== 'FINISHED'" class="pulse"></i>
+                                        <md-icon md-colors="testrunHistoryItem.id === testrun.id ? {color: 'background'} : ''" ng-show="testrunHistoryItem.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateTestrunStatus(testrunHistoryItem.summary), '') }}">{{ statusToIcon(calculateTestrunStatus(testrunHistoryItem.summary)) }}</md-icon><i ng-if="testrunHistoryItem.state !== 'FINISHED' || calculateTestrunStatus(testrunHistoryItem.summary) === undefined" class="pulse"></i>
                                     </md-list-item>
                                 </md-list>
                             </md-card-content>
@@ -353,6 +352,7 @@
     <md-content style="overflow: auto">
         <table slick-list-header model="resultList" search="on" pagination="on" default-sort="recorded" default-page-size="50" style="width: 100%">
             <tr slick-list-columns class="result-list-column-container">
+                <th slick-list-column style="text-align: center">Status</th>
                 <th slick-list-column ng-show="results[0].attributes && results[0].attributes.scheduled" class="result-list-status-column" sortable="false"></th>
                 <th slick-list-column class="result-list-name-column" sort-property-name="testcase.name" sortable="true">Name</th>
                 <th slick-list-column class="result-list-author-column" sort-property-name="testcase.author" sortable="true" ng-show="show['author']">Author</th>
@@ -365,6 +365,7 @@
             </tr>
             <tbody style="width: 100%" class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
             <tr style="padding-bottom: 5px">
+                <td style="text-align: center"><md-icon ng-show="result.runstatus === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(result.status, '') }}">{{ statusToIcon(result.status) }}</md-icon><i ng-if="result.runstatus === 'RUNNING' || (result.runstatus === 'FINISHED' && result.status === 'NO_RESULT')" class="pulse"></i></td>
                 <td align="center" ng-show="result.attributes && result.attributes.scheduled" class="result-list-status-column">
                     <md-button class="md-icon-button" ng-click="rescheduleResult(result.id)">
                         <md-icon class="material-icons">refresh</md-icon>
@@ -389,13 +390,13 @@
                 <td style="align-items: center"><span class="result-status-{{ replaceOnStatus(result.status, '') }}" ng-bind="replaceOnStatus(result.status, ' ')"></span></td>
             </tr>
             <tr ng-show="show['automationid']">
-                <td colspan="9" class="result-list-automationid-column" ng-bind="'Automation ID: ' + result.testcase.automationId"></td>
+                <td colspan="10" class="result-list-automationid-column" ng-bind="'Automation ID: ' + result.testcase.automationId"></td>
             </tr>
             <tr ng-show="show['resultid']">
-                <td colspan="9" class="result-list-resultid-column" ng-bind="'Slick Result ID: ' + result.id"></td>
+                <td colspan="10" class="result-list-resultid-column" ng-bind="'Slick Result ID: ' + result.id"></td>
             </tr>
             <tr ng-show="getResultNotes(result).length !== 0">
-                <td colspan="9" class="result-list-notes-part">
+                <td colspan="10" class="result-list-notes-part">
                     <fieldset class="standard">
                         <legend>Notes</legend>
                         <div ng-repeat="note in getResultNotes(result)" class="result-note">
@@ -407,7 +408,7 @@
                 </td>
             </tr>
             <tr ng-show="result.reason && !moreDetail && !moreDetailForResult[result.id]">
-                <td colspan="9" class="result-list-reason-part">
+                <td colspan="10" class="result-list-reason-part">
                     <fieldset class="standard">
                         <legend>Reason</legend>
                         <a href="results/{{ result.id }}/reason" ng-click="displayReason(result, $event)"><span class="result-list-reason-field">{{ getAbbreviatedReason(result) }}</span>...</a>
@@ -415,7 +416,7 @@
                 </td>
             </tr>
             <tr class="result-expanded" ng-show="isExpanded(result.id)">
-                <td colspan="9" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                <td colspan="10" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                     <fieldset style="margin-bottom: 5px" class="standard" ng-show="result.files.length !== 0">
                         <legend>Files ({{ result.files.length }})</legend>
                         <span ng-repeat="file in result.files">
@@ -450,7 +451,7 @@
                     </fieldset>
                 </td>
             <tr class="result-list-more-detail-part" ng-show="moreDetailForResult[result.id]">
-                <td colspan="9">
+                <td colspan="10">
                     <fieldset style="margin-bottom: 5px" class="standard">
                         <legend>More Detail</legend>
                         <div class="result-list-more-detail-reason">

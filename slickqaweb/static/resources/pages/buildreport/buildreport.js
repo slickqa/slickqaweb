@@ -23,6 +23,9 @@ angular.module('slickApp')
         }
 
         $scope.replaceOnStatus = replaceOnStatus;
+        $scope.calculateBuildStatus = summaryToStatus;
+        $scope.statusToIcon = statusToIcon;
+
         $scope.query = {
             order: 'dateCreated',
             limit: 25,

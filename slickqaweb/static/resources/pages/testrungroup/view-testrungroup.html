@@ -68,7 +68,7 @@
                                                         {{ build.testruns[0].release.name }}.{{ build.testruns[0].build.name }}
                                                     </a>
                                                     <div flex></div>
-                                                    <md-icon md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {color: 'background'} : ''" ng-show="build.state === 'FINISHED'" class="material-icons">check_circle</md-icon>
+                                                    <md-icon md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {color: 'background'} : ''" ng-show="build.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateBuildStatus(build.groupSummary), '') }}">{{ statusToIcon(calculateBuildStatus(build.groupSummary)) }}</md-icon>
                                                     <i ng-if="build.state !== 'FINISHED'" class="pulse"></i>
                                                 </md-list-item>
                                             </md-list>
@@ -192,6 +192,7 @@
             <md-content style="overflow: auto">
                 <table slick-list-header model="testrunList" search="on" pagination="on" default-sort="dateCreated" default-page-size="50">
                     <tr slick-list-columns class="testruns-list-column-container">
+                        <th slick-list-column style="text-align: center">Status</th>
                         <th slick-list-column class="testrungroup-testruns-list-project-column" sort-property-name="project.name" sortable="true">Project</th>
                         <th slick-list-column class="testruns-list-name-column" sort-property-name="name" sortable="true">Name</th>
                         <th slick-list-column class="testruns-list-results-column" sortable="false">Results</th>
@@ -201,6 +202,7 @@
                     </tr>
                     <tbody ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''" style="width: 100%">
                     <tr class="testruns-list-column-container">
+                        <td style="text-align: center"><md-icon ng-show="testrun.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateBuildStatus(testrun.summary), '') }}">{{ statusToIcon(calculateBuildStatus(testrun.summary)) }}</md-icon><i ng-if="testrun.state !== 'FINISHED'" class="pulse"></i></td>
                         <td class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></td>
                         <td class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a></td>
                         <td class="testruns-list-results-column">

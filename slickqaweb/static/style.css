@@ -2398,9 +2398,9 @@ img {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #c0c0c0;
+  background: #55be9c;
   cursor: pointer;
-  box-shadow: 0 0 0 #c0c0c0;
+  box-shadow: 0 0 0 #55be9c;
   animation: pulse 2s infinite;
 }
 .pulse:hover {
@@ -2408,27 +2408,27 @@ img {
 }
 @-webkit-keyframes pulse {
   0% {
-    -webkit-box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.4);
+    -webkit-box-shadow: 0 0 0 0 rgba(85, 190, 156, 0.4);
   }
   70% {
-    -webkit-box-shadow: 0 0 0 10px rgba(192, 192, 192, 0);
+    -webkit-box-shadow: 0 0 0 10px rgba(85, 190, 156, 0);
   }
   100% {
-    -webkit-box-shadow: 0 0 0 0 rgba(192, 192, 192, 0);
+    -webkit-box-shadow: 0 0 0 0 rgba(85, 190, 156, 0);
   }
 }
 @keyframes pulse {
   0% {
-    -moz-box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.4);
-    box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.4);
+    -moz-box-shadow: 0 0 0 0 rgba(85, 190, 156, 0.4);
+    box-shadow: 0 0 0 0 rgba(85, 190, 156, 0.4);
   }
   70% {
-    -moz-box-shadow: 0 0 0 10px rgba(192, 192, 192, 0);
-    box-shadow: 0 0 0 10px rgba(192, 192, 192, 0);
+    -moz-box-shadow: 0 0 0 10px rgba(85, 190, 156, 0);
+    box-shadow: 0 0 0 10px rgba(85, 190, 156, 0);
   }
   100% {
-    -moz-box-shadow: 0 0 0 0 rgba(192, 192, 192, 0);
-    box-shadow: 0 0 0 0 rgba(192, 192, 192, 0);
+    -moz-box-shadow: 0 0 0 0 rgba(85, 190, 156, 0);
+    box-shadow: 0 0 0 0 rgba(85, 190, 156, 0);
   }
 }
 .faded {
@@ -2813,22 +2813,22 @@ md-toolbar.md-table-toolbar .md-toolbar-tools md-icon {
   background: linear-gradient(#AA0000, #660000);
 }
 .result-status-PASS {
-  color: #008000;
+  color: #00b352;
 }
 a.result-status-PASS,
 a.result-status-PASS:visited {
   cursor: pointer;
   text-decoration: none;
-  color: #008000;
+  color: #00b352;
 }
 .result-status-FAIL {
-  color: #ff0000;
+  color: #f96565;
 }
 a.result-status-FAIL,
 a.result-status-FAIL:visited {
   cursor: pointer;
   text-decoration: none;
-  color: #ff0000;
+  color: #f96565;
 }
 .result-status-NORESULT {
   color: #c0c0c0;
@@ -2843,20 +2843,20 @@ a.result-status-NORESULT:visited {
   color: unset;
 }
 .result-status-SKIPPED {
-  color: #bdb76b;
+  color: #A06744;
 }
 a.result-status-SKIPPED,
 a.result-status-SKIPPED:visited {
-  color: #bdb76b;
+  color: #A06744;
   text-decoration: none;
   cursor: pointer;
 }
 .result-status-PASSEDONRETRY {
-  color: #006000;
+  color: #247549;
 }
 a.result-status-PASSEDONRETRY,
 a.result-status-PASSEDONRETRY:visited {
-  color: #006000;
+  color: #247549;
   text-decoration: none;
   cursor: pointer;
 }
@@ -2867,20 +2867,20 @@ a.result-status-total:visited {
   color: unset;
 }
 .result-status-BROKENTEST {
-  color: #ffac00;
+  color: #ffd377;
 }
 a.result-status-BROKENTEST,
 a.result-status-BROKENTEST:visited {
   text-decoration: none;
-  color: #ffac00;
+  color: #ffd377;
 }
 .result-status-NOTTESTED {
-  color: #1e90ff;
+  color: #6EA9FF;
 }
 a.result-status-NOTTESTED,
 a.result-status-NOTTESTED:visited {
   text-decoration: none;
-  color: #1e90ff;
+  color: #6EA9FF;
 }
 .center-text {
   text-align: center;
@@ -4035,23 +4035,23 @@ div.multi-project-dashboard-statusbar {
   background-color: #c0c0c0;
 }
 .statusbar-PASS {
-  background-color: #008000;
+  background-color: #00b352;
 }
 .statusbar-PASSED_ON_RETRY {
-  background-color: #006000;
+  background-color: #247549;
 }
 .statusbar-BROKEN_TEST,
 .statusbar-BROKENTEST {
-  background-color: #ffac00;
+  background-color: #ffd377;
 }
 .statusbar-NOT_TESTED {
-  background-color: #1e90ff;
+  background-color: #6EA9FF;
 }
 .statusbar-SKIPPED {
-  background-color: #bdb76b;
+  background-color: #A06744;
 }
 .statusbar-FAIL {
-  background-color: #ff0000;
+  background-color: #f96565;
 }
 .testruns-list-column-container {
   min-height: .3in;
@@ -4552,7 +4552,7 @@ table {
   animation-name: fadeOut;
 }
 .result-note {
-  color: #ffac00;
+  color: #ffd377;
   margin-bottom: 5px;
 }
 .result-note .INFO {
@@ -4620,16 +4620,16 @@ table {
   color: #c0c0c0;
 }
 .testrun-stats-PASS {
-  color: #008000;
+  color: #00b352;
 }
 .testrun-stats-FAIL {
-  color: #ff0000;
+  color: #f96565;
 }
 .testrun-stats-SKIPPED {
-  color: #bdb76b;
+  color: #A06744;
 }
 .testrun-stats-PASSEDONRETRY {
-  color: #006000;
+  color: #247549;
 }
 /* Tooltip container */
 .tooltip {
@@ -4884,13 +4884,13 @@ table {
   color: #c0c0c0;
 }
 .testrungroup-stats-PASS {
-  color: #008000;
+  color: #00b352;
 }
 .testrungroup-stats-FAIL {
-  color: #ff0000;
+  color: #f96565;
 }
 .testrungroup-stats-SKIPPED {
-  color: #bdb76b;
+  color: #A06744;
 }
 .landing-recent-info {
   margin-top: .25in;

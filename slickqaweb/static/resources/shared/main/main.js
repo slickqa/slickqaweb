@@ -38,6 +38,9 @@ angular.module('slickApp')
         nav.setTitle("Slick");
 
         $scope.replaceOnStatus = replaceOnStatus;
+        $scope.statusToIcon = statusToIcon;
+        $scope.calculateBuildStatus = summaryToStatus;
+
         $scope.testrunTableOne = {};
         $scope.testrunTableTwo = {};
         $scope.testrunListOne = [];
