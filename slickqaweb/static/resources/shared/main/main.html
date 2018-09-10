@@ -249,22 +249,41 @@
                                         <md-content layout="row">
                                             <md-progress-linear ng-show="healthDataByProject[stat.title].Mf.length === 1"></md-progress-linear>
                                             <google-line-chart style="width: 100%" ng-show="healthDataByProject[stat.title].Mf.length > 1" class="testrungroup-serial-chart" data="healthDataByProject[stat.title]" options="healthReportOptionsByProject[stat.title]"></google-line-chart>
-                                            <md-input-container>
-                                                <label>Limit</label>
-                                                <md-select ng-model="buildsQuery.queryLimit">
-                                                    <md-option ng-repeat="limitItem in limits" ng-value="limitItem" ng-selected="limitItem === buildsQuery.queryLimit">{{ limitItem }}</md-option>
-                                                </md-select>
-                                            </md-input-container>
-                                            <md-input-container>
-                                                <label>Release</label>
-                                                <md-select ng-model="stat.activeRelease">
-                                                    <md-option ng-if="isObject(release)" ng-repeat="release in objToValues(stat)" ng-value="release.title" ng-selected="release.title === stat.activeRelease">{{ release.title }}</md-option>
-                                                </md-select>
-                                            </md-input-container>
+                                            <md-content layout="column">
+                                                <md-input-container>
+                                                    <label>Limit</label>
+                                                    <md-select ng-model="buildsQuery.queryLimit">
+                                                        <md-option ng-repeat="limitItem in limits" ng-value="limitItem" ng-selected="limitItem === buildsQuery.queryLimit">{{ limitItem }}</md-option>
+                                                    </md-select>
+                                                </md-input-container>
+                                                <md-input-container>
+                                                    <label>Release</label>
+                                                    <md-select ng-model="stat.activeRelease">
+                                                        <md-option ng-if="isObject(release)" ng-repeat="release in objToValues(stat)" ng-value="release.title" ng-selected="release.title === stat.activeRelease">{{ release.title }}</md-option>
+                                                    </md-select>
+                                                </md-input-container>
+                                                <md-card>
+                                                    <md-card-header>
+                                                    <md-card-header-text>
+                                                        <span class="md-title">Averages</span>
+                                                    </md-card-header-text>
+                                                </md-card-header>
+                                                <md-divider></md-divider>
+                                                <md-card-content align="center">
+                                                    <div layout="column">
+                                                        <div layout="row" style="align-items: center" ng-if="isObject(status)" ng-repeat="status in objToValues(stat[stat.activeRelease]['30']) | orderBy: '-count' track by $index">
+                                                            <span class="result-status-{{ replaceOnStatus(status._id.status, '') }}" style="font-size: 20px">{{ replaceOnStatus(status._id.status, ' ') }}</span>
+                                                            <div flex></div>
+                                                            <span style="margin-left: 10px">{{ ((status.count / stat[stat.activeRelease]['30'].total) * 100).toFixed(2) }}%</span>
+                                                        </div>
+                                                    </div>
+                                                </md-card-content>
+                                                </md-card>
+                                            </md-content>
                                         </md-content>
                                     </fieldset>
                                     <fieldset class="standard" ng-if="testcasesByProject[stat.title]">
-                                        <legend>Recently Automated tests</legend>
+                                        <legend>Recently Automated Tests</legend>
                                         <md-content layout="row">
                                             <md-card ng-repeat="(key, value) in testcasesByProject[stat.title]">
                                                 <md-card-header>
@@ -274,7 +293,7 @@
                                                 </md-card-header>
                                                 <md-divider></md-divider>
                                                 <md-card-content align="center">
-                                                    <span style="font-size: 20px">{{ value.count._id.count || "None" }}</span>
+                                                    <span style="font-size: 20px">{{ value.count.count || "None" }}</span>
                                                 </md-card-content>
                                             </md-card>
                                         </md-content>
