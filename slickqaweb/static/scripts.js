@@ -3101,21 +3101,6 @@ angular.module('slickApp')
         $scope.replaceOnStatus = replaceOnStatus;
         $scope.statusToIcon = statusToIcon;
 
-        $scope.show = {
-            'PASS': true,
-            'PASSED_ON_RETRY': true,
-            'FAIL': true,
-            'BROKEN_TEST': true,
-            'NOT_TESTED': true,
-            'SKIPPED': true,
-            undefined: true,
-                        };
-
-        $scope.toggleStatus = function(status) {
-            $scope.show[status] = !$scope.show[status];
-            $scope.getBuildReportData();
-        };
-
         $scope.query = {
             order: 'dateCreated',
             limit: 25,
