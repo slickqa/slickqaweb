@@ -125,18 +125,32 @@ function statusToIcon(status) {
     }
 }
 
+function isObject(object) {
+    return typeof object === 'object';
+}
+
+function objectToValues(object) {
+    if (object) {
+        return Object.values(object);
+    } else {
+        return []
+    }
+}
+
 function summaryToStatus(summary) {
-    if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED === summary.total) {
-        return 'PASS';
-    } else if (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED === summary.total) {
-        return 'PASSED_ON_RETRY';
-    } else if (summary.resultsByStatus.FAIL) {
-        return 'FAIL';
-    } else if (summary.resultsByStatus.BROKEN_TEST) {
-        return 'BROKEN_TEST';
-    } else if (summary.resultsByStatus.NOT_TESTED && !summary.resultsByStatus.SKIPPED) {
-        return 'NOT_TESTED';
-    } else if (summary.resultsByStatus.SKIPPED) {
-        return 'SKIPPED';
+    if (summary) {
+        if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED === summary.total) {
+            return 'PASS';
+        } else if (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED === summary.total) {
+            return 'PASSED_ON_RETRY';
+        } else if (summary.resultsByStatus.FAIL) {
+            return 'FAIL';
+        } else if (summary.resultsByStatus.BROKEN_TEST) {
+            return 'BROKEN_TEST';
+        } else if (summary.resultsByStatus.NOT_TESTED && !summary.resultsByStatus.SKIPPED) {
+            return 'NOT_TESTED';
+        } else if (summary.resultsByStatus.SKIPPED) {
+            return 'SKIPPED';
+        }
     }
 }

@@ -176,7 +176,6 @@ angular.module('slickApp')
         };
 
         $scope.statusToIcon = statusToIcon;
-        $scope.calculateTestrunStatus = summaryToStatus;
 
         $scope.testrun = {};
         $scope.results = [];

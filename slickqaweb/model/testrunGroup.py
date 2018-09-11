@@ -4,6 +4,20 @@ from .testrunSummary import TestrunSummary, ResultsByStatus
 from .serialize import serializable
 import bson
 
+def summary_to_status(summary):
+    if summary:
+        if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED) == summary.total:
+            return 'PASS'
+        elif (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED) == summary.total:
+            return 'PASSED_ON_RETRY'
+        elif summary.resultsByStatus.FAIL:
+            return 'FAIL'
+        elif summary.resultsByStatus.BROKEN_TEST:
+            return 'BROKEN_TEST'
+        elif summary.resultsByStatus.NOT_TESTED and not summary.resultsByStatus.SKIPPED:
+            return 'NOT_TESTED'
+        elif summary.resultsByStatus.SKIPPED:
+            return 'SKIPPED'
 
 class TestrunGroup(Document):
     name = StringField()
@@ -47,5 +61,6 @@ class TestrunGroup(Document):
             if not isinstance(run, bson.DBRef):
                 for status in run.summary.statusListOrdered():
                     setattr(retval.resultsByStatus, status, getattr(retval.resultsByStatus, status) + getattr(run.summary.resultsByStatus, status))
+        retval.status = summary_to_status(retval)
         return retval
 

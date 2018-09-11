@@ -125,19 +125,33 @@ function statusToIcon(status) {
     }
 }
 
+function isObject(object) {
+    return typeof object === 'object';
+}
+
+function objectToValues(object) {
+    if (object) {
+        return Object.values(object);
+    } else {
+        return []
+    }
+}
+
 function summaryToStatus(summary) {
-    if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED === summary.total) {
-        return 'PASS';
-    } else if (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED === summary.total) {
-        return 'PASSED_ON_RETRY';
-    } else if (summary.resultsByStatus.FAIL) {
-        return 'FAIL';
-    } else if (summary.resultsByStatus.BROKEN_TEST) {
-        return 'BROKEN_TEST';
-    } else if (summary.resultsByStatus.NOT_TESTED && !summary.resultsByStatus.SKIPPED) {
-        return 'NOT_TESTED';
-    } else if (summary.resultsByStatus.SKIPPED) {
-        return 'SKIPPED';
+    if (summary) {
+        if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED === summary.total) {
+            return 'PASS';
+        } else if (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED === summary.total) {
+            return 'PASSED_ON_RETRY';
+        } else if (summary.resultsByStatus.FAIL) {
+            return 'FAIL';
+        } else if (summary.resultsByStatus.BROKEN_TEST) {
+            return 'BROKEN_TEST';
+        } else if (summary.resultsByStatus.NOT_TESTED && !summary.resultsByStatus.SKIPPED) {
+            return 'NOT_TESTED';
+        } else if (summary.resultsByStatus.SKIPPED) {
+            return 'SKIPPED';
+        }
     }
 }
 'use strict';
@@ -736,62 +750,28 @@ angular.module('slickApp')
         }
 
         nav.setTitle("Slick");
+        $scope.currentTimeMillis = new Date().getTime();
 
         $scope.replaceOnStatus = replaceOnStatus;
         $scope.statusToIcon = statusToIcon;
-        $scope.calculateBuildStatus = summaryToStatus;
-
-        $scope.testrunTableOne = {};
-        $scope.testrunTableTwo = {};
-        $scope.testrunListOne = [];
-        $scope.testrunListTwo = [];
-
         $scope.getDurationString = getDurationString;
-
-        $scope.isObject = function(obj) {
-            return typeof obj === 'object'
-        };
-
-        $scope.objToValues = function (obj) {
-            if (obj) {
-                return Object.values(obj);
-            } else {
-                return []
-            }
-        };
-        $scope.testrungroupTableOne = {};
-        $scope.testrungroupTableTwo = {};
-        $scope.testrungroupListOne = [];
-        $scope.testrungroupListTwo = [];
-
-        $scope.buildTableOne = {};
-        $scope.buildTableTwo = {};
-        $scope.buildListOne = [];
-        $scope.buildListTwo = [];
+        $scope.isObject = isObject;
+        $scope.objToValues = objectToValues;
+        
+        const allProjects = 'All';
+        
         $scope.project = $cookies.get("projectFilter");
-        $scope.limits = [25, 50, 100, 200];
         if ($routeParams["project"]) {
             $scope.project = $routeParams["project"];
         }
 
-        var stop;
-        var builds;
-        var check;
+        if (!$scope.project) {
+            $scope.project = allProjects;
+        }
 
-        // $scope.testrunChartOptions = {
-        //             chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-        //             backgroundColor: "#000000",
-        //             legend: {
-        //                 textStyle: {
-        //                     color: "#ffffff"
-        //                 }
-        //             },
-        //             colors: []
-        //         };
-
+        const buildsTabName = 'Builds';
+        $scope.buildList = [];
         $scope.buildsQuery = $cookies.getObject("buildsQuery");
-        $scope.testrunsQuery = $cookies.getObject("testrunsQuery");
-        $scope.testrunGroupsQuery = $cookies.getObject("testrunGroupsQuery");
         if (!$scope.buildsQuery) {
             $scope.buildsQuery = {
                 index: 0,
@@ -801,6 +781,13 @@ angular.module('slickApp')
                 page: 1
             };
         }
+        $scope.setBuildsSort = function (order) {
+            $scope.buildsQuery.order = order;
+        };
+
+        const testrunsTabName = 'Testruns';
+        $scope.testrunListOne = [];
+        $scope.testrunsQuery = $cookies.getObject("testrunsQuery");
         if (!$scope.testrunsQuery) {
             $scope.testrunsQuery = {
                 index: 1,
@@ -810,7 +797,13 @@ angular.module('slickApp')
                 page: 1
             };
         }
+        $scope.setTestrunsSort = function (order) {
+            $scope.testrunsQuery.order = order;
+        };
 
+        const testrungroupsTabName = 'TestrunGroups';
+        $scope.testrungroupList = [];
+        $scope.testrunGroupsQuery = $cookies.getObject("testrunGroupsQuery");
         if (!$scope.testrunGroupsQuery) {
             $scope.testrunGroupsQuery = {
                 index: 2,
@@ -820,40 +813,38 @@ angular.module('slickApp')
                 page: 1
             };
         }
+        $scope.setTestrunGroupsSort = function (order) {
+            $scope.testrunGroupsQuery.order = order;
+        };
+
+        $scope.limits = [25, 50, 100, 200];
+        
+        const statisticsTabName = 'Statistics';
 
         $scope.tabNameToIndex = function (tabName) {
             switch (tabName) {
-                case 'Builds':
+                case buildsTabName:
                     return 0;
-                case 'Testruns':
+                case testrunsTabName:
                     return 1;
-                case 'TestrunGroups':
+                case testrungroupsTabName:
                     return 2;
-                case 'Statistics':
+                case statisticsTabName:
                     return 3;
                 default:
                     return parseInt(tabName);
             }
         };
 
-        $scope.statTabNameToIndex = function (statTabName) {
-            if ($scope.statsForProjects) {
-                let index = $scope.statsForProjects.findIndex(function (stat) {
-                    return stat.title === statTabName || 0;
-                });
-                if (index !== -1) {
-                    return index;
-                } else {
-                    return 0;
-                }
-            }
+        $scope.isTabSelected = function (index) {
+            return index === $scope.selectedIndex;
         };
 
         $scope.selectedIndex = $scope.tabNameToIndex($location.search().mainTab) || $scope.tabNameToIndex($cookies.get("selectedIndex")) || 0;
 
         $scope.onTabSelected = function (index) {
             switch (index) {
-                case 'Builds':
+                case buildsTabName:
                     $scope.fetchBuildsData();
                     break;
             }
@@ -863,37 +854,36 @@ angular.module('slickApp')
             $scope.fetchData();
         };
 
-        $scope.isTabSelected = function (index) {
-            return index === $scope.selectedIndex;
-        };
+        let stop;
+        let builds;
+        let check;
 
-        $scope.onStatTabSelected = function (index) {
+        // $scope.statTabNameToIndex = function (statTabName) {
+        //     if ($scope.statsForProjects) {
+        //         let index = $scope.statsForProjects.findIndex(function (stat) {
+        //             return stat.title === statTabName || 0;
+        //         });
+        //         if (index !== -1) {
+        //             return index;
+        //         } else {
+        //             return 0;
+        //         }
+        //     }
+        // };
+
+        // $scope.onStatTabSelected = function (index) {
             // $cookies.put("selectedStatIndex", index);
             // $location.search("statsTab", index);
             // $scope.selectedStatIndex = $scope.statTabNameToIndex(index);
-        };
+        // };
 
-        $scope.isStatTabSelected = function (index) {
-            return index === $scope.selectedStatIndex;
-        };
-
-        $scope.setBuildsSort = function (order) {
-            $scope.buildsQuery.order = order;
-        };
-
-        $scope.setTestrunsSort = function (order) {
-            $scope.testrunsQuery.order = order;
-        };
-
-        $scope.setTestrunGroupsSort = function (order) {
-            $scope.testrunGroupsQuery.order = order;
-        };
+        // $scope.isStatTabSelected = function (index) {
+        //     return index === $scope.selectedStatIndex;
+        // };
 
         $scope.statsForProjects = [];
-
-        $scope.currentTimeMillis = new Date().getTime();
-        let statsByProject = {};
         $scope.testcasesByProject = {};
+        let statsByProject = {};
         $scope.getStatsForProjects = function () {
             return rest.one('results').one('queue', 'running').get({byProject: "true"}).then(function (resultsByProject) {
                 _.each(resultsByProject, function (project) {
@@ -950,7 +940,7 @@ angular.module('slickApp')
                     });
                     statsForProjectsList.push(stat)
                 });
-                $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
+                // $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
                 return _.sortBy(statsForProjectsList, 'title');
             });
         };
@@ -968,31 +958,32 @@ angular.module('slickApp')
         };
 
         $scope.checkForStatsForProject();
+        
         let firstFetch = true;
         $scope.fetchData = function () {
-            if ($scope.selectedIndex === $scope.tabNameToIndex('Statistics') || firstFetch) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex(statisticsTabName) || firstFetch) {
                 $scope.getStatsForProjects().then(function (response) {
                     $scope.statsForProjects = response;
-                    $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
+                    // $scope.selectedStatIndex = $scope.statTabNameToIndex($location.search().statsTab) || $scope.statTabNameToIndex($cookies.get("selectedStatIndex")) || 0;
                 });
             }
             $scope.currentTimeMillis = new Date().getTime();
             var testrunsQuery = {orderby: '-dateCreated', limit: $scope.testrunsQuery.queryLimit};
-            if ($scope.project) {
+            if ($scope.project && $scope.project !== allProjects) {
                 testrunsQuery["project.name"] = $scope.project;
                 $cookies.put("projectFilter", $scope.project)
             }
             $cookies.putObject("buildsQuery", $scope.buildsQuery);
             $cookies.putObject("testrunsQuery", $scope.testrunsQuery);
             $cookies.putObject("testrunGroupsQuery", $scope.testrunGroupsQuery);
-            if ($scope.selectedIndex === $scope.tabNameToIndex('Testruns') || firstFetch) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex(testrunsTabName) || firstFetch) {
                 rest.all('testruns').getList(testrunsQuery).then(function (testruns) {
                     $scope.testrunListOne = testruns
                 });
             }
-            if ($scope.selectedIndex === $scope.tabNameToIndex('TestrunGroups') || firstFetch) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex(testrungroupsTabName) || firstFetch) {
                 rest.all('testrungroups').getList({orderby: '-created', limit: $scope.testrunGroupsQuery.queryLimit}).then(function (testrungroups) {
-                    $scope.testrungroupListOne = testrungroups
+                    $scope.testrungroupList = testrungroups
                 });
             }
             firstFetch = false;
@@ -1001,7 +992,7 @@ angular.module('slickApp')
         let firstBuildsFetch = true;
         $scope.fetchBuildsData = function () {
             // recent builds are a little tricky
-            var buildList = [];
+            let buildList = [];
 
             function processBuildList(buildList) {
                 buildList = _.sortBy(buildList, function (build) {
@@ -1021,17 +1012,17 @@ angular.module('slickApp')
                     }))
                 });
                 Promise.all(promises).then(function () {
-                    $scope.buildListOne = tempBuildList;
+                    $scope.buildList = tempBuildList;
                     builds = $timeout($scope.fetchBuildsData, 3000)
                 });
                 firstBuildsFetch = false;
             }
 
-            if (!$scope.projects || $scope.project === 'All') {
+            if (!$scope.projects || $scope.project === allProjects) {
                 rest.all('projects').getList({dashboard: true, limit: $scope.buildsQuery.limit, orderby: '-releases.builds.built'}).then(function (projects) {
                     $scope.projects = projects;
-                    if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || firstBuildsFetch) {
-                        if (!$scope.project || $scope.project === 'All') {
+                    if ($scope.selectedIndex === $scope.tabNameToIndex(buildsTabName) || firstBuildsFetch) {
+                        if (!$scope.project || $scope.project === allProjects) {
                             _.each(projects, function (project) {
                                 _.each(project.releases, function (release) {
                                     _.each(release.builds, function (build) {
@@ -1055,7 +1046,7 @@ angular.module('slickApp')
                     }
                 });
             } else if ($scope.project) {
-                if ($scope.selectedIndex === $scope.tabNameToIndex('Builds') || firstBuildsFetch) {
+                if ($scope.selectedIndex === $scope.tabNameToIndex(buildsTabName) || firstBuildsFetch) {
                     rest.one('projects', $scope.project).get().then(function (project) {
                         _.each(project.releases, function (release) {
                             _.each(release.builds, function (build) {
@@ -1124,7 +1115,7 @@ angular.module('slickApp')
                     });
                     if (!healthIntervals[project]) {
                         healthIntervals[project] = $interval(function () {
-                            if ($scope.selectedIndex === $scope.tabNameToIndex('Statistics')) {
+                            if ($scope.selectedIndex === $scope.tabNameToIndex(statisticsTabName)) {
                                 $scope.getHealthData(project, $scope.statsForProjects[$scope.statsForProjects.findIndex(function (stat) {
                                     return stat.title === project || 0;
                                 })].activeRelease);
@@ -1950,7 +1941,6 @@ angular.module('slickApp')
         };
 
         $scope.statusToIcon = statusToIcon;
-        $scope.calculateTestrunStatus = summaryToStatus;
 
         $scope.testrun = {};
         $scope.results = [];
@@ -2634,6 +2624,43 @@ angular.module('slickApp')
                 });
             }
         };
+    })
+    .directive('googleAreaChart', function () {
+        return {
+            restrict: 'E',
+            transclude: false,
+            template: '<div class="google-area-chart"></div>',
+            replace: true,
+            scope: {
+                data: "=",
+                options: "="
+            },
+            link: function postLink(scope, element, attrs) {
+                var chart = new google.visualization.AreaChart(element[0]);
+
+                function goToBuildReport() {
+                    var selectedItem = chart.getSelection()[0];
+                    if (selectedItem) {
+                        var properties = scope.data.getRowProperties(selectedItem.row);
+                        if (properties.project) {
+                            window.location.href = ['build-report', properties.project, properties.release, properties.build].join('/')
+                        } else if (properties.testrun) {
+                            window.location.href = ['testruns', properties.testrun].join('/')
+                        }
+                    }
+                }
+
+                google.visualization.events.addListener(chart, 'select', goToBuildReport);
+                chart.draw(scope.data, scope.options);
+
+                scope.$watch('data', function (newValue, oldValue) {
+                    chart.draw(scope.data, scope.options);
+                });
+                scope.$watch('options', function (newValue, oldValue) {
+                    chart.draw(scope.data, scope.options);
+                });
+            }
+        }
     });
 /**
  * User: jcorbett
@@ -3072,8 +3099,22 @@ angular.module('slickApp')
         }
 
         $scope.replaceOnStatus = replaceOnStatus;
-        $scope.calculateBuildStatus = summaryToStatus;
         $scope.statusToIcon = statusToIcon;
+
+        $scope.show = {
+            'PASS': true,
+            'PASSED_ON_RETRY': true,
+            'FAIL': true,
+            'BROKEN_TEST': true,
+            'NOT_TESTED': true,
+            'SKIPPED': true,
+            undefined: true,
+                        };
+
+        $scope.toggleStatus = function(status) {
+            $scope.show[status] = !$scope.show[status];
+            $scope.getBuildReportData();
+        };
 
         $scope.query = {
             order: 'dateCreated',

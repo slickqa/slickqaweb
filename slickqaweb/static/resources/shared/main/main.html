@@ -29,8 +29,8 @@
                             </md-input-container>
                         </div>
                     </md-toolbar>
-                    <md-progress-linear ng-show="buildListOne.length === 0"></md-progress-linear>
-                    <md-content ng-show="buildListOne.length !== 0">
+                    <md-progress-linear ng-show="buildList.length === 0"></md-progress-linear>
+                    <md-content ng-show="buildList.length !== 0">
                         <md-table-container>
                             <table md-table>
                                 <thead md-head md-order="buildsQuery.order" md-on-reorder="setBuildsSort">
@@ -45,10 +45,10 @@
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildListOne | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit track by $index" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildList | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit track by $index" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
-                                        <md-icon ng-show="build.report.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateBuildStatus(build.report.groupSummary), '') }}">{{ statusToIcon(calculateBuildStatus(build.report.groupSummary)) }}</md-icon>
-                                        <i ng-show="build.report.state !== 'FINISHED'" class="pulse"></i>
+                                        <md-icon ng-show="build.report.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(build.report.groupSummary.status, '') }}" title="{{ replaceOnStatus(build.report.groupSummary.status, ' ') }}">{{ statusToIcon(build.report.groupSummary.status) }}</md-icon>
+                                        <i ng-show="build.report.state !== 'FINISHED'" class="pulse" title="RUNNING"></i>
                                     </td>
                                     <td md-cell>
                                         <a href="projects/{{ build.project.name }}" ng-bind="build.project.name"></a>
@@ -121,8 +121,8 @@
                                 <tbody md-body>
                                 <tr md-row md-select="testrun" md-select-id="name" md-auto-select ng-repeat="testrun in testrunListOne | filter: filter.search | orderBy: testrunsQuery.order | limitTo: testrunsQuery.limit : (testrunsQuery.page -1) * testrunsQuery.limit track by testrun.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
-                                        <md-icon ng-show="testrun.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateBuildStatus(testrun.summary), '') }}">{{ statusToIcon(calculateBuildStatus(testrun.summary)) }}</md-icon>
-                                        <i ng-show="testrun.state !== 'FINISHED'" class="pulse"></i>
+                                        <md-icon ng-show="testrun.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(testrun.summary.status, '') }}" title="{{ replaceOnStatus(testrun.summary.status, ' ') }}">{{ statusToIcon(testrun.summary.status) }}</md-icon>
+                                        <i ng-show="testrun.state !== 'FINISHED'" class="pulse" title="RUNNING"></i>
                                     </td>
                                     <td md-cell>
                                         <a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a>
@@ -179,8 +179,8 @@
                             </md-input-container>
                         </div>
                     </md-toolbar>
-                    <md-progress-linear ng-show="testrungroupListOne.length === 0"></md-progress-linear>
-                    <md-content ng-show="testrungroupListOne.length !== 0">
+                    <md-progress-linear ng-show="testrungroupList.length === 0"></md-progress-linear>
+                    <md-content ng-show="testrungroupList.length !== 0">
                         <md-table-container>
                             <table md-table ng-model="selected" md-progress="promise">
                                 <thead md-head md-order="testrunGroupsQuery.order" md-on-reorder="setTestrunGroupsSort">
@@ -194,10 +194,10 @@
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="testrungroup" md-select-id="name" md-auto-select ng-repeat="testrungroup in testrungroupListOne | filter: filter.search | orderBy: testrunGroupsQuery.order | limitTo: testrunGroupsQuery.limit : (testrunGroupsQuery.page -1) * testrunGroupsQuery.limit track by testrungroup.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="testrungroup" md-select-id="name" md-auto-select ng-repeat="testrungroup in testrungroupList | filter: filter.search | orderBy: testrunGroupsQuery.order | limitTo: testrunGroupsQuery.limit : (testrunGroupsQuery.page -1) * testrunGroupsQuery.limit track by testrungroup.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
-                                        <md-icon ng-show="testrungroup.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateBuildStatus(testrungroup.groupSummary), '') }}">{{ statusToIcon(calculateBuildStatus(testrungroup.groupSummary)) }}</md-icon>
-                                        <i ng-show="testrungroup.state !== 'FINISHED'" class="pulse"></i>
+                                        <md-icon ng-show="testrungroup.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(testrungroup.groupSummary.status, '') }}" title="{{ replaceOnStatus(testrungroup.groupSummary.status, ' ') }}">{{ statusToIcon(testrungroup.groupSummary.status) }}</md-icon>
+                                        <i ng-show="testrungroup.state !== 'FINISHED'" class="pulse" title="RUNNING"></i>
                                     </td>
                                     <td md-cell>
                                         <a href="testrungroup/{{ testrungroup.id }}" ng-bind="testrungroup.name"></a>
@@ -248,7 +248,7 @@
                                         <legend>{{ stat.title }} {{ stat.activeRelease }}</legend>
                                         <md-content layout="row">
                                             <md-progress-linear ng-show="healthDataByProject[stat.title].Mf.length === 1"></md-progress-linear>
-                                            <google-line-chart style="width: 100%" ng-show="healthDataByProject[stat.title].Mf.length > 1" class="testrungroup-serial-chart" data="healthDataByProject[stat.title]" options="healthReportOptionsByProject[stat.title]"></google-line-chart>
+                                            <google-area-chart style="width: 100%" ng-show="healthDataByProject[stat.title].Mf.length > 1" class="testrungroup-serial-chart" data="healthDataByProject[stat.title]" options="healthReportOptionsByProject[stat.title]"></google-area-chart>
                                             <md-content layout="column">
                                                 <md-input-container>
                                                     <label>Limit</label>

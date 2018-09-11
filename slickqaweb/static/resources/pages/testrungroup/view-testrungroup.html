@@ -68,8 +68,8 @@
                                                         {{ build.testruns[0].release.name }}.{{ build.testruns[0].build.name }}
                                                     </a>
                                                     <div flex></div>
-                                                    <md-icon md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {color: 'background'} : ''" ng-show="build.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateBuildStatus(build.groupSummary), '') }}">{{ statusToIcon(calculateBuildStatus(build.groupSummary)) }}</md-icon>
-                                                    <i ng-if="build.state !== 'FINISHED'" class="pulse"></i>
+                                                    <md-icon md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {color: 'background'} : ''" ng-show="build.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(build.groupSummary.status, '') }}" title="{{ replaceOnStatus(build.groupSummary.status, ' ') }}">{{ statusToIcon(build.groupSummary.status) }}</md-icon>
+                                                    <i ng-if="build.state !== 'FINISHED'" class="pulse" title="RUNNING"></i>
                                                 </md-list-item>
                                             </md-list>
                                         </md-card-content>
@@ -110,7 +110,7 @@
                                                                     <div class="cancel-button" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled && status === 'NO_RESULT'" ng-click="cancelResultsForBuild()"></div>
                                                                     <div class="cancel-button-empty" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled && status !== 'NO_RESULT' && testrungroup.groupSummary.statusListOrdered.includes('NO_RESULT')"></div>
                                                                     <div class="reschedule-button" ng-show="testrungroup.testruns[0].attributes && testrungroup.testruns[0].attributes.scheduled" ng-click="rescheduleStatusForBuild(status)"></div>
-                                                                    <div class="testrun-summary-data-status clickable-text" ng-bind="replaceOnStatus(status, ' ')"></div>
+                                                                    <a class="testrun-summary-data-status clickable-text" ng-bind="replaceOnStatus(status, ' ')" href="result-list/{{ testrungroup.testruns[0].project.name }}/{{ testrungroup.testruns[0].release.name }}/{{ testrungroup.testruns[0].build.name }}?status={{ status }}"></a>
                                                                     <div flex></div>
                                                                     <div class="testrun-summary-data-number" ng-bind="testrungroup.groupSummary.resultsByStatus[status]"></div>
                                                                     <div class="testrun-summary-data-percent" ng-bind="'' + (((testrungroup.groupSummary.resultsByStatus[status] * 1.0)/testrungroup.groupSummary.total) * 100).toFixed(1) + '%'"></div>
@@ -164,7 +164,7 @@
                                     </md-tab>
                                     <md-tab label="Release Report" ng-show="releaseData.Mf.length > 1">
                                         <md-progress-linear ng-show="releaseData.Mf.length === 1"></md-progress-linear>
-                                        <google-line-chart ng-show="releaseData.Mf.length > 1" class="testrungroup-serial-chart" data="releaseData" options="releaseReportOptions"></google-line-chart>
+                                        <google-area-chart ng-show="releaseData.Mf.length > 1" class="testrungroup-serial-chart" data="releaseData" options="releaseReportOptions"></google-area-chart>
                                     </md-tab>
                                 </md-tabs>
                             </div>
@@ -173,7 +173,7 @@
                 </md-tab>
             </md-tabs>
         </md-content>
-        <google-line-chart class="testrungroup-serial-chart" data="serialData" options="serialChartOptions" ng-switch-when="SERIAL"></google-line-chart>
+        <google-area-chart class="testrungroup-serial-chart" data="serialData" options="serialChartOptions" ng-switch-when="SERIAL"></google-area-chart>
         <md-toolbar layout="row" class="md-accent">
             <md-toolbar-filler layout layout-align="center center">
                 <md-icon class="material-icons" style="margin-right: 20px">assessment</md-icon>
@@ -202,7 +202,7 @@
                     </tr>
                     <tbody ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''" style="width: 100%">
                     <tr class="testruns-list-column-container">
-                        <td style="text-align: center"><md-icon ng-show="testrun.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateBuildStatus(testrun.summary), '') }}">{{ statusToIcon(calculateBuildStatus(testrun.summary)) }}</md-icon><i ng-if="testrun.state !== 'FINISHED'" class="pulse"></i></td>
+                        <td style="text-align: center"><md-icon ng-show="testrun.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(testrun.summary.status, '') }}" title="{{ replaceOnStatus(testrun.summary.status, ' ') }}">{{ statusToIcon(testrun.summary.status) }}</md-icon><i ng-if="testrun.state !== 'FINISHED'" class="pulse"></i></td>
                         <td class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></td>
                         <td class="testruns-list-name-column"><a href="testruns/{{ testrun.id }}" ng-bind="testrun.name"></a></td>
                         <td class="testruns-list-results-column">

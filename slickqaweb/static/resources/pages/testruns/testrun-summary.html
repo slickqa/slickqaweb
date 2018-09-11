@@ -157,7 +157,7 @@
                                             {{ testrunHistoryItem.release.name }}.{{ testrunHistoryItem.build.name }}
                                         </a>
                                         <div flex></div>
-                                        <md-icon md-colors="testrunHistoryItem.id === testrun.id ? {color: 'background'} : ''" ng-show="testrunHistoryItem.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(calculateTestrunStatus(testrunHistoryItem.summary), '') }}">{{ statusToIcon(calculateTestrunStatus(testrunHistoryItem.summary)) }}</md-icon><i ng-if="testrunHistoryItem.state !== 'FINISHED' || calculateTestrunStatus(testrunHistoryItem.summary) === undefined" class="pulse"></i>
+                                        <md-icon md-colors="testrunHistoryItem.id === testrun.id ? {color: 'background'} : ''" ng-show="testrunHistoryItem.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(testrunHistoryItem.summary.status, '') }}" title="{{ replaceOnStatus(testrunHistoryItem.summary.status, ' ') }}">{{ statusToIcon(testrunHistoryItem.summary.status) }}</md-icon><i ng-if="testrunHistoryItem.state !== 'FINISHED' || testrunHistoryItem.summary.status === undefined" class="pulse"></i>
                                     </md-list-item>
                                 </md-list>
                             </md-card-content>
@@ -295,7 +295,7 @@
                     <md-tab label="TPS Report">
                         <md-tab-body>
                             <md-progress-linear ng-show="tpsData.Mf.length === 1"></md-progress-linear>
-                            <google-line-chart ng-show="tpsData.Mf.length > 1" class="testrungroup-serial-chart" data="tpsData" options="tpsReportOptions"></google-line-chart>
+                            <google-area-chart ng-show="tpsData.Mf.length > 1" class="testrungroup-serial-chart" data="tpsData" options="tpsReportOptions"></google-area-chart>
                         </md-tab-body>
                     </md-tab>
                 </md-tabs>
@@ -433,7 +433,7 @@
                     </fieldset>
                     <fieldset style="margin-bottom: 5px" class="standard" ng-show="resultGraphs[result.id]">
                         <legend>Graph</legend>
-                        <google-line-chart class="testrungroup-serial-chart" data="resultGraphs[result.id].data" options="resultGraphs[result.id].options"></google-line-chart>
+                        <google-area-chart class="testrungroup-serial-chart" data="resultGraphs[result.id].data" options="resultGraphs[result.id].options"></google-area-chart>
                     </fieldset>
                     <fieldset style="margin-bottom: 5px" class="standard">
                         <legend>Testcase</legend>
