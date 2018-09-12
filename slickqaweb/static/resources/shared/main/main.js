@@ -271,6 +271,9 @@ angular.module('slickApp')
                 });
             }
             firstFetch = false;
+            if (!stop) {
+                stop = $interval($scope.fetchData, 3000)
+            }
         };
 
         let firstBuildsFetch = true;
@@ -440,6 +443,5 @@ angular.module('slickApp')
 
         $scope.fetchData();
         $scope.fetchBuildsData();
-        stop = $interval($scope.fetchData, 3000);
         window.scope = $scope;
     }]);
