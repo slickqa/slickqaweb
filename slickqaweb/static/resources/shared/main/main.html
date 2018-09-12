@@ -258,7 +258,7 @@
                                                 <md-input-container>
                                                     <label>Release</label>
                                                     <md-select ng-model="stat.activeRelease">
-                                                        <md-option ng-if="isObject(release)" ng-repeat="release in objToValues(stat)" ng-value="release.title" ng-selected="release.title === stat.activeRelease">{{ release.title }}</md-option>
+                                                        <md-option ng-if="isObject(release)" ng-repeat="release in objToValues(stat)" ng-value="release.title" ng-selected="release.title === stat.activeRelease" ng-click="stat.activeRelease = release.title; getHealthData(stat.title, stat.activeRelease)">{{ release.title }}</md-option>
                                                     </md-select>
                                                 </md-input-container>
                                                 <md-card>
