@@ -239,16 +239,15 @@
                     <md-progress-linear ng-show="statsForProjects.length === 0"></md-progress-linear>
                     <md-tab-body ng-show="statsForProjects.length !== 0">
                         <md-tabs>
-                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'title' track by $index">
+                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'title' track by $index" md-on-select="getHealthData(stat.title, stat.activeRelease)">
                                 <md-tab-label>
                                     <span>{{ stat.title }}</span>
                                 </md-tab-label>
                                 <md-tab-body>
-                                    <fieldset class="standard" ng-show="healthDataByProject[stat.title].Mf.length > 1">
+                                    <fieldset class="standard">
                                         <legend>{{ stat.title }} {{ stat.activeRelease }}</legend>
                                         <md-content layout="row">
-                                            <md-progress-linear ng-show="healthDataByProject[stat.title].Mf.length === 1"></md-progress-linear>
-                                            <google-area-chart style="width: 100%" ng-show="healthDataByProject[stat.title].Mf.length > 1" class="testrungroup-serial-chart" data="healthDataByProject[stat.title]" options="healthReportOptionsByProject[stat.title]"></google-area-chart>
+                                            <google-area-chart style="width: 100%" class="testrungroup-serial-chart" data="healthDataByProject[stat.title]" options="healthReportOptionsByProject[stat.title]"></google-area-chart>
                                             <md-content layout="column">
                                                 <md-input-container>
                                                     <label>Limit</label>

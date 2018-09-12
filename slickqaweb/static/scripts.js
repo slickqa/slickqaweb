@@ -949,9 +949,7 @@ angular.module('slickApp')
             if ($scope.statsForProjects && $scope.statsForProjects.length !== 0) {
                 $interval.cancel(check);
                 check = undefined;
-                _.each($scope.statsForProjects, function (stat) {
-                    $scope.getHealthData(stat.title, stat.activeRelease);
-                })
+                $scope.getHealthData($scope.statsForProjects[0].title, $scope.statsForProjects[0].activeRelease);
             } else if (!check) {
                 check = $interval($scope.checkForStatsForProject, 500)
             }
@@ -1086,6 +1084,7 @@ angular.module('slickApp')
                             color: "#ffffff"
                         }
                     },
+                    width: '100%',
                     colors: []
                 };
                 if (releaseReport.hasOwnProperty('name')) {
@@ -2649,6 +2648,10 @@ angular.module('slickApp')
                         }
                     }
                 }
+
+                google.visualization.events.addListener(chart, 'error', function (googleError) {
+                    google.visualization.errors.removeError(googleError.id);
+                });
 
                 google.visualization.events.addListener(chart, 'select', goToBuildReport);
                 chart.draw(scope.data, scope.options);

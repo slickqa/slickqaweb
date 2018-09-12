@@ -144,6 +144,10 @@ angular.module('slickApp')
                     }
                 }
 
+                google.visualization.events.addListener(chart, 'error', function (googleError) {
+                    google.visualization.errors.removeError(googleError.id);
+                });
+
                 google.visualization.events.addListener(chart, 'select', goToBuildReport);
                 chart.draw(scope.data, scope.options);
 
