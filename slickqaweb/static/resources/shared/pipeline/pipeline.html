@@ -1,0 +1,37 @@
+<div style="width:100%; position: relative">
+    <div layout="row" style="width: 100%">
+        <md-button class="md-fab md-mini" style="margin: unset;">
+            <md-icon class="material-icons">play_circle_filled</md-icon>
+            <md-tooltip>Start</md-tooltip>
+        </md-button>
+        <div flex ng-repeat="phase in phases track by $index" style="text-align: end; position: relative;">
+            <span ng-if="phase.duration" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: absolute; width: 100%; text-align: center; left: -20px; font-size: .8em;"> {{ getDurationString(phase.duration, true) }} </span>
+            <div ng-if="phase.status !== 'NO_RESULT'" class="line" style="background: {{ statusToColor(phase.status) }}"></div>
+            <div ng-if="phase.state !== 'RUNNING' && phase.status === 'NO_RESULT'" class="dotted-line" style="color: {{ statusToColor(phase.status) }}"></div>
+            <div ng-if="phase.state === 'RUNNING' && phase.status === 'NO_RESULT'" class="loader"></div>
+            <md-button ng-if="phase.links.length <= 1" class="md-fab md-mini" ng-href="{{ phase.links.length === 1 ? phase.links[0].url : '' }}" style="margin: unset; background-color: {{ statusToColor(phase.status) }}">
+                <md-icon class="material-icons">{{ phaseTypeToIcon(phase.type) }}</md-icon>
+                <md-tooltip>{{ phase.name }}
+                    <div ng-if="phase.notes">
+                        <pre>{{ phase.notes }}</pre>
+                    </div>
+                </md-tooltip>
+            </md-button>
+            <md-menu ng-if="phase.links.length > 1">
+                <md-button class="md-fab md-mini" ng-click="$mdMenu.open()" style="margin: unset; background-color: {{ statusToColor(phase.status) }}">
+                    <md-icon class="material-icons">{{ phaseTypeToIcon(phase.type) }}</md-icon>
+                    <md-tooltip>{{ phase.name }}
+                        <div ng-if="phase.notes">
+                            <pre>{{ phase.notes }}</pre>
+                        </div>
+                    </md-tooltip>
+                </md-button>
+                <md-menu-content>
+                    <md-menu-item ng-repeat="link in phase.links track by $index">
+                        <md-button ng-href="{{ link.url }}">{{ link.name }}</md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </div>
+    </div>
+</div>

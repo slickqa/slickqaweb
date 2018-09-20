@@ -1,14 +1,17 @@
 __author__ = 'jcorbett'
 
 from mongoengine import *
+
 from .serialize import serializable
+
 
 def summary_to_status(summary):
     if summary:
-
-        if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED) == summary.total():
+        if summary.resultsByStatus.NO_RESULT:
+            return 'NO_RESULT'
+        if summary.resultsByStatus.PASS and (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED) == summary.total():
             return 'PASS'
-        elif (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED) == summary.total():
+        elif summary.resultsByStatus.PASSED_ON_RETRY and (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED) == summary.total():
             return 'PASSED_ON_RETRY'
         elif summary.resultsByStatus.FAIL:
             return 'FAIL'
@@ -18,6 +21,7 @@ def summary_to_status(summary):
             return 'NOT_TESTED'
         elif summary.resultsByStatus.SKIPPED:
             return 'SKIPPED'
+
 
 class ResultsByStatus(EmbeddedDocument):
     PASS = IntField(default=0)
