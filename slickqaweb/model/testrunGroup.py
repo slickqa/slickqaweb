@@ -3,6 +3,7 @@ import datetime
 import bson
 from mongoengine import *
 
+from slickqaweb.utils import is_not_provided
 from .serialize import serializable, serialize_this, deserialize_that
 from .testrun import Testrun
 from .testrunSummary import TestrunSummary, ResultsByStatus
@@ -81,6 +82,8 @@ class TestrunGroup(Document):
             retval = serialize_this(self.finished) - serialize_this(self.created)
         elif self.created:
             retval = serialize_this(datetime.datetime.utcnow()) - serialize_this(self.created)
+        elif self.testruns and self.finished:
+            retval = serialize_this(self.finished) - serialize_this(self.testruns[0].runStarted)
         elif self.testruns:
             retval = serialize_this(datetime.datetime.utcnow()) - serialize_this(self.testruns[0].runStarted)
         return retval

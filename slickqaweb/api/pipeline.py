@@ -7,7 +7,7 @@ from mongoengine import ListField, ReferenceField, EmbeddedDocumentListField
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from slickqaweb import events
 from slickqaweb.app import app
-from slickqaweb.model.phase import Phase, EmbeddedDocumentField
+from slickqaweb.model.phase import Phase
 from slickqaweb.model.pipeline import Pipeline
 from slickqaweb.model.project import Project
 from slickqaweb.model.query import queryFor
@@ -57,6 +57,31 @@ def get_pipeline_by_id(pipeline_id):
     return JsonResponse(Pipeline.objects(id=pipeline_id).first())
 
 
+def pipeline_check(pipeline):
+    if is_not_provided(pipeline, 'started'):
+        pipeline.started = datetime.datetime.utcnow()
+    if pipeline.state == 'FINISHED' and is_not_provided(pipeline, 'finished'):
+        pipeline.finished = datetime.datetime.utcnow()
+    elif pipeline.state != 'FINISHED' and is_provided(pipeline, 'finished'):
+        pipeline.finished = None
+    return pipeline
+
+
+def phase_check(phase):
+    def do_check(phase):
+        if phase.state != "TO_BE_RUN" and is_not_provided(phase, 'started'):
+            phase.started = datetime.datetime.utcnow()
+        if phase.status != "NO_RESULT" and is_not_provided(phase, 'finished'):
+            phase.finished = datetime.datetime.utcnow()
+            phase.state = "FINISHED"
+        elif phase.status == "NO_RESULT":
+            phase.finished = None
+            phase.state = "RUNNING"
+        return phase
+
+    return do_check(phase)
+
+
 @app.route('/api/pipelines/<pipeline_name_or_id>/add_phase', methods=["POST"])
 @returns(Pipeline)
 @argument_doc('pipeline_name_or_id', "The id of the pipeline (the string representation of a BSON ObjectId).")
@@ -74,11 +99,7 @@ def add_phase_to_pipeline(pipeline_name_or_id):
         if pipeline.phases and not pipeline.phases[-1].finished:
             pipeline.phases[-1].finished = datetime.datetime.utcnow()
         for phase in new_phases:
-            if phase.state != "TO_BE_RUN" and is_not_provided(phase, 'started'):
-                phase.started = datetime.datetime.utcnow()
-            if phase.status != "NO_RESULT" and is_not_provided(phase, 'finished'):
-                phase.finished = datetime.datetime.utcnow()
-                phase.state = "FINISHED"
+            phase = phase_check(phase)
             pipeline.phases.append(phase)
         pipeline.save()
     return JsonResponse(pipeline)
@@ -95,14 +116,7 @@ def update_phase_in_pipeline(pipeline_name_or_id, phase_name):
         if phase:
             index = phase[0]
             pipeline.phases[index] = deserialize_that(read_request(), pipeline.phases[index])
-            if pipeline.phases[index].state != "TO_BE_RUN" and is_not_provided(pipeline.phases[index], 'started'):
-                pipeline.phases[index].started = datetime.datetime.utcnow()
-            if pipeline.phases[index].status != "NO_RESULT" and is_not_provided(pipeline.phases[index], 'finished'):
-                pipeline.phases[index].finished = datetime.datetime.utcnow()
-                pipeline.phases[index].state = "FINISHED"
-            elif pipeline.phases[index].status == "NO_RESULT":
-                pipeline.phases[index].finished = None
-                pipeline.phases[index].state = "RUNNING"
+            pipeline.phases[index] = phase_check(pipeline.phases[index])
             pipeline.save()
     return JsonResponse(pipeline)
 
@@ -143,16 +157,9 @@ def add_pipeline():
             if bld_id is not None:
                 new_pipeline.build.buildId = bld_id
 
-    for phase in new_pipeline.phases:
-        if phase.state != "TO_BE_RUN" and is_not_provided(phase, 'started'):
-            phase.started = datetime.datetime.utcnow()
-        if phase.status != "NO_RESULT" and is_not_provided(phase, 'finished'):
-            phase.state = "FINISHED"
-            phase.finished = datetime.datetime.utcnow()
-    if new_pipeline.status == 'FINISHED' and is_not_provided(new_pipeline, 'finished'):
-        new_pipeline.finished = datetime.datetime.utcnow()
-    elif new_pipeline.status != 'FINISHED' and is_provided(new_pipeline, 'finished'):
-        new_pipeline.finished = None
+    for ind, phase in enumerate(new_pipeline.phases):
+        new_pipeline.phases[ind] = phase_check(new_pipeline.phases[ind])
+    new_pipeline = pipeline_check(new_pipeline)
     new_pipeline.save()
     # add an event
     events.CreateEvent(new_pipeline)
@@ -169,10 +176,7 @@ def update_pipeline(pipeline_id):
     orig = Pipeline.objects(id=pipeline_id).first()
     update_event = events.UpdateEvent(before=orig)
     deserialize_that(read_request(), orig)
-    if orig.state == "FINISHED" and is_not_provided(orig, 'finished'):
-        orig.finished = datetime.datetime.utcnow()
-    elif orig.state != "FINISHED":
-        orig.finished = None
+    orig = pipeline_check(orig)
     orig.save()
     update_event.after(orig)
     return JsonResponse(orig)

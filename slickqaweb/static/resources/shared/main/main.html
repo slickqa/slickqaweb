@@ -41,7 +41,7 @@
                                     <th md-column md-numerical md-order-by="report.testruns.length">Testruns</th>
                                     <th md-column>Results</th>
                                     <th md-column md-numerical md-order-by="report.testruns[0].dateCreated">Created</th>
-                                    <th md-column md-numerical md-order-by="report.duration">Duration</th>
+                                    <th md-column md-numerical md-order-by="report.testruns[0].runFinished - report.testruns[0].dateCreated">Duration</th>
                                 </tr>
                                 </thead>
                                 <tbody md-body>
@@ -64,7 +64,8 @@
                                         <span>{{ build.report.testruns[0].dateCreated | date:'medium' }}</span>
                                     </td>
                                     <td md-cell>
-                                        <span>{{ getDurationString(build.report.duration, true) }}</span>
+                                        <span ng-if="build.report.state === 'FINISHED'">{{ getDurationString(build.report.testruns[0].runFinished - build.report.testruns[0].dateCreated, true) }}</span>
+                                        <span ng-if="build.report.state !== 'FINISHED'">{{ getDurationString(currentTimeMillis - build.report.testruns[0].dateCreated, true) }}</span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -208,7 +209,8 @@
                                         <span>{{ testrungroup.created | date:'medium' }}</span>
                                     </td>
                                     <td md-cell>
-                                        <span>{{ getDurationString(testrungroup.duration, true) }}</span>
+                                        <span ng-if="testrungroup.state === 'FINISHED'">{{ getDurationString(testrungroup.testruns[0].runFinished - testrungroup.testruns[0].dateCreated, true) }}</span>
+                                        <span ng-if="testrungroup.state !== 'FINISHED'">{{ getDurationString(currentTimeMillis - testrungroup.testruns[0].dateCreated, true) }}</span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -423,7 +425,7 @@
                     </md-tab-body>
                 </md-tab-body>
             </md-tab>
-            <md-tab ng-show="environment.iframeConfig" ng-repeat="iframe in environment.iframeConfig" md-on-select="onTabSelected($index + 4)">
+            <md-tab ng-show="environment.iframeConfig" ng-repeat="iframe in environment.iframeConfig" md-on-select="onTabSelected($index + 5)">
                 <md-tab-label>
                     <md-icon class="material-icons">{{ iframe.icon }}</md-icon>
                     <md-tooltip>{{ iframe.title }}</md-tooltip>

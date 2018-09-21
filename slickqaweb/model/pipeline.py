@@ -18,7 +18,7 @@ class Pipeline(Document):
     build = EmbeddedDocumentField(BuildReference)
     phases = ListField(EmbeddedDocumentField(Phase))
     notes = StringField()
-    started = DateTimeField(default=datetime.datetime.utcnow())
+    started = DateTimeField()
     finished = DateTimeField()
 
     dynamic_types = {

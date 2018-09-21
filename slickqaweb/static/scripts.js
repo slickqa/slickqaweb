@@ -1101,7 +1101,7 @@ angular.module('slickApp')
                             });
                             processBuildList(buildList);
                         } else {
-                            rest.one('projects', $scope.project).get().then(function (project) {
+                            rest.one('projects', $scope.project).get({quick: true}).then(function (project) {
                                 _.each(project.releases, function (release) {
                                     _.each(release.builds, function (build) {
                                         // This creates a flat list that we can sort
@@ -1115,7 +1115,7 @@ angular.module('slickApp')
                 });
             } else if ($scope.project) {
                 if ($scope.selectedIndex === $scope.tabNameToIndex(buildsTabName) || firstBuildsFetch) {
-                    rest.one('projects', $scope.project).get().then(function (project) {
+                    rest.one('projects', $scope.project).get({quick: true}).then(function (project) {
                         _.each(project.releases, function (release) {
                             _.each(release.builds, function (build) {
                                 // This creates a flat list that we can sort
