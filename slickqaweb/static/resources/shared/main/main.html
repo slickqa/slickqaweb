@@ -425,7 +425,7 @@
                     </md-tab-body>
                 </md-tab-body>
             </md-tab>
-            <md-tab ng-show="environment.iframeConfig" ng-repeat="iframe in environment.iframeConfig" md-on-select="onTabSelected($index + 6)">
+            <md-tab ng-show="environment.iframeConfig" ng-repeat="iframe in environment.iframeConfig" md-on-select="onTabSelected($index + 5)">
                 <md-tab-label>
                     <md-icon class="material-icons">{{ iframe.icon }}</md-icon>
                     <md-tooltip>{{ iframe.title }}</md-tooltip>
@@ -440,7 +440,7 @@
                             <div flex="" class="flex"></div>
                         </div>
                     </md-toolbar>
-                    <iframe ng-if="isTabSelected($index + 4)" ng-src="{{ iframe.url }}" style="width: {{ iframe.width }}; height: {{ iframe.height }}"></iframe>
+                    <iframe ng-if="isTabSelected($index + 5)" ng-src="{{ iframe.url }}" style="width: {{ iframe.width }}; height: {{ iframe.height }}"></iframe>
                 </md-tab-body>
             </md-tab>
         </md-tabs>
