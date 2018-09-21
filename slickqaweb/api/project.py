@@ -61,19 +61,19 @@ def get_project(project_name_or_id):
 @argument_doc('project_name', "The name or id of the project to find.")
 def get_project_by_name(project_name):
     """Find a project by name or id"""
-    if "quick" in request.args:
-        conn = connection.get_connection()
-        result = conn[app.config['MONGODB_DBNAME']]['projects'].aggregate([
-            {'$project': {'name': '$name', 'releases': '$releases'}},
-            {'$match': {'name': project_name}}
-        ])
-        if result['result']:
-            result = result['result'][0]
-            return JsonResponse(result)
-        else:
-            return JsonResponse([])
-    else:
-        return JsonResponse(get_project(project_name))
+    # if "quick" in request.args:
+    #     conn = connection.get_connection()
+    #     result = conn[app.config['MONGODB_DBNAME']]['projects'].aggregate([
+    #         {'$project': {'name': '$name', 'releases': '$releases'}},
+    #         {'$match': {'name': project_name}}
+    #     ])
+    #     if result['result']:
+    #         result = result['result'][0]
+    #         return JsonResponse(result)
+    #     else:
+    #         return JsonResponse([])
+    # else:
+    return JsonResponse(get_project(project_name))
 
 
 @app.route('/api/projects', methods=["POST"])
