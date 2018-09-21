@@ -71,7 +71,7 @@
                                 </tbody>
                             </table>
                         </md-table-container>
-                        <md-table-pagination md-limit="buildsQuery.limit" md-limit-options="limits" md-page="buildsQuery.page" md-total="{{ buildListOne.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
+                        <md-table-pagination md-limit="buildsQuery.limit" md-limit-options="limits" md-page="buildsQuery.page" md-total="{{ buildList.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
                     </md-content>
                 </md-tab-body>
             </md-tab>
@@ -146,7 +146,7 @@
                                 </tbody>
                             </table>
                         </md-table-container>
-                        <md-table-pagination md-limit="testrunsQuery.limit" md-limit-options="limits" md-page="testrunsQuery.page" md-total="{{ testrunListOne.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
+                        <md-table-pagination md-limit="testrunsQuery.limit" md-limit-options="limits" md-page="testrunsQuery.page" md-total="{{ testrunList.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
                     </md-content>
                 </md-tab-body>
             </md-tab>
@@ -216,7 +216,7 @@
                                 </tbody>
                             </table>
                         </md-table-container>
-                        <md-table-pagination md-limit="testrunGroupsQuery.limit" md-limit-options="limits" md-page="testrunGroupsQuery.page" md-total="{{ testrungroupListOne.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
+                        <md-table-pagination md-limit="testrunGroupsQuery.limit" md-limit-options="limits" md-page="testrunGroupsQuery.page" md-total="{{ testrungroupList.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
                     </md-content>
                 </md-tab-body>
             </md-tab>
@@ -270,7 +270,7 @@
                                     </td>
                                     <td md-cell style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         <span>{{ data.name }}</span>
-                                        <md-tooltip nf-if="data.notes">{{ data.notes }}</md-tooltip>
+                                        <md-tooltip ng-if="data.notes">{{ data.notes }}</md-tooltip>
                                     </td>
                                     <td md-cell>
                                         <span>{{ data.project.name }}</span>
@@ -291,6 +291,7 @@
                                 </tbody>
                             </table>
                         </md-table-container>
+                        <md-table-pagination md-limit="pipelinesQuery.limit" md-limit-options="limits" md-page="pipelinesQuery.page" md-total="{{ pipelinesList.length }}" md-page-select="true" md-boundary-links="true"></md-table-pagination>
                     </md-content>
                 </md-tab-body>
             </md-tab>
