@@ -3,7 +3,9 @@
 var _replace_underscore_regexp = new RegExp('_', 'g')
 
 function replaceOnStatus(status, replace_with) {
-    return status.replace(_replace_underscore_regexp, replace_with)
+    if (status) {
+        return status.replace(_replace_underscore_regexp, replace_with)
+    }
 }
 
 angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'ngMaterial', 'ngAria', 'ngMdIcons', 'md.data.table', 'restangular', 'ngSanitize' ])
@@ -101,5 +103,54 @@ function getEstimatedTimeRemaining(report, type) {
         return durationString !== "0 seconds" ? durationString : "";
     } else {
         return "";
+    }
+}
+
+function statusToIcon(status) {
+    switch (status) {
+        case 'PASS':
+            return 'check_circle';
+        case 'PASSED_ON_RETRY':
+            return 'check_circle';
+        case 'FAIL':
+            return 'cancel';
+        case 'BROKEN_TEST':
+            return 'error';
+        case 'NO_RESULT':
+            return 'help';
+        case 'SKIPPED':
+            return 'watch_later';
+        case 'NOT_TESTED':
+            return 'pause_circle_filled';
+    }
+}
+
+function isObject(object) {
+    return typeof object === 'object';
+}
+
+function objectToValues(object) {
+    if (object) {
+        return Object.values(object);
+    } else {
+        return []
+    }
+}
+
+function summaryToStatus(summary) {
+    if (summary) {
+        if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED === summary.total) {
+            return 'PASS';
+        } else if (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED === summary.total) {
+            return 'PASSED_ON_RETRY';
+        } else if (summary.resultsByStatus.FAIL) {
+            return 'FAIL';
+        } else if (summary.resultsByStatus.BROKEN_TEST) {
+            return 'BROKEN_TEST';
+        } else if (summary.resultsByStatus.NOT_TESTED && !summary.resultsByStatus.SKIPPED) {
+            return 'NOT_TESTED';
+        } else if (summary.resultsByStatus.SKIPPED) {
+            return 'SKIPPED';
+        }
     }
 }

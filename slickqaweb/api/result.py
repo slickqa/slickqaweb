@@ -301,6 +301,7 @@ def add_result(testrun_id=None):
         return Response('Existing testcase not found, please provide a testcase name if you want one to be created.\n', status=400, mimetype="text/plain")
     elif testcase is None:
         testcase = Testcase()
+        testcase.created = datetime.datetime.utcnow()
         testcase.name = new_result.testcase.name
         if is_provided(new_result.testcase, 'automationId'):
             testcase.automationId = new_result.testcase.automationId
@@ -505,7 +506,7 @@ def cancel_individual_result(result_id):
         increment_skipped_status_by = "inc__summary__resultsByStatus__SKIPPED"
         Testrun.objects(id=orig.testrun.testrunId).update_one(**{decrement_orig_status_by: 1, increment_skipped_status_by: 1})
         testrun = Testrun.objects(id=orig.testrun.testrunId).first()
-        if testrun.summary.resultsByStatus.NO_RESULT == 0:
+        if testrun and testrun.summary.resultsByStatus.NO_RESULT == 0:
             # finish testrun
             testrun.runFinished = datetime.datetime.utcnow()
             testrun.state = "FINISHED"
@@ -645,12 +646,26 @@ def get_queue_statistics():
 def get_queue_running():
     # Default is by build
     query = {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}
-    if 'by-id' in request.args:
+    if 'byId' in request.args:
         query = {'result': '$_id'}
-    elif 'by-project' in request.args:
+    elif 'byProject' in request.args:
         query = {'project': '$project.name'}
     conn = connection.get_connection()
-    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'RUNNING', 'attributes.scheduled': 'true'}}, {'$group': {'_id': query, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'RUNNING'}}, {'$group': {'_id': query, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    return JsonResponse(result['result'])
+
+@app.route('/api/results/queue/finished')
+def get_queue_finished():
+    # Default is by build
+    query = {'project': '$project.name', 'release': '$release.name', 'status': '$status'}
+    days = 1
+    if 'days' in request.args:
+        days = int(request.args['days'])
+    conn = connection.get_connection()
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([
+        {'$match': {'runstatus': 'FINISHED', 'recorded': {'$gte': datetime.datetime.utcnow() + datetime.timedelta(-days), '$lt': datetime.datetime.utcnow()}}},
+        {'$group': {'_id': query, 'count': {'$sum': 1}}}
+    ])
     return JsonResponse(result['result'])
 
 @app.route('/api/results/<result_id>/files', methods=['POST'])

@@ -10,6 +10,7 @@ from .step import Step
 
 class Testcase(Document):
     meta = {'collection': 'testcases'}
+    created = DateTimeField()
     name = StringField()
     purpose = StringField()
     requirements = StringField()

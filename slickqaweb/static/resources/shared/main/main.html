@@ -1,7 +1,7 @@
 <div class="slickview">
     <md-content style="width: 100%">
         <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes" md-selected="selectedIndex">
-            <md-tab md-on-select="onTabSelected(buildsQuery.index)">
+            <md-tab md-on-select="onTabSelected('Builds')">
                 <md-tab-label>
                     <md-icon class="material-icons">view_list</md-icon>
                     <md-tooltip>Recent Builds</md-tooltip>
@@ -23,14 +23,14 @@
                             <md-input-container>
                                 <label>Project</label>
                                 <md-select ng-model="project">
-                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
-                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project">{{ projectItem.name }}</md-option>
+                                    <md-option ng-value="'All'" ng-selected="project === 'All'" ng-click="fetchBuildsData()">All</md-option>
+                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name' track by $index" ng-value="projectItem.name" ng-selected="projectItem.name === project" ng-click="fetchBuildsData()">{{ projectItem.name }}</md-option>
                                 </md-select>
                             </md-input-container>
                         </div>
                     </md-toolbar>
-                    <md-progress-linear ng-show="buildListOne.length === 0"></md-progress-linear>
-                    <md-content ng-show="buildListOne.length !== 0">
+                    <md-progress-linear ng-show="buildList.length === 0"></md-progress-linear>
+                    <md-content ng-show="buildList.length !== 0">
                         <md-table-container>
                             <table md-table>
                                 <thead md-head md-order="buildsQuery.order" md-on-reorder="setBuildsSort">
@@ -45,10 +45,10 @@
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildListOne | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildList | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit track by $index" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
-                                        <md-icon ng-show="build.report.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
-                                        <i ng-show="build.report.state !== 'FINISHED'" class="pulse"></i>
+                                        <md-icon ng-show="build.report.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(build.report.groupSummary.status, '') }}" title="{{ replaceOnStatus(build.report.groupSummary.status, ' ') }}">{{ statusToIcon(build.report.groupSummary.status) }}</md-icon>
+                                        <i ng-show="build.report.state !== 'FINISHED'" class="pulse" title="RUNNING"></i>
                                     </td>
                                     <td md-cell>
                                         <a href="projects/{{ build.project.name }}" ng-bind="build.project.name"></a>
@@ -75,7 +75,7 @@
                     </md-content>
                 </md-tab-body>
             </md-tab>
-            <md-tab md-on-select="onTabSelected(testrunsQuery.index)">
+            <md-tab md-on-select="onTabSelected('Testruns')">
                 <md-tab-label>
                     <md-icon class="material-icons">assessment</md-icon>
                     <md-tooltip>Recent Testruns</md-tooltip>
@@ -97,8 +97,8 @@
                             <md-input-container>
                                 <label>Project</label>
                                 <md-select ng-model="project">
-                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
-                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project">{{ projectItem.name }}</md-option>
+                                    <md-option ng-value="'All'" ng-selected="project === 'All'" ng-click="fetchData()">All</md-option>
+                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name' track by $index" ng-value="projectItem.name" ng-selected="projectItem.name === project" ng-click="fetchData()">{{ projectItem.name }}</md-option>
                                 </md-select>
                             </md-input-container>
                         </div>
@@ -121,8 +121,8 @@
                                 <tbody md-body>
                                 <tr md-row md-select="testrun" md-select-id="name" md-auto-select ng-repeat="testrun in testrunListOne | filter: filter.search | orderBy: testrunsQuery.order | limitTo: testrunsQuery.limit : (testrunsQuery.page -1) * testrunsQuery.limit track by testrun.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
-                                        <md-icon ng-if="testrun.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
-                                        <i ng-if="testrun.state !== 'FINISHED'" class="pulse"></i>
+                                        <md-icon ng-show="testrun.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(testrun.summary.status, '') }}" title="{{ replaceOnStatus(testrun.summary.status, ' ') }}">{{ statusToIcon(testrun.summary.status) }}</md-icon>
+                                        <i ng-show="testrun.state !== 'FINISHED'" class="pulse" title="RUNNING"></i>
                                     </td>
                                     <td md-cell>
                                         <a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a>
@@ -151,7 +151,7 @@
                     </md-content>
                 </md-tab-body>
             </md-tab>
-            <md-tab md-on-select="onTabSelected(testrunGroupsQuery.index)">
+            <md-tab md-on-select="onTabSelected('TestrunGroups')">
                 <md-tab-label>
                     <md-icon class="material-icons">playlist_add_check</md-icon>
                     <md-tooltip>Recent Testrun Groups</md-tooltip>
@@ -173,14 +173,14 @@
                             <md-input-container>
                                 <label>Project</label>
                                 <md-select ng-model="project">
-                                    <md-option ng-value="All" ng-selected="project === 'All'">All</md-option>
-                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name'" ng-value="projectItem.name" ng-selected="projectItem.name === project">{{ projectItem.name }}</md-option>
+                                    <md-option ng-value="'All'" ng-selected="project === 'All'" ng-click="fetchData()">All</md-option>
+                                    <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name' track by $index" ng-value="projectItem.name" ng-selected="projectItem.name === project" ng-click="fetchData()">{{ projectItem.name }}</md-option>
                                 </md-select>
                             </md-input-container>
                         </div>
                     </md-toolbar>
-                    <md-progress-linear ng-show="testrungroupListOne.length === 0"></md-progress-linear>
-                    <md-content ng-show="testrungroupListOne.length !== 0">
+                    <md-progress-linear ng-show="testrungroupList.length === 0"></md-progress-linear>
+                    <md-content ng-show="testrungroupList.length !== 0">
                         <md-table-container>
                             <table md-table ng-model="selected" md-progress="promise">
                                 <thead md-head md-order="testrunGroupsQuery.order" md-on-reorder="setTestrunGroupsSort">
@@ -194,10 +194,10 @@
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="testrungroup" md-select-id="name" md-auto-select ng-repeat="testrungroup in testrungroupListOne | filter: filter.search | orderBy: testrunGroupsQuery.order | limitTo: testrunGroupsQuery.limit : (testrunGroupsQuery.page -1) * testrunGroupsQuery.limit track by testrungroup.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="testrungroup" md-select-id="name" md-auto-select ng-repeat="testrungroup in testrungroupList | filter: filter.search | orderBy: testrunGroupsQuery.order | limitTo: testrunGroupsQuery.limit : (testrunGroupsQuery.page -1) * testrunGroupsQuery.limit track by testrungroup.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
-                                        <md-icon ng-if="testrungroup.state === 'FINISHED'" class="material-icons" style="color: #008000">check_circle</md-icon>
-                                        <i ng-if="testrungroup.state !== 'FINISHED'" class="pulse"></i>
+                                        <md-icon ng-show="testrungroup.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(testrungroup.groupSummary.status, '') }}" title="{{ replaceOnStatus(testrungroup.groupSummary.status, ' ') }}">{{ statusToIcon(testrungroup.groupSummary.status) }}</md-icon>
+                                        <i ng-show="testrungroup.state !== 'FINISHED'" class="pulse" title="RUNNING"></i>
                                     </td>
                                     <td md-cell>
                                         <a href="testrungroup/{{ testrungroup.id }}" ng-bind="testrungroup.name"></a>
@@ -221,7 +221,138 @@
                     </md-content>
                 </md-tab-body>
             </md-tab>
-            <md-tab ng-show="environment.iframeConfig" ng-repeat="iframe in environment.iframeConfig" md-on-select="onTabSelected($index + 3)">
+            <md-tab md-on-select="onTabSelected('Statistics')">
+                <md-tab-label>
+                    <md-icon class="material-icons">trending_up</md-icon>
+                    <md-tooltip>Statistics</md-tooltip>
+                </md-tab-label>
+                <md-tab-body>
+                    <md-toolbar layout="row" class="md-accent">
+                        <md-toolbar-filler layout layout-align="center center">
+                            <md-icon class="material-icons" style="margin-right: 20px">trending_up</md-icon>
+                        </md-toolbar-filler>
+                        <div class="md-toolbar-tools">
+                            <span style="font-family: 'Audiowide', cursive;">Statistics</span>
+                            <div flex="" class="flex"></div>
+                        </div>
+                    </md-toolbar>
+                    <md-progress-linear ng-show="statsForProjects.length === 0"></md-progress-linear>
+                    <md-tab-body ng-show="statsForProjects.length !== 0">
+                        <md-tabs>
+                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'title' track by $index" md-on-select="getHealthData(stat.title, stat.activeRelease)">
+                                <md-tab-label>
+                                    <span>{{ stat.title }}</span>
+                                </md-tab-label>
+                                <md-tab-body>
+                                    <fieldset class="standard">
+                                        <legend>{{ stat.title }} {{ stat.activeRelease }}</legend>
+                                        <md-content layout="row">
+                                            <google-area-chart style="width: 100%" class="testrungroup-serial-chart" data="healthDataByProject[stat.title]" options="healthReportOptionsByProject[stat.title]"></google-area-chart>
+                                            <md-content layout="column">
+                                                <md-input-container>
+                                                    <label>Limit</label>
+                                                    <md-select ng-model="buildsQuery.queryLimit">
+                                                        <md-option ng-repeat="limitItem in limits" ng-value="limitItem" ng-selected="limitItem === buildsQuery.queryLimit">{{ limitItem }}</md-option>
+                                                    </md-select>
+                                                </md-input-container>
+                                                <md-input-container>
+                                                    <label>Release</label>
+                                                    <md-select ng-model="stat.activeRelease">
+                                                        <md-option ng-if="isObject(release)" ng-repeat="release in objToValues(stat)" ng-value="release.title" ng-selected="release.title === stat.activeRelease" ng-click="stat.activeRelease = release.title; getHealthData(stat.title, stat.activeRelease)">{{ release.title }}</md-option>
+                                                    </md-select>
+                                                </md-input-container>
+                                                <md-card>
+                                                    <md-card-header>
+                                                    <md-card-header-text>
+                                                        <span class="md-title">Averages</span>
+                                                    </md-card-header-text>
+                                                </md-card-header>
+                                                <md-divider></md-divider>
+                                                <md-card-content align="center">
+                                                    <div layout="column">
+                                                        <div layout="row" style="align-items: center" ng-if="isObject(status)" ng-repeat="status in objToValues(stat[stat.activeRelease]['30']) | orderBy: '-count' track by $index">
+                                                            <span class="result-status-{{ replaceOnStatus(status._id.status, '') }}" style="font-size: 20px">{{ replaceOnStatus(status._id.status, ' ') }}</span>
+                                                            <div flex></div>
+                                                            <span style="margin-left: 10px">{{ ((status.count / stat[stat.activeRelease]['30'].total) * 100).toFixed(2) }}%</span>
+                                                        </div>
+                                                    </div>
+                                                </md-card-content>
+                                                </md-card>
+                                            </md-content>
+                                        </md-content>
+                                    </fieldset>
+                                    <fieldset class="standard" ng-if="testcasesByProject[stat.title]">
+                                        <legend>Recently Automated Tests</legend>
+                                        <md-content layout="row">
+                                            <md-card ng-repeat="(key, value) in testcasesByProject[stat.title]">
+                                                <md-card-header>
+                                                    <md-card-header-text>
+                                                        <span class="md-title">{{ value.title }}</span>
+                                                    </md-card-header-text>
+                                                </md-card-header>
+                                                <md-divider></md-divider>
+                                                <md-card-content align="center">
+                                                    <span style="font-size: 20px">{{ value.count.count || "None" }}</span>
+                                                </md-card-content>
+                                            </md-card>
+                                        </md-content>
+                                    </fieldset>
+                                    <fieldset class="standard">
+                                        <legend>Total Executions</legend>
+                                        <md-content layout="row">
+                                            <md-card>
+                                                <md-card-header>
+                                                    <md-card-header-text>
+                                                        <span class="md-title">{{ stat[stat.activeRelease].running.title }}</span>
+                                                    </md-card-header-text>
+                                                </md-card-header>
+                                                <md-divider></md-divider>
+                                                <md-card-content align="center">
+                                                    <span style="font-size: 20px">{{ stat[stat.activeRelease].running.count || "None" }}</span>
+                                                </md-card-content>
+                                            </md-card>
+                                            <md-card ng-repeat="(key, value) in stat[stat.activeRelease]" ng-show="key !== 'running' && isObject(value)">
+                                                <md-card-header>
+                                                    <md-card-header-text>
+                                                        <span class="md-title">{{ value.title }}</span>
+                                                    </md-card-header-text>
+                                                </md-card-header>
+                                                <md-divider></md-divider>
+                                                <md-card-content align="center">
+                                                    <span style="font-size: 20px">{{ value.total || "None" }}</span>
+                                                </md-card-content>
+                                            </md-card>
+                                        </md-content>
+                                    </fieldset>
+                                    <fieldset class="standard">
+                                        <legend>Succes Rate</legend>
+                                        <md-content layout="row">
+                                            <md-card ng-repeat="(key, value) in stat[stat.activeRelease]" ng-show="key !== 'running' && isObject(value)">
+                                                <md-card-header>
+                                                    <md-card-header-text>
+                                                        <span class="md-title">{{ value.title }}</span>
+                                                    </md-card-header-text>
+                                                </md-card-header>
+                                                <md-divider></md-divider>
+                                                <md-card-content>
+                                                    <div layout="column">
+                                                        <div layout="row" style="align-items: center" ng-repeat="status in objToValues(value) | orderBy: '-count' track by $index" ng-show="status._id.status">
+                                                            <span class="result-status-{{ replaceOnStatus(status._id.status, '') }}" style="font-size: 20px">{{ replaceOnStatus(status._id.status, ' ') }}</span>
+                                                            <div flex></div>
+                                                            <span style="margin-left: 10px">{{ status.count }}</span>
+                                                        </div>
+                                                    </div>
+                                                </md-card-content>
+                                            </md-card>
+                                        </md-content>
+                                    </fieldset>
+                                </md-tab-body>
+                            </md-tab>
+                        </md-tabs>
+                    </md-tab-body>
+                </md-tab-body>
+            </md-tab>
+            <md-tab ng-show="environment.iframeConfig" ng-repeat="iframe in environment.iframeConfig" md-on-select="onTabSelected($index + 4)">
                 <md-tab-label>
                     <md-icon class="material-icons">{{ iframe.icon }}</md-icon>
                     <md-tooltip>{{ iframe.title }}</md-tooltip>
@@ -236,7 +367,7 @@
                             <div flex="" class="flex"></div>
                         </div>
                     </md-toolbar>
-                    <iframe ng-if="isTabSelected($index + 3)" ng-src="{{ iframe.url }}" style="width: {{ iframe.width }}; height: {{ iframe.height }}"></iframe>
+                    <iframe ng-if="isTabSelected($index + 4)" ng-src="{{ iframe.url }}" style="width: {{ iframe.width }}; height: {{ iframe.height }}"></iframe>
                 </md-tab-body>
             </md-tab>
         </md-tabs>

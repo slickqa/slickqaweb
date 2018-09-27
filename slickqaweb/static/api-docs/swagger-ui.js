@@ -1849,11 +1849,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     };
 
     OperationView.prototype.showErrorStatus = function(data, parent) {
-      return parent.showStatus(data);
+      return parent.toggleStatus(data);
     };
 
     OperationView.prototype.showCompleteStatus = function(data, parent) {
-      return parent.showStatus(data);
+      return parent.toggleStatus(data);
     };
 
     OperationView.prototype.formatXml = function(xml) {
@@ -1929,7 +1929,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return formatted;
     };
 
-    OperationView.prototype.showStatus = function(response) {
+    OperationView.prototype.toggleStatus = function(response) {
       var code, content, contentType, headers, pre, response_body, url;
       if (response.content === void 0) {
         content = response.data;

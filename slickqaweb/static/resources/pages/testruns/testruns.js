@@ -171,28 +171,11 @@ angular.module('slickApp')
 
         $scope.expandedResults = {};
 
-        $scope.isExpanded = function (testcaseId) {
-            return !!$scope.expandedResults[testcaseId];
+        $scope.isExpanded = function (resultId) {
+            return !!$scope.expandedResults[resultId];
         };
 
-        $scope.statusToIcon = function (status) {
-            switch (status) {
-                case 'PASS':
-                    return 'check_circle';
-                case 'PASSED_ON_RETRY':
-                    return 'check_circle';
-                case 'FAIL':
-                    return 'cancel';
-                case 'BROKEN_TEST':
-                    return 'error';
-                case 'NO_RESULT':
-                    return 'help';
-                case 'SKIPPED':
-                    return 'watch_later';
-                case 'NOT_TESTED':
-                    return 'pause_circle_filled';
-            }
-        };
+        $scope.statusToIcon = statusToIcon;
 
         $scope.testrun = {};
         $scope.results = [];
@@ -241,7 +224,7 @@ angular.module('slickApp')
         }
         $scope.show = $cookies.getObject('testrunShowFilter');
 
-        $scope.testcases = {}
+        $scope.testcases = {};
 
         $scope.testcase = {
             name: "",
@@ -266,7 +249,7 @@ angular.module('slickApp')
         $scope.topContributors = {};
         $scope.keyLength = function (obj) {
             return Object.keys(obj).length;
-        }
+        };
 
         $scope.fetchTestrun = function () {
             rest.one('testruns', $routeParams["testrunid"]).get().then(function (testrun) {
@@ -339,7 +322,7 @@ angular.module('slickApp')
                         name: "Back to Build Report"
                     };
                     $scope.goToTPSReportButton = {
-                        href: `tps-report/${testrun.project.name}/${testrun.release.name}/${testrun.testplan.name}`,
+                        href: testrun.testplan ? `tps-report/${testrun.project.name}/${testrun.release.name}/${testrun.testplan.name}` : undefined,
                         name: "TPS Report"
                     };
                     $scope.estimatedTimeRemaining = testrun.state !== 'FINISHED' ? getEstimatedTimeRemaining(testrun, 'testrun') : "";
@@ -403,7 +386,7 @@ angular.module('slickApp')
                         $scope.tpsReportOptions.colors.push(color);
                         $scope.tpsData.addColumn('number', replaceOnStatus(status, " "))
                     });
-                    _.each(testrungroup.testruns, function (testrun) {
+                    _.each(testrungroup.testruns, function (testrun, index) {
                         $scope.testrunHistory.unshift(testrun)
                         var row = [new Date(testrun.dateCreated)];
                         let sum = Object.values(testrun.summary.resultsByStatus).reduce((a, b) => a + b, 0);
@@ -411,13 +394,59 @@ angular.module('slickApp')
                             row.push(testrun.summary.resultsByStatus[status] / sum * 100);
                         });
                         $scope.tpsData.addRow(row);
+                        $scope.tpsData.setRowProperties(index, {testrun: testrun.id});
                     });
                 } else {
-                    refresh_promise = $timeout($scope.getTPSReportData, 500);
+                    refresh_promise = $timeout($scope.getTPSReportData, 15000);
                 }
             }, function errorCallback() {
                 refresh_promise = $timeout($scope.getTPSReportData, 3000);
             });
+        };
+
+        $scope.resultGraphs = {};
+
+        $scope.getGraphDataFromResult = function (result) {
+            let reportOptions = {
+                chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+                backgroundColor: "none",
+                hAxis: {
+                    title: 'Time',
+                    titleTextStyle: {
+                        color: "#ffffff"
+                    },
+                    textStyle: {
+                        color: "#ffffff"
+                    }
+                },
+                vAxis: {
+                    title: 'Values',
+                    textStyle: {
+                        color: "#ffffff"
+                    },
+                    titleTextStyle: {
+                        color: "#ffffff"
+                    }
+                },
+                legend: {
+                    textStyle: {
+                        color: "#ffffff"
+                    },
+                },
+                lineWidth: 5,
+            };
+            let reportData = new google.visualization.DataTable();
+            _.each(result.graph.columns, function (column) {
+                reportData.addColumn(column.type, column.name)
+            });
+            _.each(result.graph.values, function (value) {
+                let row = [new Date(value.date)];
+                _.each(value.measurements, function (measurement) {
+                    row.push(measurement);
+                });
+                reportData.addRow(row);
+            });
+            $scope.resultGraphs[result.id] = {options: reportOptions, data: reportData}
         };
 
         $scope.fetchTestrun();
@@ -450,6 +479,9 @@ angular.module('slickApp')
                     _.each(results, function (result) {
                         if (result.started) {
                             result.recorded = result.started;
+                        }
+                        if (result.graph) {
+                            $scope.getGraphDataFromResult(result)
                         }
                         $scope.results.push(result);
                     });
@@ -614,10 +646,10 @@ angular.module('slickApp')
             }
         };
 
-        $scope.showTestcase = function (testcaseId, $event) {
+        $scope.showTestcase = function (result, $event) {
             $event.preventDefault();
-            rest.one('testcases', testcaseId).get().then(function (testcase) {
-                $scope.expandedResults[testcase.name] = $scope.expandedResults[testcase.name] ? !$scope.expandedResults[testcase.name] : true;
+            rest.one('testcases', result.testcase.testcaseId).get().then(function (testcase) {
+                $scope.expandedResults[result.id] = $scope.expandedResults[result.id] ? !$scope.expandedResults[result.id] : true;
                 $scope.testcase = testcase;
                 $scope.testcases[testcase.name] = testcase
             });

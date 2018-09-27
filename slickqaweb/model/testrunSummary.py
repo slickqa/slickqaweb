@@ -3,6 +3,22 @@ __author__ = 'jcorbett'
 from mongoengine import *
 from .serialize import serializable
 
+def summary_to_status(summary):
+    if summary:
+
+        if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED) == summary.total():
+            return 'PASS'
+        elif (summary.resultsByStatus.PASS + summary.resultsByStatus.PASSED_ON_RETRY + summary.resultsByStatus.NOT_TESTED) == summary.total():
+            return 'PASSED_ON_RETRY'
+        elif summary.resultsByStatus.FAIL:
+            return 'FAIL'
+        elif summary.resultsByStatus.BROKEN_TEST:
+            return 'BROKEN_TEST'
+        elif summary.resultsByStatus.NOT_TESTED and not summary.resultsByStatus.SKIPPED:
+            return 'NOT_TESTED'
+        elif summary.resultsByStatus.SKIPPED:
+            return 'SKIPPED'
+
 class ResultsByStatus(EmbeddedDocument):
     PASS = IntField(default=0)
     PASSED_ON_RETRY = IntField(default=0)
@@ -19,13 +35,15 @@ class TestrunSummary(EmbeddedDocument):
 
     dynamic_types = {
         'statusListOrdered': ListField(StringField()),
-        'total': IntField()
+        'total': IntField(),
+        'status': StringField(choices=["PASS", "PASSED_ON_RETRY", "FAIL", "BROKEN_TEST", "NOT_TESTED", "SKIPPED", "NO_RESULT"])
     }
 
     def dynamic_fields(self):
         return {
             'statusListOrdered': self.statusListOrdered(),
-            'total': self.total()
+            'total': self.total(),
+            'status': self.overallStatus()
         }
 
     @serializable
@@ -35,6 +53,13 @@ class TestrunSummary(EmbeddedDocument):
             if hasattr(self.resultsByStatus, status) and getattr(self.resultsByStatus, status) > 0:
                 retval.append(status)
         return retval
+
+    @serializable
+    def overallStatus(self):
+        if isinstance(self, TestrunSummary):
+            return summary_to_status(self)
+        else:
+            return None
 
     @serializable
     def total(self):

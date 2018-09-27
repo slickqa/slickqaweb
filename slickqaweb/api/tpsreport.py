@@ -28,14 +28,17 @@ add_resource("/tps", "Get tps reports, without cover sheets on purpose.")
 def get_tps_report(project_name, release_name, testplan_name):
     """Get all summary of all the testruns run against a particular build."""
     project_id, release_id, _ = Project.lookup_project_release_build_ids(project_name, release_name, None)
-    testplan = TestPlan.objects(project__id=project_id, name=testplan_name)[0]
+    testplan = TestPlan.objects(project__id=project_id, name=testplan_name)
+    if len(testplan) > 0:
+        testplan = testplan[0]
+        report = TestrunGroup()
+        report.name = "{} Summary for {}".format(testplan_name, release_name)
+        report.grouptype = "SERIAL"
+        report.testruns = []
+        report.testruns.extend(Testrun.objects(project__id=project_id, release__releaseId=release_id, testplanId=testplan.id).order_by('-dateCreated').limit(50))
+        report.testruns.reverse()
 
-    report = TestrunGroup()
-    report.name = "{} Summary for {}".format(testplan_name, release_name)
-    report.grouptype = "SERIAL"
-    report.testruns = []
-    report.testruns.extend(Testrun.objects(project__id=project_id, release__releaseId=release_id, testplanId=testplan.id).order_by('-dateCreated').limit(50))
-    report.testruns.reverse()
-
-    return JsonResponse(report)
+        return JsonResponse(report)
+    else:
+        return JsonResponse({})
 

@@ -96,6 +96,18 @@ angular.module('slickApp')
             },
             link: function postLink(scope, element, attrs) {
                 var chart = new google.visualization.LineChart(element[0]);
+                function goToBuildReport() {
+                    var selectedItem = chart.getSelection()[0];
+                    if (selectedItem) {
+                        var properties = scope.data.getRowProperties(selectedItem.row);
+                        if (properties.project) {
+                            window.location.href = ['build-report', properties.project, properties.release, properties.build].join('/')
+                        } else if(properties.testrun) {
+                            window.location.href = ['testruns', properties.testrun].join('/')
+                        }
+                    }
+                }
+                google.visualization.events.addListener(chart, 'select', goToBuildReport);
                 chart.draw(scope.data, scope.options);
 
                 scope.$watch('data', function(newValue, oldValue) {
@@ -106,4 +118,45 @@ angular.module('slickApp')
                 });
             }
         };
+    })
+    .directive('googleAreaChart', function () {
+        return {
+            restrict: 'E',
+            transclude: false,
+            template: '<div class="google-area-chart"></div>',
+            replace: true,
+            scope: {
+                data: "=",
+                options: "="
+            },
+            link: function postLink(scope, element, attrs) {
+                var chart = new google.visualization.AreaChart(element[0]);
+
+                function goToBuildReport() {
+                    var selectedItem = chart.getSelection()[0];
+                    if (selectedItem) {
+                        var properties = scope.data.getRowProperties(selectedItem.row);
+                        if (properties.project) {
+                            window.location.href = ['build-report', properties.project, properties.release, properties.build].join('/')
+                        } else if (properties.testrun) {
+                            window.location.href = ['testruns', properties.testrun].join('/')
+                        }
+                    }
+                }
+
+                google.visualization.events.addListener(chart, 'error', function (googleError) {
+                    google.visualization.errors.removeError(googleError.id);
+                });
+
+                google.visualization.events.addListener(chart, 'select', goToBuildReport);
+                chart.draw(scope.data, scope.options);
+
+                scope.$watch('data', function (newValue, oldValue) {
+                    chart.draw(scope.data, scope.options);
+                });
+                scope.$watch('options', function (newValue, oldValue) {
+                    chart.draw(scope.data, scope.options);
+                });
+            }
+        }
     });
