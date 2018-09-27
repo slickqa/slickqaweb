@@ -1,4 +1,4 @@
-import bson
+import datetime
 
 from slickqaweb.api.result import cancel_individual_result, reschedule_individual_result
 from slickqaweb.model.result import Result
@@ -8,21 +8,16 @@ __author__ = 'Jason Corbett'
 from slickqaweb.app import app
 from slickqaweb.model.testrunGroup import TestrunGroup
 from slickqaweb.model.project import Project
-from slickqaweb.model.release import Release
-from slickqaweb.model.build import Build, ListField
+from slickqaweb.model.build import ListField
 from slickqaweb.model.testrun import Testrun
-from slickqaweb.model.serialize import deserialize_that
-from slickqaweb.model.query import queryFor
-from flask import request, g
-from .standardResponses import JsonResponse, read_request
+from flask import request
+from .standardResponses import JsonResponse
 from .apidocs import add_resource, returns, argument_doc
-from bson import ObjectId
-
-from .project import get_project, get_release, get_build
 
 # TODO: add error handling. Not sure how to handle that yet.
 
 add_resource("/build-report", "Get build reports.")
+
 
 @app.route('/api/build-report/<project_name>/<release_name>/<path:build_name>')
 @returns(TestrunGroup)
@@ -45,8 +40,13 @@ def get_build_report(project_name, release_name, build_name):
         if testrun.testplanId not in testplans:
             report.testruns.append(testrun)
             testplans.append(testrun.testplanId)
-
+    if report.state() == "FINISHED" and not report.finished:
+        report.finished = datetime.datetime.utcnow()
+        report.save()
+    else:
+        report.finished = None
     return JsonResponse(report)
+
 
 @app.route('/api/release-report/<project_name>/<release_name>')
 @returns(dict)
@@ -62,7 +62,7 @@ def get_build_reports(project_name, release_name):
             pass
     groupType = "SERIAL"
     if request.args.get("groupType"):
-        groupType = request.args.get("groupType");
+        groupType = request.args.get("groupType")
     project_id, release_id, build_id = Project.lookup_project_release_build_ids(project_name, release_name, None, get_all_builds=True, limit=limit)
     report = {}
     report['name'] = "Release Report for {} {}".format(project_name, release_name)
@@ -77,6 +77,7 @@ def get_build_reports(project_name, release_name):
         testrun_group.testruns = Testrun.objects(build__buildId=build_object['id']).order_by("-dateCreated")
         report['builds'].append(testrun_group)
     return JsonResponse(report)
+
 
 @app.route('/api/build-report/<project_name>/<release_name>/recent-builds')
 @returns(TestrunGroup)
@@ -98,8 +99,8 @@ def get_recent_builds_for_release(project_name, release_name, build_name):
         if testrun.testplanId not in testplans:
             report.testruns.append(testrun)
             testplans.append(testrun.testplanId)
-
     return JsonResponse(report)
+
 
 @app.route('/api/build-report/<project_name>/<release_name>/<path:build_name>/reschedule/<status>')
 @argument_doc('project_name', 'The name of the project.')
@@ -140,4 +141,3 @@ def cancel_results_for_build(project_name, release_name, build_name):
         for result in results_to_cancel:
             cancel_individual_result(result.id)
     return JsonResponse(canceled_results)
-

@@ -1,23 +1,24 @@
 import datetime
 
 import bson
+from flask import request
+from mongoengine import ListField, ReferenceField
+
+from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from slickqaweb import events
 from slickqaweb.app import app
-from slickqaweb.utils import is_provided, is_not_provided
-from slickqaweb.model.testrun import Testrun
-from slickqaweb.model.testrunGroup import TestrunGroup
-from slickqaweb.model.serialize import deserialize_that
+from slickqaweb.model.project import Project
+from slickqaweb.model.projectReference import ProjectReference
 from slickqaweb.model.query import queryFor
 from slickqaweb.model.result import Result
-from slickqaweb.model.project import Project
+from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.testPlan import TestPlan
-from slickqaweb.model.projectReference import ProjectReference
+from slickqaweb.model.testrun import Testrun
+from slickqaweb.model.testrunGroup import TestrunGroup
+from slickqaweb.utils import is_provided, is_not_provided
 from .project import get_project, get_release, get_build
-from flask import request, g
+from .result import reschedule_individual_result, cancel_individual_result
 from .standardResponses import JsonResponse, read_request
-from .result import get_results, reschedule_individual_result, cancel_individual_result
-from slickqaweb import events
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
-from mongoengine import ListField, ReferenceField
 
 add_resource('/testruns', 'Add, update, and delete testruns.')
 
@@ -104,7 +105,7 @@ def add_testrun():
     if is_not_provided(new_tr, 'dateCreated'):
         new_tr.dateCreated = datetime.datetime.utcnow()
     if is_not_provided(new_tr, 'info') and is_provided(new_tr, 'build') and \
-       is_provided(new_tr, 'project') and is_provided(new_tr, 'release'):
+            is_provided(new_tr, 'project') and is_provided(new_tr, 'release'):
         project = get_project(new_tr.project.name)
         build = None
         if project is None:
@@ -138,6 +139,8 @@ def update_testrun(testrun_id):
     deserialize_that(read_request(), orig)
     if orig.state == "FINISHED" and is_not_provided(orig, 'runFinished'):
         orig.runFinished = datetime.datetime.utcnow()
+    else:
+        orig.runFinished = None
     orig.save()
     update_event.after(orig)
     return JsonResponse(orig)
@@ -195,5 +198,3 @@ def cancel_results_from_testrun(testrun_id):
     for result in results_to_cancel:
         cancel_individual_result(result.id)
     return JsonResponse(Result.objects(testrun__testrunId=testrun.id, status="FINISHED", runstatus="SKIPPED"))
-
-

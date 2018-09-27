@@ -1,0 +1,63 @@
+@c-status-noresult: #c0c0c0;
+
+.loader {
+  height: 1px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: @c-status-noresult;
+  top: 20px;
+}
+
+.loader:before {
+  display: block;
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 1px;
+  background-color: #55be9c;
+  animation: loading 2s linear infinite;
+}
+
+@keyframes loading {
+  from {
+    left: -200px;
+    width: 30%;
+  }
+  50% {
+    width: 30%;
+  }
+  70% {
+    width: 70%;
+  }
+  80% {
+    left: 50%;
+  }
+  95% {
+    left: 120%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+.line {
+  border: 0;
+  height: 1px;
+  position: absolute;
+  top: 20px;
+  width: 100%;
+}
+
+.dotted-line {
+  border: 0;
+  border-top: 1px dashed;
+  height: 1px;
+  position: absolute;
+  top: 20px;
+  width: 100%;
+}
+
+.md-tooltip {
+  height: auto;
+}

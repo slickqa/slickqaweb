@@ -8,6 +8,52 @@ function replaceOnStatus(status, replace_with) {
     }
 }
 
+function phaseTypeToIcon(phaseType) {
+    switch (phaseType) {
+        case "unit":
+            return "assignment";
+        case "build":
+            return "build";
+        case "smoke":
+            return "cloud";
+        case "bats":
+            return "assignment_turned_in";
+        case "integration":
+            return "group_work";
+        case "regression":
+            return "playlist_add_check";
+        case "performance":
+            return "trending_up";
+        case "deploy":
+            return "send";
+        case "generic":
+            return "all_inclusive";
+        default: return "all_inclusive";
+    }
+}
+
+function statusToColor(status) {
+    switch (status) {
+        case "PASS":
+            return "#00b352";
+        case "FAIL":
+            return "#f96565";
+        case "BROKEN_TEST":
+            return "#ffd377";
+        case "NOT_TESTED":
+            return "#6EA9FF";
+        case "NO_RESULT":
+            return "#c0c0c0";
+        case "SKIP":
+            return "#A06744";
+        case "CANCELLED":
+            return "#a0522d";
+        case "PASSED_ON_RETRY":
+            return "#247549";
+        default: return "unset";
+    }
+}
+
 angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'ngMaterial', 'ngAria', 'ngMdIcons', 'md.data.table', 'restangular', 'ngSanitize' ])
   .config(['$locationProvider', 'RestangularProvider', function ($locationProvider, RestangularProvider) {
     $locationProvider.html5Mode(true);
@@ -757,9 +803,9 @@ angular.module('slickApp')
         $scope.getDurationString = getDurationString;
         $scope.isObject = isObject;
         $scope.objToValues = objectToValues;
-        
+
         const allProjects = 'All';
-        
+
         $scope.project = $cookies.get("projectFilter");
         if ($routeParams["project"]) {
             $scope.project = $routeParams["project"];
@@ -786,12 +832,12 @@ angular.module('slickApp')
         };
 
         const testrunsTabName = 'Testruns';
-        $scope.testrunListOne = [];
+        $scope.testrunList = [];
         $scope.testrunsQuery = $cookies.getObject("testrunsQuery");
         if (!$scope.testrunsQuery) {
             $scope.testrunsQuery = {
                 index: 1,
-                order: '-dateCreated',
+                order: '-runStarted',
                 limit: 25,
                 queryLimit: 25,
                 page: 1
@@ -817,8 +863,24 @@ angular.module('slickApp')
             $scope.testrunGroupsQuery.order = order;
         };
 
+        const pipelinesTabName = 'Pipelines';
+        $scope.pipelinesList = [];
+        $scope.pipelinesQuery = $cookies.getObject("pipelinesQuery");
+        if (!$scope.pipelinesQuery) {
+            $scope.pipelinesQuery = {
+                index: 2,
+                order: '-started',
+                limit: 25,
+                queryLimit: 25,
+                page: 1
+            };
+        }
+        $scope.setPipelinesSort = function (order) {
+            $scope.pipelinesQuery.order = order;
+        };
+
         $scope.limits = [25, 50, 100, 200];
-        
+
         const statisticsTabName = 'Statistics';
 
         $scope.tabNameToIndex = function (tabName) {
@@ -829,8 +891,10 @@ angular.module('slickApp')
                     return 1;
                 case testrungroupsTabName:
                     return 2;
-                case statisticsTabName:
+                case pipelinesTabName:
                     return 3;
+                case statisticsTabName:
+                    return 4;
                 default:
                     return parseInt(tabName);
             }
@@ -856,6 +920,7 @@ angular.module('slickApp')
 
         let stop;
         let builds;
+        let pipelines;
         let check;
 
         // $scope.statTabNameToIndex = function (statTabName) {
@@ -872,9 +937,9 @@ angular.module('slickApp')
         // };
 
         // $scope.onStatTabSelected = function (index) {
-            // $cookies.put("selectedStatIndex", index);
-            // $location.search("statsTab", index);
-            // $scope.selectedStatIndex = $scope.statTabNameToIndex(index);
+        // $cookies.put("selectedStatIndex", index);
+        // $location.search("statsTab", index);
+        // $scope.selectedStatIndex = $scope.statTabNameToIndex(index);
         // };
 
         // $scope.isStatTabSelected = function (index) {
@@ -917,13 +982,13 @@ angular.module('slickApp')
                         });
                     });
                     rest.one('testcases').one('recently-created').get({days: days}).then(function (createdByProject) {
-                    _.each(createdByProject, function (project) {
-                        $scope.testcasesByProject[project._id.project] = $scope.testcasesByProject[project._id.project] || {};
-                        $scope.testcasesByProject[project._id.project][days] = $scope.testcasesByProject[project._id.project][days] || {};
-                        $scope.testcasesByProject[project._id.project][days]['title'] = days !== 1 ? `Past ${days} days` : "Today";
-                        $scope.testcasesByProject[project._id.project][days]['count'] = project
+                        _.each(createdByProject, function (project) {
+                            $scope.testcasesByProject[project._id.project] = $scope.testcasesByProject[project._id.project] || {};
+                            $scope.testcasesByProject[project._id.project][days] = $scope.testcasesByProject[project._id.project][days] || {};
+                            $scope.testcasesByProject[project._id.project][days]['title'] = days !== 1 ? `Past ${days} days` : "Today";
+                            $scope.testcasesByProject[project._id.project][days]['count'] = project
+                        });
                     });
-                });
                 });
                 let statsForProjectsList = [];
                 _.each(Object.values(statsByProject), function (stat) {
@@ -956,7 +1021,7 @@ angular.module('slickApp')
         };
 
         $scope.checkForStatsForProject();
-        
+
         let firstFetch = true;
         $scope.fetchData = function () {
             if ($scope.selectedIndex === $scope.tabNameToIndex(statisticsTabName) || firstFetch) {
@@ -966,17 +1031,19 @@ angular.module('slickApp')
                 });
             }
             $scope.currentTimeMillis = new Date().getTime();
-            var testrunsQuery = {orderby: '-dateCreated', limit: $scope.testrunsQuery.queryLimit};
+            let testrunsQuery = {orderby: '-runStarted', limit: $scope.testrunsQuery.queryLimit};
+            if ($scope.project) {
+                $cookies.put("projectFilter", $scope.project)
+            }
             if ($scope.project && $scope.project !== allProjects) {
                 testrunsQuery["project.name"] = $scope.project;
-                $cookies.put("projectFilter", $scope.project)
             }
             $cookies.putObject("buildsQuery", $scope.buildsQuery);
             $cookies.putObject("testrunsQuery", $scope.testrunsQuery);
             $cookies.putObject("testrunGroupsQuery", $scope.testrunGroupsQuery);
             if ($scope.selectedIndex === $scope.tabNameToIndex(testrunsTabName) || firstFetch) {
                 rest.all('testruns').getList(testrunsQuery).then(function (testruns) {
-                    $scope.testrunListOne = testruns
+                    $scope.testrunList = testruns
                 });
             }
             if ($scope.selectedIndex === $scope.tabNameToIndex(testrungroupsTabName) || firstFetch) {
@@ -1034,7 +1101,7 @@ angular.module('slickApp')
                             });
                             processBuildList(buildList);
                         } else {
-                            rest.one('projects', $scope.project).get().then(function (project) {
+                            rest.one('projects', $scope.project).get({quick: true}).then(function (project) {
                                 _.each(project.releases, function (release) {
                                     _.each(release.builds, function (build) {
                                         // This creates a flat list that we can sort
@@ -1048,7 +1115,7 @@ angular.module('slickApp')
                 });
             } else if ($scope.project) {
                 if ($scope.selectedIndex === $scope.tabNameToIndex(buildsTabName) || firstBuildsFetch) {
-                    rest.one('projects', $scope.project).get().then(function (project) {
+                    rest.one('projects', $scope.project).get({quick: true}).then(function (project) {
                         _.each(project.releases, function (release) {
                             _.each(release.builds, function (build) {
                                 // This creates a flat list that we can sort
@@ -1057,6 +1124,24 @@ angular.module('slickApp')
                         });
                         processBuildList(buildList);
                     });
+                }
+            }
+        };
+
+        let firstTimelineFetch = true;
+        $scope.fetchPipelinesData = function () {
+            if ($scope.selectedIndex === $scope.tabNameToIndex(pipelinesTabName) || firstTimelineFetch) {
+                let pipelinesQuery = {orderby: '-started', limit: $scope.pipelinesQuery.queryLimit};
+                if ($scope.project && $scope.project !== allProjects) {
+                    pipelinesQuery["project.name"] = $scope.project;
+                    $cookies.put("projectFilter", $scope.project)
+                }
+                $cookies.putObject("pipelinesQuery", $scope.pipelinesQuery);
+                rest.all('pipelines').getList(pipelinesQuery).then(function (pipelines) {
+                    $scope.pipelinesList = pipelines;
+                });
+                if (!pipelines) {
+                    pipelines = $interval($scope.fetchPipelinesData, 3000)
                 }
             }
         };
@@ -1139,6 +1224,10 @@ angular.module('slickApp')
                 $timeout.cancel(builds);
                 builds = undefined;
             }
+            if (angular.isDefined(pipelines)) {
+                $timeout.cancel(pipelines);
+                pipelines = undefined;
+            }
             if (angular.isDefined(check)) {
                 $interval.cancel(check);
                 check = undefined;
@@ -1156,6 +1245,7 @@ angular.module('slickApp')
         });
 
         $scope.fetchData();
+        $scope.fetchPipelinesData();
         $scope.fetchBuildsData();
         window.scope = $scope;
     }]);
@@ -1723,47 +1813,6 @@ angular.module('slickApp')
         };
     }
 ]);
-/**
- * User: jcorbett
- * Date: 11/23/13
- * Time: 9:15 PM
- */
-
-
-angular.module("slickApp")
-    .directive("slickTestrunStatusbar", function() {
-        return {
-            restrict: 'E',
-            transclude: false,
-            replace: true,
-            templateUrl: "static/resources/shared/testrun-statusbar/statusbar.html",
-            scope: {
-                summary: "=",
-                size: "@"
-            },
-
-            link: function(scope, element, attrs, ctrls) {
-                if (scope.size != "large" && scope.size != "normal") {
-                    scope.size = "normal";
-                }
-                scope.setStats = function () {
-                    scope.stats = [];
-
-                    _.each(scope.summary.statusListOrdered, function(statusName) {
-                        scope.stats.push({name: statusName,
-                            width: ((scope.summary.resultsByStatus[statusName] / scope.summary.total) * 100).toFixed(0)});
-                    });
-                };
-                scope.setStats();
-                scope.$watch('summary', function(newValue, oldValue) {
-                    if (newValue !== oldValue) {
-                        scope.setStats();
-                    }
-                });
-            }
-
-        };
-    });
 /**
  * User: jcorbett
  * Date: 11/24/13
@@ -4058,3 +4107,85 @@ angular.module('slickApp')
     }]);
 
 
+/**
+ * User: steve.jensen
+ * Date: 9/18/2018
+ * Time: 4:14 PM
+ */
+
+
+angular.module("slickApp")
+    .directive("pipeline", function () {
+        return {
+            restrict: 'E',
+            transclude: false,
+            replace: true,
+            templateUrl: "static/resources/shared/pipeline/pipeline.html",
+            scope: {
+                data: "=",
+                size: "@"
+            },
+
+            link: function (scope, element, attrs, ctrls) {
+                scope.replaceOnStatus = replaceOnStatus;
+                scope.statusToColor = statusToColor;
+                scope.phaseTypeToIcon = phaseTypeToIcon;
+                scope.getDurationString = getDurationString;
+                scope.setStats = function () {
+
+                    scope.phases = [];
+                    _.each(scope.data.phases, function (phase) {
+                        phase.width = ((phase.duration / scope.data.duration) * 100).toFixed(0);
+                        scope.phases.push(phase);
+                    });
+                };
+                scope.setStats();
+                scope.$watch('data', function (newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        scope.setStats();
+                    }
+                });
+            }
+        }
+    });
+/**
+ * User: jcorbett
+ * Date: 11/23/13
+ * Time: 9:15 PM
+ */
+
+
+angular.module("slickApp")
+    .directive("slickTestrunStatusbar", function() {
+        return {
+            restrict: 'E',
+            transclude: false,
+            replace: true,
+            templateUrl: "static/resources/shared/testrun-statusbar/statusbar.html",
+            scope: {
+                summary: "=",
+                size: "@"
+            },
+
+            link: function(scope, element, attrs, ctrls) {
+                if (scope.size != "large" && scope.size != "normal") {
+                    scope.size = "normal";
+                }
+                scope.setStats = function () {
+                    scope.stats = [];
+
+                    _.each(scope.summary.statusListOrdered, function(statusName) {
+                        scope.stats.push({name: statusName,
+                            width: ((scope.summary.resultsByStatus[statusName] / scope.summary.total) * 100).toFixed(0)});
+                    });
+                };
+                scope.setStats();
+                scope.$watch('summary', function(newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        scope.setStats();
+                    }
+                });
+            }
+
+        };
+    });

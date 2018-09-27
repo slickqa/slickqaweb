@@ -16,7 +16,7 @@ pages/not-found/not-found.js
 pages/project/projects.js
 pages/find-testcases/find-testcases.js
 pages/testcase/testcases.js
-shared/testrun-statusbar/statusbar.js
+shared/testrun-statusbar/pipeline.js
 pages/testruns/testruns.js
 shared/side-select/side-select.js
 shared/testrun-stats/stats.js
@@ -36,3 +36,5 @@ pages/result-list/result-list.js
 pages/tps/release-report.js
 shared/main/sidenav.js
 shared/environment.js
+shared/pipeline/pipeline.js
+shared/testrun-statusbar/statusbar.js

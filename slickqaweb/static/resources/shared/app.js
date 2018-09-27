@@ -8,6 +8,52 @@ function replaceOnStatus(status, replace_with) {
     }
 }
 
+function phaseTypeToIcon(phaseType) {
+    switch (phaseType) {
+        case "unit":
+            return "assignment";
+        case "build":
+            return "build";
+        case "smoke":
+            return "cloud";
+        case "bats":
+            return "assignment_turned_in";
+        case "integration":
+            return "group_work";
+        case "regression":
+            return "playlist_add_check";
+        case "performance":
+            return "trending_up";
+        case "deploy":
+            return "send";
+        case "generic":
+            return "all_inclusive";
+        default: return "all_inclusive";
+    }
+}
+
+function statusToColor(status) {
+    switch (status) {
+        case "PASS":
+            return "#00b352";
+        case "FAIL":
+            return "#f96565";
+        case "BROKEN_TEST":
+            return "#ffd377";
+        case "NOT_TESTED":
+            return "#6EA9FF";
+        case "NO_RESULT":
+            return "#c0c0c0";
+        case "SKIP":
+            return "#A06744";
+        case "CANCELLED":
+            return "#a0522d";
+        case "PASSED_ON_RETRY":
+            return "#247549";
+        default: return "unset";
+    }
+}
+
 angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 'ngMaterial', 'ngAria', 'ngMdIcons', 'md.data.table', 'restangular', 'ngSanitize' ])
   .config(['$locationProvider', 'RestangularProvider', function ($locationProvider, RestangularProvider) {
     $locationProvider.html5Mode(true);
