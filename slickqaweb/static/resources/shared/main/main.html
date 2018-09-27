@@ -268,23 +268,23 @@
                                         <md-icon ng-show="data.status !== 'NO_RESULT'" class="material-icons result-status-{{ replaceOnStatus(data.status, '') }}" title="{{ replaceOnStatus(data.status, ' ') }}">{{ statusToIcon(data.status) }}</md-icon>
                                         <i ng-show="data.status === 'NO_RESULT'" class="pulse" title="RUNNING"></i>
                                     </td>
-                                    <td md-cell style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        <span>{{ data.name }}</span>
+                                    <td md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <span title="{{ data.name }}">{{ data.name }}</span>
                                         <md-tooltip ng-if="data.notes">{{ data.notes }}</md-tooltip>
                                     </td>
                                     <td md-cell>
                                         <span>{{ data.project.name }}</span>
                                     </td>
-                                    <td md-cell>
+                                    <td md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         <span>{{ data.release.name }}</span>
                                     </td>
                                     <td md-cell>
                                         <span>{{ data.build.name }}</span>
                                     </td>
-                                    <td md-cell style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <td md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         <span>{{ data.started | date: 'medium' }}</span>
                                     </td>
-                                    <td md-cell style="width: 75%">
+                                    <td md-cell style="min-width: 700px; width: 75%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         <pipeline data="data" style="align-items: center"></pipeline>
                                     </td>
                                 </tr>

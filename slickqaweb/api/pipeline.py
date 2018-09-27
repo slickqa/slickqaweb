@@ -74,7 +74,7 @@ def phase_check(phase):
         if phase.status != "NO_RESULT" and is_not_provided(phase, 'finished'):
             phase.finished = datetime.datetime.utcnow()
             phase.state = "FINISHED"
-        elif phase.status == "NO_RESULT":
+        elif phase.status == "NO_RESULT" and phase.state == "FINISHED":
             phase.finished = None
             phase.state = "RUNNING"
         return phase
