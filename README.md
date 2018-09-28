@@ -1,5 +1,6 @@
 Slick
 =====
+[![Waffle.io - Issues in progress](https://badge.waffle.io/slickqa/slickqaweb.png?label=in%20progress&title=In%20Progress)](http://waffle.io/slickqa/slickqaweb)
 
 Slick is a web based test case and result managment tool.  The previous version 
 used java on the server side and jquery / backbone on the web as a single page
