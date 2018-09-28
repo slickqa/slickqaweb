@@ -44,7 +44,7 @@ function statusToColor(status) {
             return "#6EA9FF";
         case "NO_RESULT":
             return "#c0c0c0";
-        case "SKIP":
+        case "SKIPPED":
             return "#A06744";
         case "CANCELLED":
             return "#a0522d";
