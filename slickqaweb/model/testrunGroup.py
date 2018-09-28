@@ -78,11 +78,11 @@ class TestrunGroup(Document):
     @serializable
     def duration(self):
         retval = 0
-        if self.created and self.finished:
+        if self.created and self.finished and serialize_this(self.created) is not None and serialize_this(self.finished) is not None:
             retval = serialize_this(self.finished) - serialize_this(self.created)
-        elif self.created:
+        elif self.created and serialize_this(self.created) is not None:
             retval = serialize_this(datetime.datetime.utcnow()) - serialize_this(self.created)
-        elif self.testruns and self.finished:
+        elif self.testruns and serialize_this(self.finished) is not None and serialize_this(self.testruns[0].runStarted) is not None:
             retval = serialize_this(self.finished) - serialize_this(self.testruns[0].runStarted)
         elif self.testruns and serialize_this(self.testruns[0].runStarted) is not None:
             retval = serialize_this(datetime.datetime.utcnow()) - serialize_this(self.testruns[0].runStarted)
