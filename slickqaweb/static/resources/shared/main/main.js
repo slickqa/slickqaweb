@@ -321,7 +321,7 @@ angular.module('slickApp')
                 });
                 Promise.all(promises).then(function () {
                     $scope.buildList = tempBuildList;
-                    builds = $timeout($scope.fetchBuildsData, 3000)
+                    builds = $timeout($scope.fetchBuildsData, 15000)
                 });
                 firstBuildsFetch = false;
             }

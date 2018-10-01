@@ -640,7 +640,7 @@ def get_single_scheduled_result(hostname):
 def get_queue_statistics():
     conn = connection.get_connection()
     result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
-    return JsonResponse(result['result'])
+    return JsonResponse(list(result))
 
 @app.route('/api/results/queue/running')
 def get_queue_running():
@@ -652,7 +652,7 @@ def get_queue_running():
         query = {'project': '$project.name'}
     conn = connection.get_connection()
     result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'RUNNING'}}, {'$group': {'_id': query, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
-    return JsonResponse(result['result'])
+    return JsonResponse(list(result))
 
 @app.route('/api/results/queue/finished')
 def get_queue_finished():
@@ -666,7 +666,7 @@ def get_queue_finished():
         {'$match': {'runstatus': 'FINISHED', 'recorded': {'$gte': datetime.datetime.utcnow() + datetime.timedelta(-days), '$lt': datetime.datetime.utcnow()}}},
         {'$group': {'_id': query, 'count': {'$sum': 1}}}
     ])
-    return JsonResponse(result['result'])
+    return JsonResponse(list(result))
 
 @app.route('/api/results/<result_id>/files', methods=['POST'])
 @accepts(StoredFile)

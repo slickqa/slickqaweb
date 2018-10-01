@@ -45,7 +45,7 @@ def get_testcases_created():
         {'$match': {'created': {'$gte': datetime.datetime.utcnow() + datetime.timedelta(-days), '$lt': datetime.datetime.utcnow()}}},
         {'$group': {'_id': query, 'count': {'$sum': 1}}}
     ])
-    return JsonResponse(result['result'])
+    return JsonResponse(list(result))
 
 
 @app.route('/api/testcases', methods=["POST"])

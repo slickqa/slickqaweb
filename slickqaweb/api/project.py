@@ -37,7 +37,7 @@ def get_projects():
                 }
             }
         ])
-        return JsonResponse(result['result'])
+        return JsonResponse(list(result))
     else:
         return JsonResponse(queryFor(Project))
 
