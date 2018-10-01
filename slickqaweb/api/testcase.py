@@ -1,5 +1,7 @@
 import datetime
 
+from slickqaweb.utils import is_provided, is_not_provided
+
 __author__ = 'slambson'
 
 from slickqaweb.app import app
@@ -57,6 +59,8 @@ def add_testcase():
     new_tc = deserialize_that(read_request(), Testcase())
     #if (new_tc.author is None or new_tc.author == "") and g.user is not None:
     #    new_tc.author = g.user.full_name
+    if is_not_provided(new_tc, 'created'):
+        new_tc.created = datetime.datetime.utcnow()
     new_tc.save()
     return JsonResponse(new_tc)
 
