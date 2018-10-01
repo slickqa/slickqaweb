@@ -2,7 +2,7 @@ import datetime
 
 from bson import ObjectId
 from flask import request
-from mongoengine import ListField, ReferenceField, EmbeddedDocumentListField
+from mongoengine import ListField, ReferenceField, EmbeddedDocumentListField, EmbeddedDocumentField
 
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from slickqaweb import events
