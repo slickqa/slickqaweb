@@ -624,7 +624,7 @@ def get_single_scheduled_result(hostname):
     rawquery['requirements'] = {'$not': {'$elemMatch': {'$nin': provides}}}
     import mongoengine
     # mongoengine.QuerySet.modify()
-    result = Result.objects(__raw__=rawquery).order_by("recorded").modify(new=True, full_response=True, **update)
+    result = Result.objects(__raw__=rawquery).order_by("recorded").modify(new=True, full_response=False, **update)
     # query = {}
     # if 'project' in parameters:
     #    query['project__name'] = parameters['project']
@@ -633,7 +633,7 @@ def get_single_scheduled_result(hostname):
     # if 'build' in parameters:
     #    query['build__name'] = parameters['build']
 
-    return JsonResponse(result["value"])
+    return JsonResponse(result)
 
 
 @app.route('/api/results/queue/statistics')
