@@ -43,8 +43,6 @@ def get_build_report(project_name, release_name, build_name):
     if report.state() == "FINISHED" and not report.finished:
         report.finished = datetime.datetime.utcnow()
         report.save()
-    else:
-        report.finished = None
     return JsonResponse(report)
 
 
