@@ -139,7 +139,8 @@ def update_testrun(testrun_id):
     deserialize_that(read_request(), orig)
     if orig.state == "FINISHED" and is_not_provided(orig, 'runFinished'):
         orig.runFinished = datetime.datetime.utcnow()
-    else:
+    elif orig.state == "FINISHED":
+        orig.state = "RUNNING"
         orig.runFinished = None
     orig.save()
     update_event.after(orig)
