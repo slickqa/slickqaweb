@@ -2991,6 +2991,7 @@ a.result-status-NOTTESTED:visited {
   display: box;
   display: flex;
   width: 100%;
+  overflow: hidden;
   padding-top: 10px;
 }
 .slick-list-header-search-box {

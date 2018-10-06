@@ -431,10 +431,12 @@
                                         <span ng-show="!$last">,</span>
                                 </span>
                     </fieldset>
-                    <fieldset style="margin-bottom: 5px" class="standard" ng-show="resultGraphs[result.id]">
-                        <legend>Graph</legend>
-                        <google-area-chart class="testrungroup-serial-chart" data="resultGraphs[result.id].data" options="resultGraphs[result.id].options"></google-area-chart>
-                    </fieldset>
+                    <div ng-show="resultGraphs[result.id]">
+                        <fieldset style="margin-bottom: 5px" class="standard">
+                            <legend>Graph</legend>
+                            <google-area-chart class="testrungroup-serial-chart" data="resultGraphs[result.id].data" options="resultGraphs[result.id].options"></google-area-chart>
+                        </fieldset>
+                    </div>
                     <fieldset style="margin-bottom: 5px" class="standard">
                         <legend>Testcase</legend>
                         <md-toolbar md-colors="{background: 'accent-A200'}">
