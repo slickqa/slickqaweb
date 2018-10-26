@@ -1128,9 +1128,9 @@ angular.module('slickApp')
             }
         };
 
-        let firstTimelineFetch = true;
+        let firstPipelineFetch = true;
         $scope.fetchPipelinesData = function () {
-            if ($scope.selectedIndex === $scope.tabNameToIndex(pipelinesTabName) || firstTimelineFetch) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex(pipelinesTabName) || firstPipelineFetch) {
                 let pipelinesQuery = {orderby: '-started', limit: $scope.pipelinesQuery.queryLimit};
                 if ($scope.project && $scope.project !== allProjects) {
                     pipelinesQuery["project.name"] = $scope.project;
@@ -1141,7 +1141,8 @@ angular.module('slickApp')
                     $scope.pipelinesList = pipelines;
                 });
                 if (!pipelines) {
-                    pipelines = $interval($scope.fetchPipelinesData, 3000)
+                    pipelines = $interval($scope.fetchPipelinesData, 3000);
+                    firstPipelineFetch = false;
                 }
             }
         };
@@ -1225,7 +1226,7 @@ angular.module('slickApp')
                 builds = undefined;
             }
             if (angular.isDefined(pipelines)) {
-                $timeout.cancel(pipelines);
+                $interval.cancel(pipelines);
                 pipelines = undefined;
             }
             if (angular.isDefined(check)) {
