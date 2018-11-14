@@ -42,9 +42,9 @@ def get_build_report(project_name, release_name, build_name):
             testplans.append(testrun.testplanId)
     if report.state() == "FINISHED" and not report.finished:
         report.finished = datetime.datetime.utcnow()
-        # report.save() DON'T DO THIS, build reports don't get saved
-    else:
-        report.finished = None
+        # report.save() Warning, be careful not to do this, build reports don't get saved
+        # this will create a new testrungroup every time the build report is
+        # queried
     return JsonResponse(report)
 
 
