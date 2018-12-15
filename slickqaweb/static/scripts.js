@@ -879,6 +879,24 @@ angular.module('slickApp')
             $scope.pipelinesQuery.order = order;
         };
 
+        if (!$cookies.getObject('pipelineShowFilter')) {
+            $cookies.putObject('pipelineShowFilter', {
+                name: true,
+                project: true,
+                release: true,
+                build: true,
+                started: true
+            });
+        }
+        $scope.show = $cookies.getObject('pipelineShowFilter');
+
+        $scope.$watch('showFilter.$dirty', function (newValue, oldValue) {
+            if (newValue) {
+                $cookies.putObject('pipelineShowFilter', $scope.show);
+                $scope.showFilter.$setPristine();
+            }
+        });
+
         $scope.limits = [25, 50, 100, 200];
 
         const statisticsTabName = 'Statistics';

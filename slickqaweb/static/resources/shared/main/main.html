@@ -246,6 +246,21 @@
                                     <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name' track by $index" ng-value="projectItem.name" ng-selected="projectItem.name === project" ng-click="fetchPipelinesData()">{{ projectItem.name }}</md-option>
                                 </md-select>
                             </md-input-container>
+                            <form class="testrun-summary-show-form" name="showFilter">
+                                <md-menu>
+                                    <md-button class="md-fab md-mini md-primary" ng-click="$mdMenu.open()">
+                                        <md-icon class="material-icons">visibility</md-icon>
+                                        <md-tooltip>Show</md-tooltip>
+                                    </md-button>
+                                    <md-menu-content>
+                                        <md-menu-item><span class="testrun-summary-filter"><md-switch type="checkbox" ng-model="show['name']">Name</md-switch></span></md-menu-item>
+                                        <md-menu-item><span class="testrun-summary-filter"><md-switch type="checkbox" ng-model="show['project']">Project</md-switch></span></md-menu-item>
+                                        <md-menu-item><span class="testrun-summary-filter"><md-switch type="checkbox" ng-model="show['release']">Release</md-switch></span></md-menu-item>
+                                        <md-menu-item><span class="testrun-summary-filter"><md-switch type="checkbox" ng-model="show['build']">Build</md-switch></span></md-menu-item>
+                                        <md-menu-item><span class="testrun-summary-filter"><md-switch type="checkbox" ng-model="show['started']">Started</md-switch></span></md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
+                            </form>
                         </div>
                     </md-toolbar>
                     <md-content>
@@ -254,11 +269,11 @@
                                 <thead md-head md-order="pipelinesQuery.order" md-on-reorder="setPipelinesSort">
                                 <tr md-row>
                                     <th md-column md-order-by="status" style="text-align: center">Status</th>
-                                    <th md-column md-order-by="name">Name</th>
-                                    <th md-column md-order-by="project.name">Project</th>
-                                    <th md-column md-order-by="release.name">Release</th>
-                                    <th md-column md-order-by="build.name">Build</th>
-                                    <th md-column md-order-by="started">Started</th>
+                                    <th md-column ng-show="show['name']" md-order-by="name">Name</th>
+                                    <th md-column ng-show="show['project']" md-order-by="project.name">Project</th>
+                                    <th md-column ng-show="show['release']" md-order-by="release.name">Release</th>
+                                    <th md-column ng-show="show['build']" md-order-by="build.name">Build</th>
+                                    <th md-column ng-show="show['started']" md-order-by="started">Started</th>
                                     <th md-column md-order-by="phases" style="text-align: center">Phases</th>
                                 </tr>
                                 </thead>
@@ -268,20 +283,20 @@
                                         <md-icon ng-show="data.status !== 'NO_RESULT'" class="material-icons result-status-{{ replaceOnStatus(data.status, '') }}" title="{{ replaceOnStatus(data.status, ' ') }}">{{ statusToIcon(data.status) }}</md-icon>
                                         <i ng-show="data.status === 'NO_RESULT'" class="pulse" title="RUNNING"></i>
                                     </td>
-                                    <td md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <td ng-show="show['name']" md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         <span title="{{ data.name }}">{{ data.name }}</span>
                                         <md-tooltip ng-if="data.notes">{{ data.notes }}</md-tooltip>
                                     </td>
-                                    <td md-cell>
+                                    <td ng-show="show['project']" md-cell>
                                         <span>{{ data.project.name }}</span>
                                     </td>
-                                    <td md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <td ng-show="show['release']" md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         <span>{{ data.release.name }}</span>
                                     </td>
-                                    <td md-cell>
+                                    <td ng-show="show['build']" md-cell>
                                         <span>{{ data.build.name }}</span>
                                     </td>
-                                    <td md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <td ng-show="show['started']" md-cell style="min-width: 100px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         <span>{{ data.started | date: 'medium' }}</span>
                                     </td>
                                     <td md-cell style="min-width: 700px; width: 75%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
