@@ -2327,6 +2327,10 @@ angular.module('slickApp')
             }
         };
 
+        $scope.manuallyPassed = function(resultId) {
+            rest.one()
+        };
+
         $scope.getDisplayName = function (testrun) {
             var retval = testrun.name;
             if (testrun.testplan) {
@@ -2549,6 +2553,10 @@ angular.module('slickApp')
 
         $scope.rescheduleResult = function (result_id) {
             rest.one('results', result_id).one('reschedule').get();
+        };
+        $scope.markResultManuallyPassed = function (result) {
+            result.log.push({entryTime: new Date().getTime(), level: "WARN", loggerName: "slick.note", message: "Manually Verified!", exceptionMessage: ""});
+            rest.one('results', result.id).customPUT({status: "PASSED_ON_RETRY", run_status: "FINISHED", log: result.log});
         };
 
         window.scope = $scope;
