@@ -41,7 +41,7 @@ fi
 
 /usr/sbin/unitd --no-daemon &
 sleep 1
-curl -X PUT -d @/opt/slick/nginx-unit-conf.json --unix-socket /var/run/control.unit.sock http://localhost
+curl -X PUT -d @/opt/slick/nginx-unit-conf.json --unix-socket /var/run/control.unit.sock http://localhost/config/
 
 wait
 
