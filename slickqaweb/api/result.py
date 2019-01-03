@@ -425,7 +425,7 @@ def update_result(result_id):
     update = read_request()
     print(repr(update))
 
-    if 'status' in update and update['status'] != orig.status:
+    if 'status' in update and update['status'] != None and update['status'] != orig.status:
         atomic_update = {
             'dec__summary__resultsByStatus__' + orig.status: 1,
             'inc__summary__resultsByStatus__' + update['status']: 1
@@ -641,6 +641,14 @@ def get_queue_statistics():
     conn = connection.get_connection()
     result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
     return JsonResponse(list(result))
+
+
+@app.route('/api/results/queue/statistics/<attribute>')
+def get_queue_statistics_by_attribute(attribute):
+    conn = connection.get_connection()
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {attribute: '$attributes.' + attribute}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    return JsonResponse(list(result))
+
 
 @app.route('/api/results/queue/running')
 def get_queue_running():
