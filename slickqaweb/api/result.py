@@ -646,7 +646,7 @@ def get_queue_statistics():
 @app.route('/api/results/queue/statistics/<attribute>')
 def get_queue_statistics_by_attribute(attribute):
     conn = connection.get_connection()
-    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {attribute: '$attributes.' + attribute}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED', 'attributes.' + attribute: {'$ne': None}}}, {'$group': {'_id': {attribute: '$attributes.' + attribute}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
     return JsonResponse(list(result))
 
 
