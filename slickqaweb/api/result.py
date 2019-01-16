@@ -639,7 +639,7 @@ def get_single_scheduled_result(hostname):
 @app.route('/api/results/queue/statistics')
 def get_queue_statistics():
     conn = connection.get_connection()
-    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$recorded'}, 'oldest_result': {'$first': '$recorded'}, 'count': {'$sum': 1}}}])
     return JsonResponse(list(result))
 
 @app.route('/api/results/queue/running')
