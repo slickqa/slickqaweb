@@ -569,6 +569,11 @@ def get_single_scheduled_result(hostname):
                 'status': 'NO_RESULT'}
     update = {'set__runstatus': 'TO_BE_RUN',
               'set__hostname': hostname}
+
+    if 'minutes-scheduled' in request.args:
+        minutes_scheduled = int(request.args['minutes-scheduled'])
+        rawquery['recorded'] = {'$lt': datetime.datetime.utcnow() + datetime.timedelta(minutes=-minutes_scheduled)}
+
     attr_query = dict(**parameters)
     if 'project' in attr_query:
         del attr_query['project']
