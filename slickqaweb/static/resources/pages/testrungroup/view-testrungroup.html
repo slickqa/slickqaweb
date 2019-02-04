@@ -1,6 +1,6 @@
 <div class="slickview" ng-switch="testrungroup.grouptype">
-    <md-content style="width: 100%">
-        <md-content ng-switch-when="PARALLEL">
+    <md-content style="width: 100%" md-colors="{background: 'background-900-0.7'}">
+        <md-content ng-switch-when="PARALLEL" md-colors="{background: 'background-900-0'}">
             <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes">
                 <md-tab>
                     <md-tab-label>
@@ -10,9 +10,9 @@
                     <md-tab-body>
                         <div layout="row" layout-wrap>
                             <div layout="row" layout-wrap style="justify-content: space-between; flex-grow: 1">
-                                <div layout="column" md-colors="{background: 'background-hue-1'}">
-                                    <md-card>
-                                        <md-card-header>
+                                <div layout="column" md-colors="{background: 'background-900-0'}">
+                                    <md-card md-colors="{background: 'background-900-0'}">
+                                        <md-card-header md-colors="{background: 'background-900-0.5'}">
                                             <md-card-header-text>
                                                 <span class="md-title">Build Report Information</span>
                                             </md-card-header-text>
@@ -53,15 +53,15 @@
                                             </div>
                                         </md-card-content>
                                     </md-card>
-                                    <md-card>
-                                        <md-card-header>
+                                    <md-card md-colors="{background: 'background-900-0'}">
+                                        <md-card-header md-colors="{background: 'background-900-0.5'}">
                                             <md-card-header-text>
                                                 <span class="md-title">Build History</span>
                                             </md-card-header-text>
                                         </md-card-header>
                                         <md-divider></md-divider>
                                         <md-progress-linear ng-show="buildHistory.length === 0"></md-progress-linear>
-                                        <md-card-content style="max-height: 2.5in; overflow: auto" ng-show="buildHistory.length !== 0">
+                                        <md-card-content style="max-height: 2.5in; overflow: hidden" ng-show="buildHistory.length !== 0">
                                             <md-list class="md-dense">
                                                 <md-list-item ng-repeat="build in buildHistory track by $index" md-colors="build.testruns[0].build.name === testrungroup.testruns[0].build.name ? {background: 'background-A100'} : ''">
                                                     <a class="clickable" href="build-report/{{ build.testruns[0].project.name }}/{{ build.testruns[0].release.name }}/{{ build.testruns[0].build.name }}">
@@ -93,8 +93,8 @@
                                     </md-card>
                                 </div>
                                 <div layout="column">
-                                    <md-card md-colors="{background: 'background'}">
-                                        <md-card-header>
+                                    <md-card md-colors="{background: 'background-900-0'}">
+                                        <md-card-header md-colors="{background: 'background-900-0.5'}">
                                             <md-card-header-text>
                                                 <span class="md-title">Results</span>
                                             </md-card-header-text>
@@ -132,8 +132,8 @@
                                     </md-card>
                                 </div>
                                 <div layout="column">
-                                    <md-card md-colors="{background: 'background'}">
-                                        <md-card-header>
+                                    <md-card md-colors="{background: 'background-900-0'}">
+                                        <md-card-header md-colors="{background: 'background-900-0.5'}">
                                             <md-card-header-text>
                                                 <span class="md-title">Overall Summary</span>
                                             </md-card-header-text>
@@ -174,7 +174,7 @@
             </md-tabs>
         </md-content>
         <google-area-chart class="testrungroup-serial-chart" data="serialData" options="serialChartOptions" ng-switch-when="SERIAL"></google-area-chart>
-        <md-toolbar layout="row" class="md-accent">
+        <md-toolbar layout="row" md-colors="{background: 'background-900-0.9'}">
             <md-toolbar-filler layout layout-align="center center">
                 <md-icon class="material-icons" style="margin-right: 20px">assessment</md-icon>
             </md-toolbar-filler>
@@ -188,9 +188,9 @@
             </div>
         </md-toolbar>
         <md-progress-linear ng-show="!testrungroup.testruns"></md-progress-linear>
-        <md-content ng-show="testrungroup.testruns">
-            <md-content style="overflow: auto">
-                <table slick-list-header model="testrunList" search="on" pagination="on" default-sort="dateCreated" default-page-size="50">
+        <md-content ng-show="testrungroup.testruns" md-colors="{background: 'background-900-0'}">
+            <md-content style="overflow: auto" md-colors="{background: 'background-900-0'}">
+                <table slick-list-header model="testrunList" search="on" pagination="on" default-sort="dateCreated" default-page-size="50"  md-colors="{background: 'background-900-0'}">
                     <tr slick-list-columns class="testruns-list-column-container">
                         <th slick-list-column style="text-align: center">Status</th>
                         <th slick-list-column class="testrungroup-testruns-list-project-column" sort-property-name="project.name" sortable="true">Project</th>
@@ -200,7 +200,7 @@
                         <th slick-list-column class="testruns-list-build-column" sort-property-name="build.name" sortable="true">Build</th>
                         <th slick-list-column class="testruns-list-created-column" sort-property-name="dateCreated" sortable="true">Created</th>
                     </tr>
-                    <tbody ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''" style="width: 100%">
+                    <tbody ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row" md-colors="$index % 2 === 0 ? {background: 'background-900-0.5'} : ''" style="width: 100%">
                     <tr class="testruns-list-column-container">
                         <td style="text-align: center"><md-icon ng-show="testrun.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(testrun.summary.status, '') }}" title="{{ replaceOnStatus(testrun.summary.status, ' ') }}">{{ statusToIcon(testrun.summary.status) }}</md-icon><i ng-if="testrun.state !== 'FINISHED'" class="pulse"></i></td>
                         <td class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></td>

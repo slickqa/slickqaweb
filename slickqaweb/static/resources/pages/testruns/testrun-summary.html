@@ -1,4 +1,4 @@
-<div class="slickview">
+<div class="slickview" md-colors="{background: 'background-900-0.7'}">
     <slick-dialog title="Add Note" size="small" show="showAddNote" buttons="Add|Cancel" button-callback="addNoteDialogButtonClicked(buttonName)">
         <div class="data-view testrun-summary-add-note" layout="column">
             <md-input-container>
@@ -54,18 +54,18 @@
         <ng-include src="'static/resources/pages/testcase/testcase-dataview.html'">
         </ng-include>
     </slick-dialog>
-    <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes">
-        <md-tab>
-            <md-tab-label>
+    <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes" md-colors="{background: 'background-900-0'}">
+        <md-tab md-colors="{background: 'background-900-0'}">
+            <md-tab-label md-colors="{background: 'background-900-0.5'}">
                 <md-icon class="material-icons">info</md-icon>
                 <md-tooltip>Testrun Info</md-tooltip>
             </md-tab-label>
-            <md-tab-body>
+            <md-tab-body md-colors="{background: 'background-900-0'}">
                 <div layout="row" layout-wrap>
                     <div layout="row" layout-wrap style="justify-content: space-between; flex-grow: 1">
-                        <div layout="column" md-colors="{background: 'background-hue-1'}">
-                        <md-card>
-                            <md-card-header style="padding: 2px 16px;">
+                        <div layout="column" md-colors="{background: 'background-900-0'}">
+                        <md-card md-colors="{background: 'background-900-0'}">
+                            <md-card-header style="padding: 2px 16px;" md-colors="{background: 'background-900-0.5'}">
                                 <md-button ng-show="testrun.build.name" class="md-fab md-mini md-primary" ng-href="{{ goToBuildReportButton.href }}" style="margin-right: 20px">
                                     <md-icon class="material-icons">reply</md-icon>
                                     <md-tooltip>Back to Build Report</md-tooltip>
@@ -142,8 +142,8 @@
                                 </div>
                             </md-card-content>
                         </md-card>
-                        <md-card>
-                            <md-card-header>
+                        <md-card md-colors="{background: 'background-900-0'}">
+                            <md-card-header md-colors="{background: 'background-900-0.5'}">
                                 <md-card-header-text>
                                     <span class="md-title">Testrun History</span>
                                 </md-card-header-text>
@@ -164,8 +164,8 @@
                         </md-card>
                     </div>
                         <div layout="column">
-                            <md-card md-colors="{background: 'background'}">
-                                <md-card-header>
+                            <md-card  md-colors="{background: 'background-900-0'}">
+                                <md-card-header md-colors="{background: 'background-900-0.5'}">
                                     <md-card-header-text>
                                         <span class="md-title">Results</span>
                                     </md-card-header-text>
@@ -206,8 +206,8 @@
                             </md-card>
                         </div>
                         <div layout="column">
-                            <md-card md-colors="{background: 'background'}">
-                                <md-card-header>
+                            <md-card  md-colors="{background: 'background-900-0'}">
+                                <md-card-header md-colors="{background: 'background-900-0.5'}">
                                     <md-card-header-text>
                                         <span class="md-title">Overall Summary</span>
                                     </md-card-header-text>
@@ -219,8 +219,8 @@
                             </md-card>
                         </div>
                         <div layout="column">
-                            <md-card md-colors="{background: 'background'}">
-                                <md-card-header>
+                            <md-card  md-colors="{background: 'background-900-0'}">
+                                <md-card-header md-colors="{background: 'background-900-0.5'}">
                                     <md-card-header-text>
                                         <span class="md-title">Frequent Issues</span>
                                     </md-card-header-text>
@@ -255,8 +255,8 @@
                                     </div>
                                 </md-card-content>
                             </md-card>
-                            <md-card md-colors="{background: 'background'}" style="overflow: auto" ng-show="topContributors">
-                                <md-card-header>
+                            <md-card  md-colors="{background: 'background-900-0'}" style="overflow: auto" ng-show="topContributors">
+                                <md-card-header md-colors="{background: 'background-900-0.5'}">
                                     <md-card-header-text>
                                         <span class="md-title">Who should I talk to?</span>
                                     </md-card-header-text>
@@ -302,7 +302,7 @@
             </md-tab-body>
         </md-tab>
     </md-tabs>
-    <md-toolbar layout="row" class="md-table-toolbar md-accent">
+    <md-toolbar layout="row" class="md-table-toolbar" md-colors="{background: 'background-900-0.9'}">
         <md-toolbar-filler layout layout-align="center center">
             <md-icon class="material-icons" style="margin-right: 20px">create</md-icon>
         </md-toolbar-filler>
@@ -349,8 +349,8 @@
         </div>
     </md-toolbar>
     <md-progress-linear ng-show="results.length === 0" style="margin: 0 auto"></md-progress-linear>
-    <md-content style="overflow: auto">
-        <table slick-list-header model="resultList" search="on" pagination="on" default-sort="recorded" default-page-size="50" style="width: 100%">
+    <md-content style="overflow: auto" md-colors="{background: 'background-900-0'}">
+        <table slick-list-header model="resultList" search="on" pagination="on" default-sort="recorded" default-page-size="50" style="width: 100%"  md-colors="{background: 'background-900-0'}">
             <tr slick-list-columns class="result-list-column-container">
                 <th slick-list-column style="text-align: center">Status</th>
                 <th slick-list-column ng-show="results[0].attributes && results[0].attributes.scheduled" class="result-list-status-column" sortable="false"></th>
@@ -363,7 +363,7 @@
                 <th slick-list-column class="result-list-history-column" sortable="false">History</th>
                 <th slick-list-column class="result-list-status-column" sort-property-name="status" sortable="true">Status</th>
             </tr>
-            <tbody style="width: 100%" class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+            <tbody style="width: 100%" class="result-list-row" ng-repeat="result in results | slickListFilter:resultList track by result.id" md-colors="$index % 2 === 0 ? {background: 'background-900-0.75'} : ''">
             <tr style="padding-bottom: 5px">
                 <td style="text-align: center"><md-icon ng-show="result.runstatus === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(result.status, '') }}">{{ statusToIcon(result.status) }}</md-icon><i ng-if="result.runstatus === 'RUNNING' || (result.runstatus === 'FINISHED' && result.status === 'NO_RESULT')" class="pulse"></i></td>
                 <td align="center" ng-show="result.attributes && result.attributes.scheduled" class="result-list-status-column">
@@ -416,7 +416,7 @@
                 </td>
             </tr>
             <tr class="result-expanded" ng-show="isExpanded(result.id)">
-                <td colspan="10" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                <td colspan="10">
                     <fieldset style="margin-bottom: 5px" class="standard" ng-show="result.files.length !== 0">
                         <legend>Files ({{ result.files.length }})</legend>
                         <span ng-repeat="file in result.files">

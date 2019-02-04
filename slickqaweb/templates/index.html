@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="background-color: transparent;">
 <head>
     <base href="{{ base }}"/>
     <meta charset="utf-8">
@@ -20,7 +20,7 @@
     <!-- compiled stylesheet -->
     <link rel="stylesheet" href="static/style.css"/>
 
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- static files -->
     <script src="static/components/angular/angular{{ min }}.js"></script>
@@ -57,8 +57,8 @@
     <script src="static/scripts.js"></script>
 
     <script type="text/javascript">
-        google.load("visualization", "1", {packages: ["corechart"]});
-        google.setOnLoadCallback(function () {
+        google.charts.load("current", {packages: ["corechart"]});
+        google.charts.setOnLoadCallback(function () {
             angular.bootstrap(document.body, ['slickApp']);
         });
     </script>
@@ -67,7 +67,7 @@
         <script src="static/jstests.js"></script>
     {% endif %}
 </head>
-<body>
+<body style="background-color: rgba(0,0,0,0);">
 <span class="result-status-PASS" id="PASS-element"></span>
 <span class="result-status-FAIL" id="FAIL-element"></span>
 <span class="result-status-BROKENTEST" id="BROKENTEST-element"></span>
@@ -102,11 +102,10 @@
 </script>
 <![endif]-->
 
-<div class="flex-layout-row-nowrap flex-container main" ng-controller="ParentCtrl" ng-cloak>
-    <md-content flex>
-            <div ng-include src="'static/resources/shared/main/nav.html'"></div>
-        <md-subheader md-colors="{background: 'accent'}" ng-bind="nav.getTitle()" style="font-family: 'Audiowide', cursive; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-size: 20px; width: 100%; padding-top: 5px; padding-bottom: 5px; z-index: 10">Title of Page</md-subheader>
-        <section class="main-container">
+<div class="flex-layout-row-nowrap flex-container main" ng-controller="ParentCtrl" ng-cloak md-colors="{background: 'background-500-0'}">
+    <md-content flex md-colors="{background: 'background-500-0'}">
+        <md-subheader md-colors="{background: 'background-900-0.9'}" ng-bind="nav.getTitle()" style="font-family: 'Audiowide', cursive; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-size: 20px; width: 100%; padding-top: 5px; padding-bottom: 5px; z-index: 10">Title of Page</md-subheader>
+        <section class="main-container" md-colors="{background: 'background-500-0'}">
             <div class="main-view" ng-view></div>
         </section>
     </md-content>

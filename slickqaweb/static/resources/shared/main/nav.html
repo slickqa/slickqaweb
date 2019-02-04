@@ -1,21 +1,3 @@
-<md-toolbar md-scroll-shrink layout="row" style="white-space: nowrap; overflow: auto; -webkit-overflow-scrolling: touch;" ng-controller="NavCtrl">
-    <md-toolbar-filler layout layout-align="center center">
-        <md-button class="md-icon-button slick-nav-logo" ng-href="{{ slickHomeUrl }}" aria-label="Settings" style="min-width: 50px">S</md-button>
-    </md-toolbar-filler>
-    <div class="md-toolbar-tools">
-        <md-menu-bar style="padding: unset">
-            <md-menu ng-repeat="group in nav.sections()">
-                <md-button class="md-fab md-mini md-primary" ng-disabled="group.links.length === 0" ng-click="$mdMenu.open()">
-                    <md-icon class="material-icons">{{ group.icon }}</md-icon>
-                    <md-tooltip md-direction="bottom">{{ group.name }}</md-tooltip>
-                </md-button>
-                <md-menu-content ng-show="group.links.length !== 0">
-                    <md-menu-item ng-repeat="link in group.links">
-                        <md-button ng-href="{{ link.url }}">{{ link.name }}</md-button>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
-        </md-menu-bar>
-    </div>
+<md-toolbar md-colors="{background: 'background-900-0.9'}" md-scroll-shrink layout="row" style="white-space: nowrap; overflow: auto; -webkit-overflow-scrolling: touch;" ng-controller="NavCtrl">
 </md-toolbar>
 

@@ -60,10 +60,16 @@ angular.module('slickApp', [ 'ngAnimate', 'ngRoute', 'ngResource', 'ngCookies', 
     RestangularProvider.setBaseUrl("api/");
   }])
     .config(function($mdThemingProvider) {
+        var background = $mdThemingProvider.extendPalette("grey", {
+            '900': "#000000"
+        });
+        $mdThemingProvider.definePalette('dark-background', background);
         $mdThemingProvider.theme('default')
             .primaryPalette("red")
             .accentPalette("blue-grey")
+            .backgroundPalette("dark-background")
             .dark()
+
     });
 
 angular.module('slickLoginApp', []);

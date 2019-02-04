@@ -1,13 +1,13 @@
-<md-content class="slickview">
-    <md-content style="width: 100%">
-        <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes" md-selected="selectedIndex">
+<md-content class="slickview" md-colors="{background: 'background-500-0'}">
+    <md-content style="width: 100%" md-colors="{background: 'background-500-0'}">
+        <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes" md-selected="selectedIndex" md-colors="{background: 'background-900-0.25'}">
             <md-tab md-on-select="onTabSelected('Builds')">
                 <md-tab-label>
                     <md-icon class="material-icons">view_list</md-icon>
                     <md-tooltip>Recent Builds</md-tooltip>
                 </md-tab-label>
                 <md-tab-body>
-                    <md-toolbar layout="row" class="md-accent">
+                    <md-toolbar layout="row" md-colors="{background: 'background-900-0.9'}">
                         <md-toolbar-filler layout layout-align="center center">
                             <md-icon class="material-icons" style="margin-right: 20px">view_list</md-icon>
                         </md-toolbar-filler>
@@ -30,7 +30,7 @@
                         </div>
                     </md-toolbar>
                     <md-progress-linear ng-show="buildList.length === 0"></md-progress-linear>
-                    <md-content ng-show="buildList.length !== 0">
+                    <md-content ng-show="buildList.length !== 0" md-colors="{background: 'background-900-0.25'}">
                         <md-table-container>
                             <table md-table>
                                 <thead md-head md-order="buildsQuery.order" md-on-reorder="setBuildsSort">
@@ -45,7 +45,7 @@
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildList | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit track by $index" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildList | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit track by $index" md-colors="$index % 2 === 0 ? {background: 'background-900-0.5'} : ''">
                                     <td md-cell style="text-align: center">
                                         <md-icon ng-show="build.report.groupSummary.status !== 'NO_RESULT'" class="material-icons result-status-{{ replaceOnStatus(build.report.groupSummary.status, '') }}" title="{{ replaceOnStatus(build.report.groupSummary.status, ' ') }}">{{ statusToIcon(build.report.groupSummary.status) }}</md-icon>
                                         <i ng-show="build.report.groupSummary.status === 'NO_RESULT'" class="pulse" title="RUNNING"></i>
