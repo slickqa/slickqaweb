@@ -314,8 +314,12 @@ angular.module('slickApp')
             }
         };
 
-        $scope.cancelResultsForBuild = function () {
-            rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).one('cancel').get();
+        $scope.cancelResultsForBuild = function (testrungroupId) {
+            if (testrungroupId) {
+                rest.one('testrungroups', testrungroupId).one('cancel').get();
+            } else {
+                rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).one('cancel').get();
+            }
         };
 
         $scope.rescheduleStatusForBuild = function (status_name) {

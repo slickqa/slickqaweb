@@ -1,3 +1,6 @@
+from slickqaweb.api.result import cancel_individual_result
+from slickqaweb.model.result import Result
+
 __author__ = 'Jared Jorgensen'
 
 from slickqaweb.app import app
@@ -29,6 +32,24 @@ def get_testrungroups():
 def get_testrungroup_by_id(testrungroup_id):
     """Find a testrungroup by it's id."""
     return JsonResponse(TestrunGroup.objects(id=testrungroup_id).first())
+
+@app.route('/api/testrungroups/<testrungroup_id>/cancel')
+@argument_doc('project_name', 'The name of the project.')
+@argument_doc('release_name', 'The name of the release in the project.')
+@argument_doc('build_name', 'The name of the build in the release.')
+@returns(ListField(Result))
+def cancel_results_for_testrungroup(testrungroup_id):
+    """Cancel all results that are scheduled for this testrungroup."""
+
+    orig = TestrunGroup.objects(id=testrungroup_id).first()
+    canceled_results = []
+    if (hasattr(orig, 'testruns')) or orig.testruns is not None:
+        for testrun in orig.testruns:
+            results_to_cancel = Result.objects(testrun__testrunId=testrun.id, status='NO_RESULT', runstatus__in=['SCHEDULED', 'TO_BE_RUN'])
+            canceled_results.extend(results_to_cancel)
+            for result in results_to_cancel:
+                cancel_individual_result(result.id)
+        return JsonResponse(canceled_results)
 
 
 @app.route('/api/testrungroups', methods=["POST"])
