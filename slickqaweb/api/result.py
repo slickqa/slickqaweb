@@ -1,4 +1,5 @@
 import json
+import math
 
 from .standardResponses import JsonResponse, read_request
 from .project import get_project
@@ -43,6 +44,7 @@ add_resource('/results', 'Add, Update or delete results.')
 
 def find_history(result):
     assert isinstance(result, Result)
+    estimated_runtime = 1
     history = []
 
     # other results with the same Test, Testplan, Environment, Release
@@ -62,12 +64,16 @@ def find_history(result):
         else:
             query['testrun__testplanId__exists'] = False
 
-        for hresult in Result.objects(**query).fields(id=1, status=1, recorded=1, build=1).order_by('-recorded').limit(10):
+        for hresult in Result.objects(**query).fields(id=1, status=1, recorded=1, build=1, started=1, finished=1).order_by('-recorded').limit(10):
+            if hresult.started and hresult.finished:
+                hist_length = int(math.ceil((hresult.finished - hresult.started).total_seconds()))
+                if hist_length > estimated_runtime:
+                    estimated_runtime = hist_length
             history.append(create_result_reference(hresult))
     except:
         logger = logging.getLogger('slickqaweb.api.result.find_history')
         logger.error("Error in finding history", exc_info=sys.exc_info())
-    return history
+    return history, estimated_runtime
 
 
 def apply_triage_notes(result, testcase=None):
@@ -341,8 +347,8 @@ def add_result(testrun_id=None):
     # dereference release and build if possible
     if is_provided(new_result, 'release') and project is not None:
         release = find_release_by_reference(project, new_result.release)
-    if release is None and testrun is not None and is_provided(testrun, 'release'):
-        release = find_release_by_reference(testrun.release, new_result.release)
+    if release is None and testrun is not None and project is not None and is_provided(testrun, 'release'):
+        release = find_release_by_reference(project, testrun.release)
     if release is None and project is not None and is_provided(new_result, 'release') and is_provided(new_result.release, 'name'):
         release = Release()
         release.id = ObjectId()
@@ -406,7 +412,10 @@ def add_result(testrun_id=None):
         Testrun.objects(id=testrun.id).update_one(**{status_name: 1})
 
     apply_triage_notes(new_result, testcase)
-    new_result.history = find_history(new_result)
+    new_result.history, estimatedRuntime = find_history(new_result)
+    if new_result.attributes is None:
+        new_result.attributes = {}
+    new_result.attributes['estimatedRuntime'] = str(estimatedRuntime)
     new_result.save()
 
     events.CreateEvent(new_result)
