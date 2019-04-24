@@ -20,7 +20,7 @@
     <!-- compiled stylesheet -->
     <link rel="stylesheet" href="static/style.css"/>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
     <!-- static files -->
     <script src="static/components/angular/angular{{ min }}.js"></script>
@@ -57,14 +57,10 @@
     <script src="static/scripts.js"></script>
 
     <script type="text/javascript">
-        try {
-            google.charts.load('current', {packages: ['corechart']});
-            google.charts.setOnLoadCallback(function () {
-                angular.bootstrap(document.body, ['slickApp']);
-            });
-        } catch(e) {
-            console.log(e)
-        }
+        google.load("visualization", "1", {packages: ["corechart"]});
+        google.setOnLoadCallback(function () {
+            angular.bootstrap(document.body, ['slickApp']);
+        });
     </script>
 
     {% if development %}
