@@ -30,6 +30,7 @@ from apidocs import add_resource, accepts, returns, argument_doc, standard_query
 from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField, Q, connection
 import logging
 import sys
+import os
 
 from bson import ObjectId
 import types
@@ -55,7 +56,9 @@ def find_history(result):
             query['config__configId'] = result.config.configId
         else:
             query['config__exists'] = False
-        if hasattr(result, 'release') and result.release is not None:
+        if os.environ.get('HISTORY_IGNORE_RELEASE', 'false').lower() == 'true':
+            pass
+        elif hasattr(result, 'release') and result.release is not None:
             query['release__releaseId'] = result.release.releaseId
         else:
             query['release__exists'] = False
