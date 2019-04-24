@@ -1,4 +1,5 @@
 import json
+import math
 
 from .standardResponses import JsonResponse, read_request
 from .project import get_project
@@ -29,6 +30,7 @@ from apidocs import add_resource, accepts, returns, argument_doc, standard_query
 from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField, Q, connection
 import logging
 import sys
+import os
 
 from bson import ObjectId
 import types
@@ -43,6 +45,7 @@ add_resource('/results', 'Add, Update or delete results.')
 
 def find_history(result):
     assert isinstance(result, Result)
+    estimated_runtime = 1
     history = []
 
     # other results with the same Test, Testplan, Environment, Release
@@ -53,7 +56,9 @@ def find_history(result):
             query['config__configId'] = result.config.configId
         else:
             query['config__exists'] = False
-        if hasattr(result, 'release') and result.release is not None:
+        if os.environ.get('HISTORY_IGNORE_RELEASE', 'false').lower() == 'true':
+            pass
+        elif hasattr(result, 'release') and result.release is not None:
             query['release__releaseId'] = result.release.releaseId
         else:
             query['release__exists'] = False
@@ -62,12 +67,16 @@ def find_history(result):
         else:
             query['testrun__testplanId__exists'] = False
 
-        for hresult in Result.objects(**query).fields(id=1, status=1, recorded=1, build=1).order_by('-recorded').limit(10):
+        for hresult in Result.objects(**query).fields(id=1, status=1, recorded=1, build=1, started=1, finished=1).order_by('-recorded').limit(10):
+            if hresult.started and hresult.finished:
+                hist_length = int(math.ceil((hresult.finished - hresult.started).total_seconds()))
+                if hist_length > estimated_runtime:
+                    estimated_runtime = hist_length
             history.append(create_result_reference(hresult))
     except:
         logger = logging.getLogger('slickqaweb.api.result.find_history')
         logger.error("Error in finding history", exc_info=sys.exc_info())
-    return history
+    return history, estimated_runtime
 
 
 def apply_triage_notes(result, testcase=None):
@@ -341,8 +350,8 @@ def add_result(testrun_id=None):
     # dereference release and build if possible
     if is_provided(new_result, 'release') and project is not None:
         release = find_release_by_reference(project, new_result.release)
-    if release is None and testrun is not None and is_provided(testrun, 'release'):
-        release = find_release_by_reference(testrun.release, new_result.release)
+    if release is None and testrun is not None and project is not None and is_provided(testrun, 'release'):
+        release = find_release_by_reference(project, testrun.release)
     if release is None and project is not None and is_provided(new_result, 'release') and is_provided(new_result.release, 'name'):
         release = Release()
         release.id = ObjectId()
@@ -406,7 +415,10 @@ def add_result(testrun_id=None):
         Testrun.objects(id=testrun.id).update_one(**{status_name: 1})
 
     apply_triage_notes(new_result, testcase)
-    new_result.history = find_history(new_result)
+    new_result.history, estimatedRuntime = find_history(new_result)
+    if new_result.attributes is None:
+        new_result.attributes = {}
+    new_result.attributes['estimatedRuntime'] = str(estimatedRuntime)
     new_result.save()
 
     events.CreateEvent(new_result)
@@ -425,7 +437,7 @@ def update_result(result_id):
     update = read_request()
     print(repr(update))
 
-    if 'status' in update and update['status'] != orig.status:
+    if 'status' in update and update['status'] != None and update['status'] != orig.status:
         atomic_update = {
             'dec__summary__resultsByStatus__' + orig.status: 1,
             'inc__summary__resultsByStatus__' + update['status']: 1
@@ -650,6 +662,14 @@ def get_queue_statistics():
         match['recorded'] = {'$lt': datetime.datetime.utcnow() + datetime.timedelta(minutes=-minutes_scheduled)}
     result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': match}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$recorded'}, 'oldest_result': {'$first': '$recorded'}, 'count': {'$sum': 1}}}])
     return JsonResponse(list(result))
+
+
+@app.route('/api/results/queue/statistics/<attribute>')
+def get_queue_statistics_by_attribute(attribute):
+    conn = connection.get_connection()
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED', 'attributes.' + attribute: {'$ne': None}}}, {'$group': {'_id': {attribute: '$attributes.' + attribute}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    return JsonResponse(list(result))
+
 
 @app.route('/api/results/queue/running')
 def get_queue_running():

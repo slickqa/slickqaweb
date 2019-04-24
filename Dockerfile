@@ -3,7 +3,7 @@ FROM debian:stretch-slim
 LABEL maintainer="Jason Corbett"
 
 # this is from https://github.com/nginxinc/docker-unit/blob/master/Dockerfile.python2.7
-ENV UNIT_VERSION          1.1-1~stretch
+ENV UNIT_VERSION          1.7-1~stretch
 
 RUN set -x \
 	&& apt-get update \
