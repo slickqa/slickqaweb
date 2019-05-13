@@ -2,7 +2,7 @@ import datetime
 
 import bson
 from flask import request
-from mongoengine import ListField, ReferenceField
+from mongoengine import ListField, ReferenceField, connection
 
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from slickqaweb import events
@@ -196,6 +196,16 @@ def get_single_scheduled_testrun():
         return JsonResponse([])
     else:
         return JsonResponse(None)
+
+@app.route('/api/testruns/queue/statistics')
+def get_testrun_queue_statistics():
+    conn = connection.get_connection()
+    match = {'attributes.type': 'SEQUENTIAL', 'state': 'SCHEDULED'}
+    if 'minutes-scheduled' in request.args:
+        minutes_scheduled = int(request.args['minutes-scheduled'])
+        match['recorded'] = {'$lt': datetime.datetime.utcnow() + datetime.timedelta(minutes=-minutes_scheduled)}
+    testrun = conn[app.config['MONGODB_DBNAME']]['testruns'].aggregate([{'$match': match}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$dateCreated'}, 'oldest_testrun': {'$first': '$dateCreated'}, 'count': {'$sum': 1}}}])
+    return JsonResponse(list(testrun))
 
 @app.route('/api/testruns/<testrun_id>', methods=["DELETE"])
 @argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
