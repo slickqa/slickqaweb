@@ -143,6 +143,59 @@ def update_testrun(testrun_id):
     update_event.after(orig)
     return JsonResponse(orig)
 
+@app.route('/api/testruns/queue', methods=["POST"])
+def get_single_scheduled_testrun():
+    parameters = read_request()
+    """:type : dict"""
+    rawquery = {'attributes.type': 'SEQUENTIAL',
+                'state': 'SCHEDULED'}
+    update = {'set__state': 'RUNNING'}
+
+    if 'minutes-scheduled' in request.args:
+        minutes_scheduled = int(request.args['minutes-scheduled'])
+        rawquery['dateCreated'] = {'$lt': datetime.datetime.utcnow() + datetime.timedelta(minutes=-minutes_scheduled)}
+
+    attr_query = dict(**parameters)
+    if 'project' in attr_query:
+        del attr_query['project']
+    if 'release' in attr_query:
+        del attr_query['release']
+    if 'build' in attr_query:
+        del attr_query['build']
+    if 'provides' in attr_query:
+        del attr_query['provides']
+    for key, value in attr_query.items():
+        rawquery["attributes.{}".format(key)] = value
+
+    project_id, release_id, build_id = Project.lookup_project_release_build_ids(parameters.get('project', None),
+                                                                                parameters.get('release', None),
+                                                                                parameters.get('build', None))
+    if project_id is not None:
+        rawquery['project.id'] = project_id
+    else:
+        rawquery['project.name'] = parameters.get('project', None)
+    if release_id is not None:
+        rawquery['release.releaseId'] = release_id
+    elif parameters.get('release', None) is not None:
+        rawquery['release.name'] = parameters.get('release', None)
+    if build_id is not None:
+        rawquery['build.buildId'] = build_id
+    elif parameters.get('build', None) is not None:
+        rawquery['build.name'] = parameters.get('build', None)
+
+    provides = []
+    if 'provides' in parameters:
+        provides = parameters['provides']
+    # from http://stackoverflow.com/questions/22518867/mongodb-querying-array-field-with-exclusion
+    rawquery['requirements'] = {'$not': {'$elemMatch': {'$nin': provides}}}
+    testrun = Testrun.objects(__raw__=rawquery).order_by("dateCreated").modify(new=True, full_response=False, **update)
+    if testrun:
+        results = Result.objects(project__id=project_id, release__releaseId=release_id, build__buildId=build_id, status='NO_RESULT', testrun__testrunId=testrun.id)
+        if results:
+            return JsonResponse(results)
+        return JsonResponse([])
+    else:
+        return JsonResponse(None)
 
 @app.route('/api/testruns/<testrun_id>', methods=["DELETE"])
 @argument_doc('testrun_id', "The id of the testrun (the string representation of a BSON ObjectId).")
