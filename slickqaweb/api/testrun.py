@@ -190,7 +190,7 @@ def get_single_scheduled_testrun():
     rawquery['requirements'] = {'$not': {'$elemMatch': {'$nin': provides}}}
     testrun = Testrun.objects(__raw__=rawquery).order_by("dateCreated").modify(new=True, full_response=False, **update)
     if testrun:
-        results = Result.objects(project__id=project_id, release__releaseId=release_id, build__buildId=build_id, status='NO_RESULT', testrun__testrunId=testrun.id)
+        results = Result.objects(status='NO_RESULT', testrun__testrunId=testrun.id)
         if results:
             return JsonResponse(results)
         return JsonResponse([])
