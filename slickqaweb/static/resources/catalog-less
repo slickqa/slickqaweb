@@ -24,3 +24,4 @@ shared/testrungroup-stats/stats.less
 shared/main/landing.less
 pages/email/email.less
 shared/pipeline/pipeline.less
+pages/build-diff/build-diff.less
