@@ -4,7 +4,7 @@ __author__ = 'jcorbett'
 from mongoengine import *
 from .releaseReference import ReleaseReference
 from .configurationReference import ConfigurationReference
-from resultReference import ResultReference
+from .resultReference import ResultReference
 
 class RecurringNote(EmbeddedDocument):
     message = StringField()

@@ -10,7 +10,7 @@ from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
 from flask import request
 from .standardResponses import JsonResponse, read_request
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField, connection
 
 add_resource('/testcases', 'Add, update, and delete testcases.')
@@ -22,7 +22,7 @@ add_resource('/testcases', 'Add, update, and delete testcases.')
 def get_testcases():
     """Query for testcases."""
     args = request.args
-    if args.has_key('projectid'):
+    if 'projectid' in args:
         args = args.to_dict()
         args['project.id'] = request.args['projectid']
         del args['projectid']

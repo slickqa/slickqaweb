@@ -7,13 +7,13 @@ from slickqaweb.model.query import queryFor
 from flask import request
 from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, EmbeddedDocumentField, ReferenceField
 
 sysconfig_resource = add_resource("/system-configuration", "Create, modify, and delete slick system configurations.")
 
 sysconfig_resource.subtypes[BaseSystemConfiguration] = []
-for system_configuration_type in SystemConfigurationTypes.values():
+for system_configuration_type in list(SystemConfigurationTypes.values()):
     sysconfig_resource.subtypes[BaseSystemConfiguration].append(system_configuration_type)
 
 
@@ -26,7 +26,7 @@ def get_system_configurations():
     """Find various system configuration types."""
     args = request.args
     type = BaseSystemConfiguration
-    if args.has_key('config-type'):
+    if 'config-type' in args:
         args = args.to_dict()
         if args['config-type'] in SystemConfigurationTypes:
             type = SystemConfigurationTypes[args['config-type']]

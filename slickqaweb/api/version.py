@@ -3,7 +3,7 @@ __author__ = 'jcorbett'
 from slickqaweb.app import app
 from .standardResponses import JsonResponse
 from slickqaweb.model.productVersion import ProductVersion
-from apidocs import add_resource, returns, note
+from .apidocs import add_resource, returns, note
 from mongoengine import ListField, ReferenceField
 
 add_resource('/version', 'Get slick version information')

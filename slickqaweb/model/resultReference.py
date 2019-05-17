@@ -1,5 +1,5 @@
 from mongoengine import *
-from buildReference import BuildReference
+from .buildReference import BuildReference
 
 
 class ResultReference(EmbeddedDocument):

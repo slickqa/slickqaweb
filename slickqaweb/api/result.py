@@ -26,7 +26,7 @@ from slickqaweb.model.configuration import Configuration
 from slickqaweb.model.storedFile import StoredFile
 from slickqaweb.model.configurationReference import ConfigurationReference
 from slickqaweb import events
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField, IntField, EmbeddedDocumentField, Q, connection
 import logging
 import sys
@@ -164,15 +164,15 @@ def apply_triage_notes(result, testcase=None):
 def get_results():
     """Query for results."""
     args = request.args.to_dict()
-    if args.has_key('testrunid'):
+    if 'testrunid' in args:
         args['testrun.testrunId'] = request.args['testrunid']
         del args['testrunid']
-    if args.has_key('excludestatus'):
+    if 'excludestatus' in args:
         args['q'] = "ne(status,\"{}\")".format(args['excludestatus'])
         del args['excludestatus']
-    if args.has_key('allfields'):
+    if 'allfields' in args:
         del args['allfields']
-    if not args.has_key("orderby"):
+    if "orderby" not in args:
         args["orderby"] = '-recorded'
 
     return JsonResponse(queryFor(Result, args))
@@ -435,7 +435,7 @@ def update_result(result_id):
     orig = Result.objects(id=result_id).first()
     update_event = events.UpdateEvent(before=orig)
     update = read_request()
-    print(repr(update))
+    print((repr(update)))
 
     if 'status' in update and update['status'] != None and update['status'] != orig.status:
         atomic_update = {
@@ -469,7 +469,7 @@ def add_to_log(result_id):
         orig.log = []
 
     list_of_log_entries = read_request()
-    if isinstance(list_of_log_entries, types.ListType):
+    if isinstance(list_of_log_entries, list):
         for entry_json in list_of_log_entries:
             orig.log.append(deserialize_that(entry_json, LogEntry()))
     else:
@@ -590,7 +590,7 @@ def get_single_scheduled_result(hostname):
         del attr_query['build']
     if 'provides' in attr_query:
         del attr_query['provides']
-    for key, value in attr_query.items():
+    for key, value in list(attr_query.items()):
         rawquery["attributes.{}".format(key)] = value
 
     project_id, release_id, build_id = Project.lookup_project_release_build_ids(parameters.get('project', None),

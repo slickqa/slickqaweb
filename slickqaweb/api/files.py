@@ -10,7 +10,7 @@ from .standardResponses import JsonResponse, read_request
 from hashlib import md5
 import re
 import logging
-from apidocs import add_resource, accepts, returns, argument_doc, note
+from .apidocs import add_resource, accepts, returns, argument_doc, note
 from mongoengine import ListField, EmbeddedDocumentField, ReferenceField, BinaryField
 
 add_resource('/files', 'Upload, or Download files on slick.')
