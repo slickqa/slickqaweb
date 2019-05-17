@@ -37,7 +37,7 @@ def connect_to_amqp(sysconfig):
 
     logger = logging.getLogger("slickqaweb.amqpcon.connect_to_amqp")
 
-    url = str.format("amqp://{hostname}:{port}", **dict(configuration['AMQP'].items()))
+    url = str.format("amqp://{hostname}:{port}", **dict(list(configuration['AMQP'].items())))
     if 'virtual host' in configuration['AMQP'] and configuration['AMQP']['virtual host'] != '':
         url = str.format("{}/{}", url, configuration['AMQP']['virtual host'])
     logger.debug("AMQPConnection configured with url %s", url)

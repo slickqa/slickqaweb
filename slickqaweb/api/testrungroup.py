@@ -13,7 +13,7 @@ import datetime
 from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
 
 add_resource('/testrungroups', 'Add, update, and delete testrungroups.')

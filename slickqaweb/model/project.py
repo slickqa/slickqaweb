@@ -43,7 +43,7 @@ class Project(Document):
 
         try:
             if project_name is not None and release_name is not None and build_name is not None:
-                quick_lookup_answer = Project.objects.aggregate({'$match': {'name': project_name}},
+                quick_lookup_answer = next(Project.objects.aggregate({'$match': {'name': project_name}},
                                                                 {'$unwind': '$releases'},
                                                                 {'$unwind': '$releases.builds'},
                                                                 {'$match': {'releases.name': release_name,
@@ -51,7 +51,7 @@ class Project(Document):
                                                                 {'$project': {'_id': 1, 'name': 1, 'releases.name': 1,
                                                                               'releases.id': 1,
                                                                               'releases.builds.name': 1,
-                                                                              'releases.builds.id': 1}}).next()
+                                                                              'releases.builds.id': 1}}))
                 # the above would have generated a StopIteration if any item wasn't found
                 project_id = quick_lookup_answer['_id']
                 release_id = quick_lookup_answer['releases']['id']

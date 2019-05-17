@@ -2,12 +2,12 @@ pymongo==3.7.1
 Flask
 mongoengine==0.15.3
 Flask-gzip
-CherryPy
+CherryPy==17.4.1
 watchdog
 argcomplete
 nose
 python-dateutil
 pyparsing
 kombu
-librabbitmq
+#librabbitmq
 ConfigParser

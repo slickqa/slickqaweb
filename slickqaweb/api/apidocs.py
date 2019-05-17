@@ -144,9 +144,9 @@ def get_endpoint_doc(resource):
                     operation.parameters.append(parameter)
                 endpoint.operations.append(operation)
         retval.apis.append(endpoint)
-    for parent, subtypes in resource.subtypes.iteritems():
+    for parent, subtypes in resource.subtypes.items():
         model = None
-        for potential_model in retval.models.values():
+        for potential_model in list(retval.models.values()):
             if parent.__name__ == potential_model.id:
                 model = potential_model
                 break
@@ -160,7 +160,7 @@ def get_endpoint_doc(resource):
 
 
 def get_type_name(from_type):
-    if isinstance(from_type, (type, types.ClassType)) and (issubclass(from_type, Document) or issubclass(from_type, EmbeddedDocument)):
+    if isinstance(from_type, type) and (issubclass(from_type, Document) or issubclass(from_type, EmbeddedDocument)):
         return from_type.__name__
     if isinstance(from_type, StringField):
         return "string"
@@ -216,7 +216,7 @@ def add_type_properties(to, from_type, resource):
     if description is not None:
         to.description = description
 
-    if isinstance(from_type, (type, types.ClassType)) and (issubclass(from_type, Document) or issubclass(from_type, EmbeddedDocument)):
+    if isinstance(from_type, type) and (issubclass(from_type, Document) or issubclass(from_type, EmbeddedDocument)):
         add_swagger_model(resource, from_type)
     elif isinstance(from_type, StringField):
         if hasattr(from_type, 'choices'):
@@ -225,7 +225,7 @@ def add_type_properties(to, from_type, resource):
     elif isinstance(from_type, ListField):
         to.items = dict()
         to.items['type'] = get_type_name(from_type.field)
-        if isinstance(from_type.field, (type, types.ClassType)) and (issubclass(from_type.field, Document) or issubclass(from_type.field, EmbeddedDocument)):
+        if isinstance(from_type.field, type) and (issubclass(from_type.field, Document) or issubclass(from_type.field, EmbeddedDocument)):
             add_swagger_model(resource, from_type.field)
         elif isinstance(from_type.field, (EmbeddedDocumentField, ReferenceField)):
             add_swagger_model(resource, from_type.field.document_type)
@@ -330,7 +330,7 @@ def add_swagger_model(resource, modeltype):
     if modeltype.__doc__:
         model.description = modeltype.__doc__
     model.properties = dict()
-    for fieldname, fieldtype in modeltype._fields.iteritems():
+    for fieldname, fieldtype in modeltype._fields.items():
         property = SwaggerProperty()
         add_type_properties(property, fieldtype, resource)
         if property.type is None:
@@ -338,7 +338,7 @@ def add_swagger_model(resource, modeltype):
         if property is not None:
             model.properties[fieldname] = property
     if hasattr(modeltype, 'dynamic_types'):
-        for fieldname, fieldtype in modeltype.dynamic_types.iteritems():
+        for fieldname, fieldtype in modeltype.dynamic_types.items():
             property = SwaggerProperty()
             add_type_properties(property, fieldtype, resource)
             if property.type is None:

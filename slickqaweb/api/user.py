@@ -5,7 +5,7 @@ from slickqaweb.model.userAccount import UserAccount
 from .standardResponses import JsonResponse, read_request
 from slickqaweb.model.query import queryFor
 from flask import Response
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb import events

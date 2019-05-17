@@ -14,7 +14,7 @@ def is_not_provided(obj, attr_name):
         return True
     if getattr(obj, attr_name) is None:
         return True
-    if isinstance(getattr(obj, attr_name), types.StringTypes) and getattr(obj, attr_name) == '':
+    if isinstance(getattr(obj, attr_name), (str,)) and getattr(obj, attr_name) == '':
         return True
     return False
 
@@ -38,13 +38,13 @@ def log_error(info=dict(), exc_info=None):
         exc_info = sys.exc_info()
     try:
         # try adding request information, though we don't know for sure we are inside a request context
-        if not info.has_key('url') and is_provided(request, 'url'):
+        if 'url' not in info and is_provided(request, 'url'):
             info['url'] = request.url
-        if not info.has_key('data') and is_provided(request, 'data'):
+        if 'data' not in info and is_provided(request, 'data'):
             info['data'] = request.data
-        if not info.has_key('cookies') and is_provided(request, 'cookies'):
+        if 'cookies' not in info and is_provided(request, 'cookies'):
             info['cookies'] = request.cookies
-        if not info.has_key('headers') and is_provided(request, 'headers'):
+        if 'headers' not in info and is_provided(request, 'headers'):
             info['headers'] = request.headers
     except:
         pass
