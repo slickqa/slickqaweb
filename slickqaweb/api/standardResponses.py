@@ -13,4 +13,4 @@ def JsonResponse(obj):
                     headers={'Cache-Control': 'no-store'})
 
 def read_request():
-    return loads(request.text.strip('\x00'))
+    return loads(request.data.decode('utf-8').strip('\x00'))
