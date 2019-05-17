@@ -38,3 +38,4 @@ shared/main/sidenav.js
 shared/environment.js
 shared/pipeline/pipeline.js
 shared/testrun-statusbar/statusbar.js
+pages/build-diff/build-diff.js
