@@ -120,7 +120,7 @@ def delete_project(project_name):
 def change_project_name(project_id):
     """For backwards compatibility: Change the name of a project."""
     name = read_request()
-    assert isinstance(name, (str,))
+    assert isinstance(name, str)
     orig = get_project(project_id)
     orig.name = name
     orig.lastUpdated = datetime.datetime.utcnow()
@@ -135,7 +135,7 @@ def change_project_name(project_id):
 def change_project_description(project_id):
     """For backwards compatibility: Change the description of a project."""
     description = read_request()
-    assert isinstance(description, (str,))
+    assert isinstance(description, str)
     orig = get_project(project_id)
     orig.description = description
     orig.lastUpdated = datetime.datetime.utcnow()

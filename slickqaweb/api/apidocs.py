@@ -144,7 +144,7 @@ def get_endpoint_doc(resource):
                     operation.parameters.append(parameter)
                 endpoint.operations.append(operation)
         retval.apis.append(endpoint)
-    for parent, subtypes in resource.subtypes.items():
+    for parent, subtypes in list(resource.subtypes.items()):
         model = None
         for potential_model in list(retval.models.values()):
             if parent.__name__ == potential_model.id:
@@ -330,7 +330,7 @@ def add_swagger_model(resource, modeltype):
     if modeltype.__doc__:
         model.description = modeltype.__doc__
     model.properties = dict()
-    for fieldname, fieldtype in modeltype._fields.items():
+    for fieldname, fieldtype in list(modeltype._fields.items()):
         property = SwaggerProperty()
         add_type_properties(property, fieldtype, resource)
         if property.type is None:
@@ -338,7 +338,7 @@ def add_swagger_model(resource, modeltype):
         if property is not None:
             model.properties[fieldname] = property
     if hasattr(modeltype, 'dynamic_types'):
-        for fieldname, fieldtype in modeltype.dynamic_types.items():
+        for fieldname, fieldtype in list(modeltype.dynamic_types.items()):
             property = SwaggerProperty()
             add_type_properties(property, fieldtype, resource)
             if property.type is None:

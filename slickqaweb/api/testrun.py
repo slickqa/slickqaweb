@@ -164,7 +164,7 @@ def get_single_scheduled_testrun():
         del attr_query['build']
     if 'provides' in attr_query:
         del attr_query['provides']
-    for key, value in attr_query.items():
+    for key, value in list(attr_query.items()):
         rawquery["attributes.{}".format(key)] = value
 
     project_id, release_id, build_id = Project.lookup_project_release_build_ids(parameters.get('project', None),

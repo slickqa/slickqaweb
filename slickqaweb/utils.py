@@ -14,7 +14,7 @@ def is_not_provided(obj, attr_name):
         return True
     if getattr(obj, attr_name) is None:
         return True
-    if isinstance(getattr(obj, attr_name), (str,)) and getattr(obj, attr_name) == '':
+    if isinstance(getattr(obj, attr_name), str) and getattr(obj, attr_name) == '':
         return True
     return False
 

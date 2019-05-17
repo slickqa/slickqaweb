@@ -29,7 +29,7 @@ def document_to_plain(doc):
         return retval
     if isinstance(doc, dict):
         retval = dict()
-        for fieldname, fieldvalue in doc.items():
+        for fieldname, fieldvalue in list(doc.items()):
             retval[fieldname] = document_to_plain(fieldvalue)
         return retval
     if isinstance(doc, bson.ObjectId):
@@ -70,7 +70,7 @@ def plain_to_document(plain, doctype):
             return plain
         if isinstance(doctype, mongoengine.ReferenceField):
             return plain_to_document(plain, doctype.document_type())
-    if isinstance(plain, (str,)) or isinstance(plain, str):
+    if isinstance(plain, str) or isinstance(plain, str):
         if isinstance(doctype, mongoengine.StringField):
             return plain
         if isinstance(doctype, mongoengine.ObjectIdField):

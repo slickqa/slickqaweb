@@ -6,7 +6,7 @@ from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
 from flask import request
 from .standardResponses import JsonResponse, read_request
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
 
 add_resource('/reservables', 'Add, update, and delete reservables.')
@@ -19,7 +19,7 @@ def get_reservables():
     """Query for existing reservables."""
     # for backwards compatibility
     args = request.args
-    if args.has_key('projectid'):
+    if 'projectid' in args:
         args = args.to_dict()
         args['project.id'] = request.args['projectid']
         del args['projectid']
