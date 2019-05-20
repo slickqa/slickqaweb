@@ -76,7 +76,7 @@ RUN set -x \
 	\
 	&& apt-get install --no-install-recommends --no-install-suggests -y \
 						$unitPackages \
-                        curl python-pip \
+                        curl python3-pip \
 	&& apt-get remove --purge --auto-remove -y apt-transport-https && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/unit.list \
 	\
 # if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
