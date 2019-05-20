@@ -1,4 +1,4 @@
-import json
+import ujson as json
 import math
 
 from .standardResponses import JsonResponse, read_request

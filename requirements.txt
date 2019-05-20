@@ -11,3 +11,4 @@ pyparsing
 kombu
 #librabbitmq
 ConfigParser
+ujson
