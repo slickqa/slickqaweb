@@ -6,7 +6,7 @@ from flask import Response, request
 
 import os
 import fnmatch
-from cStringIO import StringIO
+from io import StringIO
 import subprocess
 import hashlib
 import logging
@@ -84,7 +84,7 @@ for less_script in get_catalog_files(style_dir, 'less'):
 main_css = open(os.path.join(os.path.dirname(__file__), 'static', 'style.css'), 'w')
 less_source.seek(0)
 less_compiler = subprocess.Popen(['lessc', '-s', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-main_css.write(less_compiler.communicate(less_source.read())[0])
+main_css.write(less_compiler.communicate(str.encode(less_source.read()))[0].decode('utf-8'))
 
 less_compiler.wait()
 

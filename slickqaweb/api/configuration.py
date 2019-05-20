@@ -8,7 +8,7 @@ from .standardResponses import JsonResponse, read_request
 from flask import request
 from bson import ObjectId
 import mongoengine
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters
 
 add_resource("/configurations", "Add, edit or remove configurations of different types.")
 

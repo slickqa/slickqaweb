@@ -1,5 +1,5 @@
 from mongoengine import *
-from projectReference import *
+from .projectReference import *
 
 
 class TestPlan(Document):

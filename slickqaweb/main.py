@@ -11,7 +11,7 @@ from .model.systemConfiguration.amqpSystemConfiguration import AMQPSystemConfigu
 
 import os
 import sys
-import api
+from . import api
 import logging
 import mimetypes
 
@@ -71,7 +71,7 @@ if app.debug:
     def write_access_log(response):
         path = request.path
         if request.query_string:
-            path = path + "?" + request.query_string
+            path = path + "?" + request.query_string.decode("utf-8")
         mimetype = response.mimetype
         if request.method != "GET":
             mimetype = "in:{},out:{}".format(request.mimetype, response.mimetype)
@@ -81,7 +81,7 @@ if app.debug:
             data = request.data
             if not data:
                 request_logger.warn('data was empty, grabbing data from for keys')
-                data = request.form.keys()[0]
+                data = list(request.form.keys())[0]
             request_logger.warn("Request Data: %s", data)
             request_logger.warn("Headers: %s", repr(request.headers))
         return response

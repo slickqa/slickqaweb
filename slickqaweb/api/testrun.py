@@ -4,7 +4,7 @@ import bson
 from flask import request
 from mongoengine import ListField, ReferenceField
 
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from slickqaweb import events
 from slickqaweb.app import app
 from slickqaweb.model.project import Project
