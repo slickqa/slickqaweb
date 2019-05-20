@@ -3,7 +3,7 @@ FROM debian:stretch-slim
 LABEL maintainer="Jason Corbett"
 
 # this is from https://github.com/nginxinc/docker-unit/blob/master/Dockerfile.python2.7
-ENV UNIT_VERSION          1.7-1~stretch
+ENV UNIT_VERSION          1.8.0-1~stretch
 
 RUN set -x \
 	&& apt-get update \
@@ -25,7 +25,7 @@ RUN set -x \
 	&& dpkgArch="$(dpkg --print-architecture)" \
 	&& unitPackages=" \
 		unit=${UNIT_VERSION} \
-		unit-python2.7=${UNIT_VERSION} \
+		unit-python3.5=${UNIT_VERSION} \
 	" \
 	&& case "$dpkgArch" in \
 		amd64|i386) \
@@ -88,7 +88,7 @@ RUN set -x \
 COPY . /opt/slick
 
 # forward log to docker log collector
-RUN pip install --upgrade pip setuptools; cat /opt/slick/requirements.txt |grep -v CherryPy |grep -v watchdog >/opt/slick/requirements-docker.txt; /usr/local/bin/pip install -r /opt/slick/requirements-docker.txt; cp /opt/slick/docker-files/* /opt/slick; chown -R slick /opt/slick; ln -sf /dev/stdout /var/log/unit.log; 
+RUN pip3 install --upgrade pip setuptools; cat /opt/slick/requirements.txt |grep -v CherryPy |grep -v watchdog >/opt/slick/requirements-docker.txt; /usr/local/bin/pip3 install -r /opt/slick/requirements-docker.txt; cp /opt/slick/docker-files/* /opt/slick; chown -R slick /opt/slick; ln -sf /dev/stdout /var/log/unit.log; 
 
 EXPOSE 80
 
