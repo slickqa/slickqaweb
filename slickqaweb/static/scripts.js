@@ -879,6 +879,24 @@ angular.module('slickApp')
             $scope.pipelinesQuery.order = order;
         };
 
+        if (!$cookies.getObject('pipelineShowFilter')) {
+            $cookies.putObject('pipelineShowFilter', {
+                name: true,
+                project: true,
+                release: true,
+                build: true,
+                started: true
+            });
+        }
+        $scope.show = $cookies.getObject('pipelineShowFilter');
+
+        $scope.$watch('showFilter.$dirty', function (newValue, oldValue) {
+            if (newValue) {
+                $cookies.putObject('pipelineShowFilter', $scope.show);
+                $scope.showFilter.$setPristine();
+            }
+        });
+
         $scope.limits = [25, 50, 100, 200];
 
         const statisticsTabName = 'Statistics';
@@ -1128,9 +1146,9 @@ angular.module('slickApp')
             }
         };
 
-        let firstTimelineFetch = true;
+        let firstPipelineFetch = true;
         $scope.fetchPipelinesData = function () {
-            if ($scope.selectedIndex === $scope.tabNameToIndex(pipelinesTabName) || firstTimelineFetch) {
+            if ($scope.selectedIndex === $scope.tabNameToIndex(pipelinesTabName) || firstPipelineFetch) {
                 let pipelinesQuery = {orderby: '-started', limit: $scope.pipelinesQuery.queryLimit};
                 if ($scope.project && $scope.project !== allProjects) {
                     pipelinesQuery["project.name"] = $scope.project;
@@ -1141,7 +1159,8 @@ angular.module('slickApp')
                     $scope.pipelinesList = pipelines;
                 });
                 if (!pipelines) {
-                    pipelines = $interval($scope.fetchPipelinesData, 3000)
+                    pipelines = $interval($scope.fetchPipelinesData, 3000);
+                    firstPipelineFetch = false;
                 }
             }
         };
@@ -1225,7 +1244,7 @@ angular.module('slickApp')
                 builds = undefined;
             }
             if (angular.isDefined(pipelines)) {
-                $timeout.cancel(pipelines);
+                $interval.cancel(pipelines);
                 pipelines = undefined;
             }
             if (angular.isDefined(check)) {
@@ -2308,6 +2327,10 @@ angular.module('slickApp')
             }
         };
 
+        $scope.manuallyPassed = function(resultId) {
+            rest.one()
+        };
+
         $scope.getDisplayName = function (testrun) {
             var retval = testrun.name;
             if (testrun.testplan) {
@@ -2530,6 +2553,10 @@ angular.module('slickApp')
 
         $scope.rescheduleResult = function (result_id) {
             rest.one('results', result_id).one('reschedule').get();
+        };
+        $scope.markResultManuallyPassed = function (result) {
+            result.log.push({entryTime: new Date().getTime(), level: "WARN", loggerName: "slick.note", message: "Manually Verified!", exceptionMessage: ""});
+            rest.one('results', result.id).customPUT({status: "PASSED_ON_RETRY", run_status: "FINISHED", log: result.log});
         };
 
         window.scope = $scope;
@@ -3209,24 +3236,44 @@ angular.module('slickApp')
 
         $scope.getBuildReportData = function () {
             if ($routeParams.release === 'latest') {
-                rest.one('projects', $routeParams['project']).get().then(function (project) {
-                    var lastRelease = project.releases.length - 1;
-                    $routeParams.release = project.releases[lastRelease]['name'];
-                    var lastBuild = project.releases[lastRelease]['builds'].length - 1;
-                    $routeParams.build = project.releases[lastRelease]['builds'][lastBuild]['name']
+                rest.all('testruns').getList({orderby: '-runStarted', limit: 5, 'project.name': $routeParams['project']}).then(function (testruns) {
+                    let goldenTestrun = _.find(testruns, function (testrun) {
+                        return angular.isDefined(testrun.build.name)
+                    });
+                    if (angular.isDefined(goldenTestrun)) {
+                        $routeParams.release = goldenTestrun.release.name;
+                        $routeParams.build = goldenTestrun.build.name;
+                    } else {
+                        rest.one('projects', $routeParams['project']).get().then(function (project) {
+                            let lastRelease = project.releases.length - 1;
+                            $routeParams.release = project.releases[lastRelease]['name'];
+                            let lastBuild = project.releases[lastRelease]['builds'].length - 1;
+                            $routeParams.build = project.releases[lastRelease]['builds'][lastBuild]['name']
+                        });
+                    }
                 });
             } else if ($routeParams.build === 'latest') {
-                rest.one('projects', $routeParams['project']).get().then(function (project) {
-                    var release = null;
-                    for (var i = 0; i < project.releases.length; i++) {
-                        if (project.releases[i]['name'] === $routeParams.release) {
-                            release = project.releases[i];
-                            break;
-                        }
-                    }
-                    if (release !== null) {
-                        var lastBuild = project.releases[i]['builds'].length - 1;
-                        $routeParams.build = release['builds'][lastBuild]['name']
+                rest.all('testruns').getList({orderby: '-runStarted', limit: 5, 'project.name': $routeParams['project'], 'release.name': $routeParams.release}).then(function (testruns) {
+                    let goldenTestrun = _.find(testruns, function (testrun) {
+                        return angular.isDefined(testrun.build.name)
+                    });
+                    if (angular.isDefined(goldenTestrun)) {
+                        $routeParams.release = goldenTestrun.release.name;
+                        $routeParams.build = goldenTestrun.build.name;
+                    } else {
+                        rest.one('projects', $routeParams['project']).get().then(function (project) {
+                            let release = null;
+                            for (let i = 0; i < project.releases.length; i++) {
+                                if (project.releases[i]['name'] === $routeParams.release) {
+                                    release = project.releases[i];
+                                    break;
+                                }
+                            }
+                            if (release !== null) {
+                                let lastBuild = project.releases[i]['builds'].length - 1;
+                                $routeParams.build = release['builds'][lastBuild]['name']
+                            }
+                        });
                     }
                 });
             }

@@ -581,6 +581,11 @@ def get_single_scheduled_result(hostname):
                 'status': 'NO_RESULT'}
     update = {'set__runstatus': 'TO_BE_RUN',
               'set__hostname': hostname}
+
+    if 'minutes-scheduled' in request.args:
+        minutes_scheduled = int(request.args['minutes-scheduled'])
+        rawquery['recorded'] = {'$lt': datetime.datetime.utcnow() + datetime.timedelta(minutes=-minutes_scheduled)}
+
     attr_query = dict(**parameters)
     if 'project' in attr_query:
         del attr_query['project']
@@ -651,7 +656,11 @@ def get_single_scheduled_result(hostname):
 @app.route('/api/results/queue/statistics')
 def get_queue_statistics():
     conn = connection.get_connection()
-    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$recorded'}, 'count': {'$sum': 1}}}])
+    match = {'status': 'NO_RESULT', 'runstatus': 'SCHEDULED'}
+    if 'minutes-scheduled' in request.args:
+        minutes_scheduled = int(request.args['minutes-scheduled'])
+        match['recorded'] = {'$lt': datetime.datetime.utcnow() + datetime.timedelta(minutes=-minutes_scheduled)}
+    result = conn[app.config['MONGODB_DBNAME']]['results'].aggregate([{'$match': match}, {'$group': {'_id': {'requirements': '$requirements', 'project': '$project.name', 'release': '$release.name', 'build': '$build.name'}, 'date': {'$last': '$recorded'}, 'oldest_result': {'$first': '$recorded'}, 'count': {'$sum': 1}}}])
     return JsonResponse(list(result))
 
 

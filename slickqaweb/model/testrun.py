@@ -32,6 +32,7 @@ class Testrun(Document):
     links = ListField(EmbeddedDocumentField(Link))
     state = StringField()
     attributes = MapField(StringField())
+    requirements = ListField(StringField())
     meta = {'collection': 'testruns'}
 
     dynamic_types = {

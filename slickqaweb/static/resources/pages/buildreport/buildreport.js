@@ -79,24 +79,44 @@ angular.module('slickApp')
 
         $scope.getBuildReportData = function () {
             if ($routeParams.release === 'latest') {
-                rest.one('projects', $routeParams['project']).get().then(function (project) {
-                    var lastRelease = project.releases.length - 1;
-                    $routeParams.release = project.releases[lastRelease]['name'];
-                    var lastBuild = project.releases[lastRelease]['builds'].length - 1;
-                    $routeParams.build = project.releases[lastRelease]['builds'][lastBuild]['name']
+                rest.all('testruns').getList({orderby: '-runStarted', limit: 5, 'project.name': $routeParams['project']}).then(function (testruns) {
+                    let goldenTestrun = _.find(testruns, function (testrun) {
+                        return angular.isDefined(testrun.build.name)
+                    });
+                    if (angular.isDefined(goldenTestrun)) {
+                        $routeParams.release = goldenTestrun.release.name;
+                        $routeParams.build = goldenTestrun.build.name;
+                    } else {
+                        rest.one('projects', $routeParams['project']).get().then(function (project) {
+                            let lastRelease = project.releases.length - 1;
+                            $routeParams.release = project.releases[lastRelease]['name'];
+                            let lastBuild = project.releases[lastRelease]['builds'].length - 1;
+                            $routeParams.build = project.releases[lastRelease]['builds'][lastBuild]['name']
+                        });
+                    }
                 });
             } else if ($routeParams.build === 'latest') {
-                rest.one('projects', $routeParams['project']).get().then(function (project) {
-                    var release = null;
-                    for (var i = 0; i < project.releases.length; i++) {
-                        if (project.releases[i]['name'] === $routeParams.release) {
-                            release = project.releases[i];
-                            break;
-                        }
-                    }
-                    if (release !== null) {
-                        var lastBuild = project.releases[i]['builds'].length - 1;
-                        $routeParams.build = release['builds'][lastBuild]['name']
+                rest.all('testruns').getList({orderby: '-runStarted', limit: 5, 'project.name': $routeParams['project'], 'release.name': $routeParams.release}).then(function (testruns) {
+                    let goldenTestrun = _.find(testruns, function (testrun) {
+                        return angular.isDefined(testrun.build.name)
+                    });
+                    if (angular.isDefined(goldenTestrun)) {
+                        $routeParams.release = goldenTestrun.release.name;
+                        $routeParams.build = goldenTestrun.build.name;
+                    } else {
+                        rest.one('projects', $routeParams['project']).get().then(function (project) {
+                            let release = null;
+                            for (let i = 0; i < project.releases.length; i++) {
+                                if (project.releases[i]['name'] === $routeParams.release) {
+                                    release = project.releases[i];
+                                    break;
+                                }
+                            }
+                            if (release !== null) {
+                                let lastBuild = project.releases[i]['builds'].length - 1;
+                                $routeParams.build = release['builds'][lastBuild]['name']
+                            }
+                        });
                     }
                 });
             }
@@ -294,8 +314,12 @@ angular.module('slickApp')
             }
         };
 
-        $scope.cancelResultsForBuild = function () {
-            rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).one('cancel').get();
+        $scope.cancelResultsForBuild = function (testrungroupId) {
+            if (testrungroupId) {
+                rest.one('testrungroups', testrungroupId).one('cancel').get();
+            } else {
+                rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).one('cancel').get();
+            }
         };
 
         $scope.rescheduleStatusForBuild = function (status_name) {
