@@ -100,7 +100,33 @@ angular.module('slickApp')
             return result.status !== "PASS" && result.status !== "PASSED_ON_RETRY"
         }
 
+        $scope.verdictGoodOrBad = undefined;
+
+        $scope.getVerdict = function (percent) {
+            if (percent > 100) {
+                $scope.verdictGoodOrBad = "good";
+                return `${(percent - 100).toFixed(2)}% better!`;
+            } else {
+                $scope.verdictGoodOrBad = "bad";
+                return `${((percent - 100) * -1).toFixed(2)}% worse!`;
+            }
+        };
+
+        $scope.getPassedFromBuildReport = function(buildReport) {
+            let passed = 0;
+            if (buildReport.groupSummary.resultsByStatus.PASS) {
+                passed = passed + buildReport.groupSummary.resultsByStatus.PASS;
+            }
+            if (buildReport.groupSummary.resultsByStatus.PASSED_ON_RETRY) {
+                passed = passed + buildReport.groupSummary.resultsByStatus.PASSED_ON_RETRY
+
+            }
+            return passed;
+        };
+
+        $scope.gettingReport = false;
         $scope.getComparisonBuildReports = function(project_name, release1, build1, release2, build2) {
+            $scope.gettingReport = true;
             $location.search("release1", release1.name);
             $location.search("build1", build1.name);
             $location.search("release2", release2.name);
@@ -132,7 +158,7 @@ angular.module('slickApp')
                             }
                         });
                         if (!found) {
-                            $scope.resultDifferences.removed.push(result1)
+                            $scope.resultDifferences.removed.push(result1);
                         }
                     });
                     _.each(results2, function(result2) {
@@ -143,9 +169,10 @@ angular.module('slickApp')
                             }
                         });
                         if (!found) {
-                            $scope.resultDifferences.added.push(result2)
+                            $scope.resultDifferences.added.push(result2);
                         }
                     });
+                    $scope.gettingReport = false;
                 });
 
             });

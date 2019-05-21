@@ -1,208 +1,239 @@
 <div class="slickview">
-    <md-content layout="column">
-        <md-content layout="row" style="justify-content: space-around">
+    <md-content layout="row">
+        <div flex></div>
+        <md-content layout="column" style="margin-top: 20px">
             <md-content layout="column">
-                <md-input-container>
-                    <label>Release</label>
-                    <md-select ng-model="releaseForComparison1" ng-change="getBuildsForComparison(project, releaseForComparison1.name, '1')">
-                        <md-select-header>
-                            <md-input-container>
-                                <input ng-model="releasesSearchTerm1"
-                                       ng-keydown="$event.stopPropagation()"
-                                       type="search"
-                                       placeholder="Search for a release...">
-                            </md-input-container>
-                        </md-select-header>
-                        <md-progress-circular md-diameter="20px" ng-show="releasesForComparison1.length === 0"></md-progress-circular>
-                        <md-option ng-repeat="release in releasesForComparison1 | filter:releasesSearchTerm1" ng-value="release" ng-selected="release === releaseForComparison1">{{ release.name }}</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-input-container>
-                    <label>Build</label>
-                    <md-select ng-model="buildForComparison1">
-                        <md-select-header>
-                            <md-input-container>
-                                <input ng-model="buildsSearchTerm1"
-                                       ng-keydown="$event.stopPropagation()"
-                                       type="search"
-                                       placeholder="Search for a build...">
-                            </md-input-container>
-                        </md-select-header>
-                        <md-progress-circular md-diameter="20px" ng-show="buildsForComparison1.length === 0"></md-progress-circular>
-                        <md-option ng-repeat="build in buildsForComparison1 | filter:buildsSearchTerm1" ng-value="build" ng-selected="build === buildForComparison1">{{ build.name }}</md-option>
-                    </md-select>
-                </md-input-container>
+                <md-content layout="row" style="justify-content: space-around">
+                    <md-content layout="column">
+                        <md-input-container>
+                            <label>Release</label>
+                            <md-select ng-model="releaseForComparison1" ng-change="getBuildsForComparison(project, releaseForComparison1.name, '1')">
+                                <md-select-header>
+                                    <md-input-container>
+                                        <input ng-model="releasesSearchTerm1"
+                                               ng-keydown="$event.stopPropagation()"
+                                               type="search"
+                                               placeholder="Search for a release...">
+                                    </md-input-container>
+                                </md-select-header>
+                                <md-progress-circular md-diameter="20px" ng-show="releasesForComparison1.length === 0"></md-progress-circular>
+                                <md-option ng-repeat="release in releasesForComparison1 | filter:releasesSearchTerm1" ng-value="release" ng-selected="release === releaseForComparison1">{{ release.name }}</md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container>
+                            <label>Build</label>
+                            <md-select ng-model="buildForComparison1">
+                                <md-select-header>
+                                    <md-input-container>
+                                        <input ng-model="buildsSearchTerm1"
+                                               ng-keydown="$event.stopPropagation()"
+                                               type="search"
+                                               placeholder="Search for a build...">
+                                    </md-input-container>
+                                </md-select-header>
+                                <md-progress-circular md-diameter="20px" ng-show="buildsForComparison1.length === 0"></md-progress-circular>
+                                <md-option ng-repeat="build in buildsForComparison1 | filter:buildsSearchTerm1" ng-value="build" ng-selected="build === buildForComparison1">{{ build.name }}</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-content>
+                    <div flex style="min-width: 50px"></div>
+                    <md-content layout="column">
+                        <md-input-container>
+                            <label>Release</label>
+                            <md-select ng-model="releaseForComparison2" ng-change="getBuildsForComparison(project, releaseForComparison2.name, '2')">
+                                <md-select-header>
+                                    <md-input-container>
+                                        <input ng-model="releasesSearchTerm2"
+                                               ng-keydown="$event.stopPropagation()"
+                                               type="search"
+                                               placeholder="Search for a release...">
+                                    </md-input-container>
+                                </md-select-header>
+                                <md-progress-circular md-diameter="20px" ng-show="releasesForComparison2.length === 0"></md-progress-circular>
+                                <md-option ng-repeat="release in releasesForComparison2 | filter:releasesSearchTerm2" ng-value="release" ng-selected="release === releaseForComparison2">{{ release.name }}</md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container>
+                            <label>Build</label>
+                            <md-select ng-model="buildForComparison2">
+                                <md-select-header>
+                                    <md-input-container>
+                                        <input ng-model="buildsSearchTerm2"
+                                               ng-keydown="$event.stopPropagation()"
+                                               type="search"
+                                               placeholder="Search for a build...">
+                                    </md-input-container>
+                                </md-select-header>
+                                <md-progress-circular md-diameter="20px" ng-show="buildsForComparison2.length === 0"></md-progress-circular>
+                                <md-option ng-repeat="build in buildsForComparison2 | filter:buildsSearchTerm2" ng-value="build" ng-selected="build === buildForComparison2">{{ build.name }}</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-content>
+                </md-content>
+                <md-content style="margin: 0 auto;">
+                    <md-content layout="row" style="justify-content: space-around; align-items: center;">
+                        <md-button class="md-raised md-primary" ng-disabled="gettingReport" ng-click="getComparisonBuildReports(project, releaseForComparison1, buildForComparison1, releaseForComparison2, buildForComparison2)">{{ gettingReport ? 'Generating Report...' : 'Go!'}}</md-button>
+                        <md-progress-circular md-diameter="30px" ng-if="gettingReport"></md-progress-circular>
+                    </md-content>
+                </md-content>
             </md-content>
-            <md-content layout="column">
-                <md-input-container>
-                    <label>Release</label>
-                    <md-select ng-model="releaseForComparison2" ng-change="getBuildsForComparison(project, releaseForComparison2.name, '2')">
-                        <md-select-header>
-                            <md-input-container>
-                                <input ng-model="releasesSearchTerm2"
-                                       ng-keydown="$event.stopPropagation()"
-                                       type="search"
-                                       placeholder="Search for a release...">
-                            </md-input-container>
-                        </md-select-header>
-                        <md-progress-circular md-diameter="20px" ng-show="releasesForComparison2.length === 0"></md-progress-circular>
-                        <md-option ng-repeat="release in releasesForComparison2 | filter:releasesSearchTerm2" ng-value="release" ng-selected="release === releaseForComparison2">{{ release.name }}</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-input-container>
-                    <label>Build</label>
-                    <md-select ng-model="buildForComparison2">
-                        <md-select-header>
-                            <md-input-container>
-                                <input ng-model="buildsSearchTerm2"
-                                       ng-keydown="$event.stopPropagation()"
-                                       type="search"
-                                       placeholder="Search for a build...">
-                            </md-input-container>
-                        </md-select-header>
-                        <md-progress-circular md-diameter="20px" ng-show="buildsForComparison2.length === 0"></md-progress-circular>
-                        <md-option ng-repeat="build in buildsForComparison2 | filter:buildsSearchTerm2" ng-value="build" ng-selected="build === buildForComparison2">{{ build.name }}</md-option>
-                    </md-select>
-                </md-input-container>
-            </md-content>
-        </md-content>
-        <md-content style="margin: 0 auto;">
-            <md-button class="md-raised md-primary" ng-click="getComparisonBuildReports(project, releaseForComparison1, buildForComparison1, releaseForComparison2, buildForComparison2)">Go!</md-button>
-        </md-content>
-    </md-content>
-    <md-progress-circular style="margin: 0 auto;" ng-if="!resultDifferences"></md-progress-circular>
-    <md-content layout="column" ng-if="resultDifferences">
-        <md-content ng-if="buildReport1 && buildReport2" layout="row" style="justify-content: space-around;">
-            <md-content layout="column">
-                <md-card>
-                    <md-card-header>
-                        <md-card-header-text>
-                            <span class="md-title">{{ releaseForComparison1.name + "." + buildForComparison1.name }}</span>
-                        </md-card-header-text>
-                    </md-card-header>
-                    <md-divider></md-divider>
-                    <md-card-content>
-                        <div layout="column">
-                            <div layout="row" style="align-items: center" ng-repeat="status in buildReport1.groupSummary.statusListOrdered track by $index">
-                                <span class="result-status-{{ replaceOnStatus(status, '') }}" style="font-size: 20px">{{ replaceOnStatus(status, ' ') }}</span>
-                                <div flex></div>
-                                <span style="margin-left: 10px">{{ buildReport1.groupSummary.resultsByStatus[status] }}</span>
+            <md-content layout="column" ng-if="resultDifferences">
+                <md-content ng-if="buildReport1 && buildReport2" layout="row" style="justify-content: space-around;">
+                    <md-content layout="column">
+                        <md-card>
+                            <md-card-header>
+                                <md-card-header-text>
+                                    <span class="md-title">{{ releaseForComparison1.name + "." + buildForComparison1.name }}</span>
+                                </md-card-header-text>
+                            </md-card-header>
+                            <md-divider></md-divider>
+                            <md-card-content>
+                                <div layout="column">
+                                    <div layout="row" style="align-items: center" ng-repeat="status in buildReport1.groupSummary.statusListOrdered track by $index">
+                                        <span class="result-status-{{ replaceOnStatus(status, '') }}" style="font-size: 20px">{{ replaceOnStatus(status, ' ') }}</span>
+                                        <div flex></div>
+                                        <span style="margin-left: 10px">{{ buildReport1.groupSummary.resultsByStatus[status] }}</span>
+                                    </div>
+                                </div>
+                            </md-card-content>
+                        </md-card>
+                    </md-content>
+                    <div flex></div>
+                    <md-content layout="column">
+                        <md-card>
+                            <md-card-header>
+                                <md-card-header-text>
+                                    <span class="md-title">{{ releaseForComparison2.name + "." + buildForComparison2.name }}</span>
+                                </md-card-header-text>
+                            </md-card-header>
+                            <md-divider></md-divider>
+                            <md-card-content>
+                                <div layout="column">
+                                    <div layout="row" style="align-items: center" ng-repeat="status in buildReport2.groupSummary.statusListOrdered track by $index">
+                                        <span class="result-status-{{ replaceOnStatus(status, '') }}" style="font-size: 20px">{{ replaceOnStatus(status, ' ') }}</span>
+                                        <div flex></div>
+                                        <span style="margin-left: 10px">{{ buildReport2.groupSummary.resultsByStatus[status] }}</span>
+                                    </div>
+                                </div>
+                            </md-card-content>
+                        </md-card>
+                    </md-content>
+                    <div flex></div>
+                    <md-content layout="column">
+                        <md-card>
+                            <md-card-header>
+                                <md-card-header-text>
+                                    <span class="md-title" style="text-align: center">Score</span>
+                                </md-card-header-text>
+                            </md-card-header>
+                            <md-divider></md-divider>
+                            <md-card-content>
+                                <div layout="column">
+                                    <md-icon [inline]="true" ng-if="verdictGoodOrBad === 'good'" style="font-size: 100px; width: 100px; height: 100px;" class="material-icons result-status-{{ replaceOnStatus('PASS', '') }}" title="{{ replaceOnStatus('PASS', ' ') }}">{{ statusToIcon('PASS') }}</md-icon>
+                                    <md-icon [inline]="true" ng-if="verdictGoodOrBad === 'bad'" style="font-size: 100px; width: 100px; height: 100px;" class="material-icons result-status-{{ replaceOnStatus('FAIL', '') }}" title="{{ replaceOnStatus('FAIL', ' ') }}">{{ statusToIcon('FAIL') }}</md-icon>
+                                    <span class="verdict {{ verdictGoodOrBad }}">{{getVerdict((getPassedFromBuildReport(buildReport2) / getPassedFromBuildReport(buildReport1)) * 100)}}</span>
+                                </div>
+                            </md-card-content>
+                        </md-card>
+                    </md-content>
+                </md-content>
+                <md-content ng-if="resultDifferences" layout="column">
+                    <md-card>
+                        <md-card-header>
+                            <md-card-header-text>
+                                <span class="md-title">New Failures</span>
+                            </md-card-header-text>
+                        </md-card-header>
+                        <md-divider></md-divider>
+                        <md-card-content>
+                            <span ng-if="resultDifferences.newFailures.length === 0">None!</span>
+                            <div layout="column" ng-if="resultDifferences.newFailures.length > 0">
+                                <div ng-repeat="newFailure in resultDifferences.newFailures" layout="row">
+                                    <span class="diff-tc-name">{{ newFailure.result2.testcase.name }}</span>
+                                    <div flex></div>
+                                    <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(newFailure.result1.status, '') }}" title="{{ replaceOnStatus(newFailure.result1.status, ' ') }}" ng-click="navigateTo('/testruns/' + newFailure.result1.testrun.testrunId + '?result=' + newFailure.result1.id + '&all=true')">{{ statusToIcon(newFailure.result1.status) }}</md-icon>
+                                    <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(newFailure.result2.status, '') }}" title="{{ replaceOnStatus(newFailure.result2.status, ' ') }}" ng-click="navigateTo('/testruns/' + newFailure.result2.testrun.testrunId + '?result=' + newFailure.result2.id + '&all=true')">{{ statusToIcon(newFailure.result2.status) }}</md-icon>
+                                </div>
                             </div>
-                        </div>
-                    </md-card-content>
-                </md-card>
-            </md-content>
-            <md-content layout="column">
-                <md-card>
-                    <md-card-header>
-                        <md-card-header-text>
-                            <span class="md-title">{{ releaseForComparison2.name + "." + buildForComparison2.name }}</span>
-                        </md-card-header-text>
-                    </md-card-header>
-                    <md-divider></md-divider>
-                    <md-card-content>
-                        <div layout="column">
-                            <div layout="row" style="align-items: center" ng-repeat="status in buildReport2.groupSummary.statusListOrdered track by $index">
-                                <span class="result-status-{{ replaceOnStatus(status, '') }}" style="font-size: 20px">{{ replaceOnStatus(status, ' ') }}</span>
-                                <div flex></div>
-                                <span style="margin-left: 10px">{{ buildReport2.groupSummary.resultsByStatus[status] }}</span>
+                        </md-card-content>
+                    </md-card>
+                    <md-card>
+                        <md-card-header>
+                            <md-card-header-text>
+                                <span class="md-title">Fixed</span>
+                            </md-card-header-text>
+                        </md-card-header>
+                        <md-divider></md-divider>
+                        <md-card-content>
+                            <span ng-if="resultDifferences.fixed.length === 0">None!</span>
+                            <div layout="column" ng-if="resultDifferences.fixed.length > 0">
+                                <div ng-repeat="fixed in resultDifferences.fixed" layout="row">
+                                    <span class="diff-tc-name">{{ fixed.result2.testcase.name }}</span>
+                                    <div flex></div>
+                                    <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(fixed.result1.status, '') }}" title="{{ replaceOnStatus(fixed.result1.status, ' ') }}" ng-click="navigateTo('/testruns/' + fixed.result1.testrun.testrunId + '?result=' + fixed.result1.id + '&all=true')">{{ statusToIcon(fixed.result1.status) }}</md-icon>
+                                    <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(fixed.result2.status, '') }}" title="{{ replaceOnStatus(fixed.result2.status, ' ') }}" ng-click="navigateTo('/testruns/' + fixed.result2.testrun.testrunId + '?result=' + fixed.result2.id + '&all=true')">{{ statusToIcon(fixed.result2.status) }}</md-icon>
+                                </div>
                             </div>
-                        </div>
-                    </md-card-content>
-                </md-card>
+                        </md-card-content>
+                    </md-card>
+                    <md-card>
+                        <md-card-header>
+                            <md-card-header-text>
+                                <span class="md-title">Existing</span>
+                            </md-card-header-text>
+                        </md-card-header>
+                        <md-divider></md-divider>
+                        <md-card-content>
+                            <span ng-if="resultDifferences.existing.length === 0">None!</span>
+                            <div layout="column" ng-if="resultDifferences.existing.length > 0">
+                                <div ng-repeat="existing in resultDifferences.existing" layout="row">
+                                    <span class="diff-tc-name">{{ existing.result2.testcase.name }}</span>
+                                    <div flex></div>
+                                    <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(existing.result1.status, '') }}" title="{{ replaceOnStatus(existing.result1.status, ' ') }}" ng-click="navigateTo('/testruns/' + existing.result1.testrun.testrunId + '?result=' + existing.result1.id + '&all=true')">{{ statusToIcon(existing.result1.status) }}</md-icon>
+                                    <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(existing.result2.status, '') }}" title="{{ replaceOnStatus(existing.result2.status, ' ') }}" ng-click="navigateTo('/testruns/' + existing.result2.testrun.testrunId + '?result=' + existing.result2.id + '&all=true')">{{ statusToIcon(existing.result2.status) }}</md-icon>
+                                </div>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                    <md-card>
+                        <md-card-header>
+                            <md-card-header-text>
+                                <span class="md-title">Added</span>
+                            </md-card-header-text>
+                        </md-card-header>
+                        <md-divider></md-divider>
+                        <md-card-content>
+                            <span ng-if="resultDifferences.added.length === 0">None!</span>
+                            <div layout="column" ng-if="resultDifferences.added.length > 0">
+                                <div ng-repeat="added in resultDifferences.added" layout="row">
+                                    <span class="diff-tc-name">{{ added.testcase.name }}</span>
+                                    <div flex></div>
+                                    <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(added.status, '') }}" title="{{ replaceOnStatus(added.status, ' ') }}" ng-click="navigateTo('/testruns/' + added.testrun.testrunId + '?result=' + added.id + '&all=true')">{{ statusToIcon(added.status) }}</md-icon>
+                                </div>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                    <md-card>
+                        <md-card-header>
+                            <md-card-header-text>
+                                <span class="md-title">Removed</span>
+                            </md-card-header-text>
+                        </md-card-header>
+                        <md-divider></md-divider>
+                        <md-card-content>
+                            <span ng-if="resultDifferences.removed.length === 0">None!</span>
+                            <div layout="column" ng-if="resultDifferences.removed.length > 0">
+                                <div ng-repeat="removed in resultDifferences.removed" layout="row">
+                                    <span class="diff-tc-name">{{ removed.testcase.name }}</span>
+                                    <div flex></div>
+                                    <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(removed.status, '') }}" title="{{ replaceOnStatus(removed.status, ' ') }}" ng-click="navigateTo('/testruns/' + removed.testrun.testrunId + '?result=' + removed.id + '&all=true')">{{ statusToIcon(removed.status) }}</md-icon>
+                                </div>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                </md-content>
             </md-content>
         </md-content>
-        <md-content ng-if="resultDifferences" layout="column">
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">New Failures</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-divider></md-divider>
-                <md-card-content>
-                    <span ng-if="resultDifferences.newFailures.length === 0">None!</span>
-                    <div layout="column" ng-if="resultDifferences.newFailures.length > 0">
-                        <div ng-repeat="newFailure in resultDifferences.newFailures" layout="row">
-                            <span class="diff-tc-name">{{ newFailure.result2.testcase.name }}</span>
-                            <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(newFailure.result1.status, '') }}" title="{{ replaceOnStatus(newFailure.result1.status, ' ') }}" ng-click="navigateTo('/testruns/' + newFailure.result1.testrun.testrunId + '?result=' + newFailure.result1.id + '&all=true')">{{ statusToIcon(newFailure.result1.status) }}</md-icon>
-                            <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(newFailure.result2.status, '') }}" title="{{ replaceOnStatus(newFailure.result2.status, ' ') }}" ng-click="navigateTo('/testruns/' + newFailure.result2.testrun.testrunId + '?result=' + newFailure.result2.id + '&all=true')">{{ statusToIcon(newFailure.result2.status) }}</md-icon>
-                        </div>
-                    </div>
-                </md-card-content>
-            </md-card>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Fixed</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-divider></md-divider>
-                <md-card-content>
-                    <span ng-if="resultDifferences.fixed.length === 0">None!</span>
-                    <div layout="column" ng-if="resultDifferences.fixed.length > 0">
-                        <div ng-repeat="fixed in resultDifferences.fixed" layout="row">
-                            <span class="diff-tc-name">{{ fixed.result2.testcase.name }}</span>
-                            <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(fixed.result1.status, '') }}" title="{{ replaceOnStatus(fixed.result1.status, ' ') }}" ng-click="navigateTo('/testruns/' + fixed.result1.testrun.testrunId + '?result=' + fixed.result1.id + '&all=true')">{{ statusToIcon(fixed.result1.status) }}</md-icon>
-                            <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(fixed.result2.status, '') }}" title="{{ replaceOnStatus(fixed.result2.status, ' ') }}" ng-click="navigateTo('/testruns/' + fixed.result2.testrun.testrunId + '?result=' + fixed.result2.id + '&all=true')">{{ statusToIcon(fixed.result2.status) }}</md-icon>
-                        </div>
-                    </div>
-                </md-card-content>
-            </md-card>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Existing</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-divider></md-divider>
-                <md-card-content>
-                    <span ng-if="resultDifferences.existing.length === 0">None!</span>
-                    <div layout="column" ng-if="resultDifferences.existing.length > 0">
-                        <div ng-repeat="existing in resultDifferences.existing" layout="row">
-                            <span class="diff-tc-name">{{ existing.result2.testcase.name }}</span>
-                            <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(existing.result1.status, '') }}" title="{{ replaceOnStatus(existing.result1.status, ' ') }}" ng-click="navigateTo('/testruns/' + existing.result1.testrun.testrunId + '?result=' + existing.result1.id + '&all=true')">{{ statusToIcon(existing.result1.status) }}</md-icon>
-                            <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(existing.result2.status, '') }}" title="{{ replaceOnStatus(existing.result2.status, ' ') }}" ng-click="navigateTo('/testruns/' + existing.result2.testrun.testrunId + '?result=' + existing.result2.id + '&all=true')">{{ statusToIcon(existing.result2.status) }}</md-icon>
-                        </div>
-                    </div>
-                </md-card-content>
-            </md-card>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Added</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-divider></md-divider>
-                <md-card-content>
-                    <span ng-if="resultDifferences.added.length === 0">None!</span>
-                    <div layout="column" ng-if="resultDifferences.added.length > 0">
-                        <div ng-repeat="added in resultDifferences.added" layout="row">
-                            <span class="diff-tc-name">{{ added.testcase.name }}</span>
-                            <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(added.status, '') }}" title="{{ replaceOnStatus(added.status, ' ') }}" ng-click="navigateTo('/testruns/' + added.testrun.testrunId + '?result=' + added.id + '&all=true')">{{ statusToIcon(added.status) }}</md-icon>
-                        </div>
-                    </div>
-                </md-card-content>
-            </md-card>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Removed</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-divider></md-divider>
-                <md-card-content>
-                    <span ng-if="resultDifferences.removed.length === 0">None!</span>
-                    <div layout="column" ng-if="resultDifferences.removed.length > 0">
-                        <div ng-repeat="removed in resultDifferences.removed" layout="row">
-                            <span class="diff-tc-name">{{ removed.testcase.name }}</span>
-                            <md-icon class="clickable material-icons result-status-{{ replaceOnStatus(removed.status, '') }}" title="{{ replaceOnStatus(removed.status, ' ') }}" ng-click="navigateTo('/testruns/' + removed.testrun.testrunId + '?result=' + removed.id + '&all=true')">{{ statusToIcon(removed.status) }}</md-icon>
-                        </div>
-                    </div>
-                </md-card-content>
-            </md-card>
-
-
-        </md-content>
+        <div flex></div>
     </md-content>
 </div>

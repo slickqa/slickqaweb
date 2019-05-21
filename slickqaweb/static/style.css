@@ -5103,10 +5103,16 @@ table {
   height: auto;
 }
 .diff-tc-name {
-  min-width: 300px;
-  width: 750px;
-  max-width: 750px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.verdict {
+  font-size: large;
+}
+.verdict.good {
+  color: #00b352;
+}
+.verdict.bad {
+  color: #f96565;
 }

@@ -1,8 +1,17 @@
 .diff-tc-name {
-  min-width: 300px;
-  width: 750px;
-  max-width: 750px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.verdict {
+  font-size: large;
+}
+
+.verdict.good {
+  color: @c-status-pass
+}
+
+.verdict.bad {
+  color: @c-status-fail
 }
