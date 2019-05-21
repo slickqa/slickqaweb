@@ -5,7 +5,8 @@ angular.module('slickApp')
         $routeProvider
             .when('/build-diff/:project', {
                 templateUrl: 'static/resources/pages/build-diff/build-diff.html',
-                controller: 'BuildDiffCtrl'
+                controller: 'BuildDiffCtrl',
+                reloadOnSearch: false
             })
     }])
     .controller('BuildDiffCtrl', ['$scope', 'Restangular', 'NavigationService', '$routeParams', '$timeout', 'NameBasedRestangular', '$location', function ($scope, rest, nav, $routeParams, $timeout, projrest, $location) {
@@ -42,7 +43,7 @@ angular.module('slickApp')
         $scope.resultDifferences = undefined;
 
         $scope.navigateTo = function (uri) {
-            window.open($location.$$absUrl.replace($location.$$path, uri), '_blank');
+            window.open($location.$$absUrl.replace($location.$$url, uri), '_blank');
         };
 
         $scope.getReleasesForComparison = function(project_name, whichSide) {
