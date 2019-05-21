@@ -101,6 +101,10 @@ angular.module('slickApp')
         }
 
         $scope.getComparisonBuildReports = function(project_name, release1, build1, release2, build2) {
+            $location.search("release1", release1.name);
+            $location.search("build1", build1.name);
+            $location.search("release2", release2.name);
+            $location.search("build2", build2.name);
             $scope.buildReport1 = undefined;
             $scope.buildReport2 = undefined;
             $scope.resultDifferences = undefined;
