@@ -8,12 +8,12 @@ from flask import request, g
 from .standardResponses import JsonResponse, read_request
 from bson import ObjectId
 from slickqaweb.utils import is_id
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, add_swagger_model
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, add_swagger_model
 from mongoengine import ListField, EmbeddedDocumentField, ReferenceField
 
 dashboard_resource = add_resource("/dashboards", "Create, modify, and delete dashboard configurations.")
 dashboard_resource.subtypes[BaseDashboard] = []
-for dashboard_type in DashboardTypes.values():
+for dashboard_type in list(DashboardTypes.values()):
     dashboard_resource.subtypes[BaseDashboard].append(dashboard_type)
 
 
@@ -24,7 +24,7 @@ def get_dashboards():
     """Query for a list of dashboards."""
     args = request.args
     type = BaseDashboard
-    if args.has_key('config-type'):
+    if 'config-type' in args:
         args = args.to_dict()
         if args['config-type'] in DashboardTypes:
             type = DashboardTypes[args['config-type']]

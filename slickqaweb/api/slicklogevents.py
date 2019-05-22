@@ -5,7 +5,7 @@ from slickqaweb.model.slickLogEvent import SlickLogEvent
 from slickqaweb.app import app
 from slickqaweb.model.query import queryFor
 from slickqaweb.model.serialize import deserialize_that
-from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
+from .apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
 
 add_resource("/slicklogevents", "Get slick audit log events.")

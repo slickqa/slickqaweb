@@ -1,7 +1,7 @@
 __author__ = 'jcorbett'
 
 import logging
-from json import dumps
+from ujson import dumps
 
 from .app import app
 from .model.serialize import serialize_this

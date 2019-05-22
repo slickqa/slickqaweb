@@ -1,5 +1,5 @@
 from mongoengine import *
-from storedFile import StoredFile
+from .storedFile import StoredFile
 
 class Feature(EmbeddedDocument):
     id = ObjectIdField()

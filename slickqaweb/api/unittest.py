@@ -20,7 +20,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), '..', '..', 'slickqawe
         output = ""
         try:
             output = (subprocess.check_output([sys.executable, '-m', 'slickqawebtest.xunit'], stderr=subprocess.STDOUT)).decode("utf-8")
-        except subprocess.CalledProcessError, e:
+        except subprocess.CalledProcessError as e:
             output = e.output.decode("utf-8")
 
         xml_filename = ""

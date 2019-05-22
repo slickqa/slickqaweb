@@ -96,7 +96,7 @@ operation = (simple_comparison | string_comparison | list_comparison | logical_o
 
 def notQuery(s,l,t):
     query_dict = {}
-    for key,value in t[1].query.iteritems():
+    for key,value in t[1].query.items():
         key_parts = key.split('__')
         new_key = ""
         if key_parts[len(key_parts) - 1] == 'eq':
@@ -137,11 +137,11 @@ def getMongoengineQueryFromString(query_string):
 def buildQueryFromRequest(args=None):
     if args is None:
         args = request.args
-    if args.has_key('q'):
+    if 'q' in args:
         return getMongoengineQueryFromString(args.get('q'))
     else:
         query = None
-        for key,value in args.iteritems():
+        for key,value in args.items():
             param = key.replace('.', '__')
             if query is not None:
                 query = query & Q(**{param: value})
@@ -153,15 +153,15 @@ def queryFor(model, args=None):
     if args is None:
         args = request.args.to_dict()
     orderby = None
-    if args.has_key('orderby'):
+    if 'orderby' in args:
         orderby = args.get('orderby')
         del args['orderby']
     skip = 0
-    if args.has_key('skip'):
+    if 'skip' in args:
         skip = int(args.get('skip'))
         del args['skip']
     limit = None
-    if args.has_key('limit'):
+    if 'limit' in args:
         limit = int(args.get('limit'))
         if skip > 0:
             limit += skip
