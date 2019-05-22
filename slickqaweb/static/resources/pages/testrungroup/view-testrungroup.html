@@ -1,5 +1,5 @@
 <div class="slickview" ng-switch="testrungroup.grouptype">
-    <md-content style="width: 100%" md-colors="{background: 'background-900-0.7'}">
+    <md-content style="width: 100%" md-colors="{background: 'background-900-0.8'}">
         <md-content ng-switch-when="PARALLEL" md-colors="{background: 'background-900-0'}">
             <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes">
                 <md-tab>
@@ -12,7 +12,7 @@
                             <div layout="row" layout-wrap style="justify-content: space-between; flex-grow: 1">
                                 <div layout="column" md-colors="{background: 'background-900-0'}">
                                     <md-card md-colors="{background: 'background-900-0'}">
-                                        <md-card-header md-colors="{background: 'background-900-0.5'}">
+                                        <md-card-header md-colors="{background: 'background-900-0.7'}">
                                             <md-card-header-text>
                                                 <span class="md-title">Build Report Information</span>
                                             </md-card-header-text>
@@ -54,7 +54,7 @@
                                         </md-card-content>
                                     </md-card>
                                     <md-card md-colors="{background: 'background-900-0'}">
-                                        <md-card-header md-colors="{background: 'background-900-0.5'}">
+                                        <md-card-header md-colors="{background: 'background-900-0.7'}">
                                             <md-card-header-text>
                                                 <span class="md-title">Build History</span>
                                             </md-card-header-text>
@@ -94,7 +94,7 @@
                                 </div>
                                 <div layout="column">
                                     <md-card md-colors="{background: 'background-900-0'}">
-                                        <md-card-header md-colors="{background: 'background-900-0.5'}">
+                                        <md-card-header md-colors="{background: 'background-900-0.7'}">
                                             <md-card-header-text>
                                                 <span class="md-title">Results</span>
                                             </md-card-header-text>
@@ -133,7 +133,7 @@
                                 </div>
                                 <div layout="column">
                                     <md-card md-colors="{background: 'background-900-0'}">
-                                        <md-card-header md-colors="{background: 'background-900-0.5'}">
+                                        <md-card-header md-colors="{background: 'background-900-0.7'}">
                                             <md-card-header-text>
                                                 <span class="md-title">Overall Summary</span>
                                             </md-card-header-text>
@@ -200,7 +200,7 @@
                         <th slick-list-column class="testruns-list-build-column" sort-property-name="build.name" sortable="true">Build</th>
                         <th slick-list-column class="testruns-list-created-column" sort-property-name="dateCreated" sortable="true">Created</th>
                     </tr>
-                    <tbody ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row" md-colors="$index % 2 === 0 ? {background: 'background-900-0.5'} : ''" style="width: 100%">
+                    <tbody ng-repeat="testrun in testrungroup.testruns | slickListFilter:testrunList track by testrun.id" class="testruns-list-row" md-colors="$index % 2 === 0 ? {background: 'background-900-0.7'} : ''" style="width: 100%">
                     <tr class="testruns-list-column-container">
                         <td style="text-align: center"><md-icon ng-show="testrun.state === 'FINISHED'" class="material-icons result-status-{{ replaceOnStatus(testrun.summary.status, '') }}" title="{{ replaceOnStatus(testrun.summary.status, ' ') }}">{{ statusToIcon(testrun.summary.status) }}</md-icon><i ng-if="testrun.state !== 'FINISHED'" class="pulse"></i></td>
                         <td class="testrungroup-testruns-list-project-column"><a href="projects/{{ testrun.project.name }}" ng-bind="testrun.project.name"></a></td>

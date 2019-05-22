@@ -1,4 +1,4 @@
-<div class="slickview" md-colors="{background: 'background-900-0.7'}">
+<div class="slickview" md-colors="{background: 'background-900-0.8'}">
     <slick-dialog title="Add Note" size="small" show="showAddNote" buttons="Add|Cancel" button-callback="addNoteDialogButtonClicked(buttonName)">
         <div class="data-view testrun-summary-add-note" layout="column">
             <md-input-container>
@@ -56,7 +56,7 @@
     </slick-dialog>
     <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes" md-colors="{background: 'background-900-0'}">
         <md-tab md-colors="{background: 'background-900-0'}">
-            <md-tab-label md-colors="{background: 'background-900-0.5'}">
+            <md-tab-label md-colors="{background: 'background-900-0.7'}">
                 <md-icon class="material-icons">info</md-icon>
                 <md-tooltip>Testrun Info</md-tooltip>
             </md-tab-label>
@@ -65,7 +65,7 @@
                     <div layout="row" layout-wrap style="justify-content: space-between; flex-grow: 1">
                         <div layout="column" md-colors="{background: 'background-900-0'}">
                         <md-card md-colors="{background: 'background-900-0'}">
-                            <md-card-header style="padding: 2px 16px;" md-colors="{background: 'background-900-0.5'}">
+                            <md-card-header style="padding: 2px 16px;" md-colors="{background: 'background-900-0.7'}">
                                 <md-button ng-show="testrun.build.name" class="md-fab md-mini md-primary" ng-href="{{ goToBuildReportButton.href }}" style="margin-right: 20px">
                                     <md-icon class="material-icons">reply</md-icon>
                                     <md-tooltip>Back to Build Report</md-tooltip>
@@ -143,7 +143,7 @@
                             </md-card-content>
                         </md-card>
                         <md-card md-colors="{background: 'background-900-0'}">
-                            <md-card-header md-colors="{background: 'background-900-0.5'}">
+                            <md-card-header md-colors="{background: 'background-900-0.7'}">
                                 <md-card-header-text>
                                     <span class="md-title">Testrun History</span>
                                 </md-card-header-text>
@@ -165,7 +165,7 @@
                     </div>
                         <div layout="column">
                             <md-card  md-colors="{background: 'background-900-0'}">
-                                <md-card-header md-colors="{background: 'background-900-0.5'}">
+                                <md-card-header md-colors="{background: 'background-900-0.7'}">
                                     <md-card-header-text>
                                         <span class="md-title">Results</span>
                                     </md-card-header-text>
@@ -207,7 +207,7 @@
                         </div>
                         <div layout="column">
                             <md-card  md-colors="{background: 'background-900-0'}">
-                                <md-card-header md-colors="{background: 'background-900-0.5'}">
+                                <md-card-header md-colors="{background: 'background-900-0.7'}">
                                     <md-card-header-text>
                                         <span class="md-title">Overall Summary</span>
                                     </md-card-header-text>
@@ -220,7 +220,7 @@
                         </div>
                         <div layout="column">
                             <md-card  md-colors="{background: 'background-900-0'}">
-                                <md-card-header md-colors="{background: 'background-900-0.5'}">
+                                <md-card-header md-colors="{background: 'background-900-0.7'}">
                                     <md-card-header-text>
                                         <span class="md-title">Frequent Issues</span>
                                     </md-card-header-text>
@@ -256,7 +256,7 @@
                                 </md-card-content>
                             </md-card>
                             <md-card  md-colors="{background: 'background-900-0'}" style="overflow: auto" ng-show="topContributors">
-                                <md-card-header md-colors="{background: 'background-900-0.5'}">
+                                <md-card-header md-colors="{background: 'background-900-0.7'}">
                                     <md-card-header-text>
                                         <span class="md-title">Who should I talk to?</span>
                                     </md-card-header-text>
@@ -410,7 +410,7 @@
             <tr ng-show="result.reason && !moreDetail && !moreDetailForResult[result.id]">
                 <td colspan="10" class="result-list-reason-part">
                     <fieldset class="standard">
-                        <legend>Reason</legend>
+                        <legend>Reason:</legend>
                         <a href="results/{{ result.id }}/reason" ng-click="displayReason(result, $event)"><span class="result-list-reason-field">{{ getAbbreviatedReason(result) }}</span>...</a>
                     </fieldset>
                 </td>
