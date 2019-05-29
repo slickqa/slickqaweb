@@ -194,6 +194,19 @@ def get_result_by_id(result_id):
     """Get a result by id."""
     return JsonResponse(Result.objects(id=result_id).first())
 
+@app.route('/api/results/<result_id>', methods=["DELETE"])
+@argument_doc('result_id', "The id of the result (the string representation of a BSON ObjectId).")
+@returns(Result)
+def delete_result(result_id):
+    """Remove a result."""
+    orig = Result.objects(id=result_id).first()
+
+    # add an event
+    events.DeleteEvent(orig)
+
+    orig.delete()
+    return JsonResponse(orig)
+
 
 @app.route('/api/results', methods=["POST"])
 @app.route('/api/testruns/<testrun_id>/results', methods=["POST"])
