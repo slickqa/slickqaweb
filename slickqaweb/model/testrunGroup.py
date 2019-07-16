@@ -3,6 +3,7 @@ import datetime
 import bson
 from mongoengine import *
 
+from slickqaweb.model.metric import Metric
 from slickqaweb.utils import is_not_provided
 from .serialize import serializable, serialize_this, deserialize_that
 from .testrun import Testrun
@@ -32,6 +33,7 @@ class TestrunGroup(Document):
     created = DateTimeField()
     finished = DateTimeField()
     testruns = ListField(ReferenceField(Testrun, dbref=True))
+    metrics = ReferenceField(Metric, dbref=True)
     grouptype = StringField(default="PARALLEL", choices=["SERIAL", "PARALLEL"])
     meta = {'collection': 'testrungroups'}
 

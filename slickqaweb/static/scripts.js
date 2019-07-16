@@ -183,6 +183,14 @@ function objectToValues(object) {
     }
 }
 
+function objectToKeys(object) {
+    if (object) {
+        return Object.keys(object)
+    } else {
+        return []
+    }
+}
+
 function summaryToStatus(summary) {
     if (summary) {
         if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED === summary.total) {
@@ -4265,6 +4273,7 @@ angular.module('slickApp')
         $scope.getDurationString = getDurationString;
         $scope.isObject = isObject;
         $scope.objToValues = objectToValues;
+        $scope.objToKeys = objectToKeys;
 
         $scope.releasesForComparison1 = [];
         $scope.releasesSearchTerm1 = "";
@@ -4348,9 +4357,27 @@ angular.module('slickApp')
             if (percent > 100) {
                 $scope.verdictGoodOrBad = "good";
                 return `${(percent - 100).toFixed(2)}% better!`;
+            }
+            else if(percent === 100) {
+                $scope.verdictGoodOrBad = "";
+                return "No Change!";
             } else {
                 $scope.verdictGoodOrBad = "bad";
                 return `${((percent - 100) * -1).toFixed(2)}% worse!`;
+            }
+        };
+
+        $scope.getMetricVerdict = function (percent, metric, measurement) {
+            if (percent > 0) {
+                $scope.metrics[metric][measurement]['verdict'] = "bad";
+                return `${percent.toFixed(2)}% worse!`;
+            }
+            else if(percent === 0) {
+                $scope.metrics[metric][measurement]['verdict'] = "";
+                return "No Change!";
+            } else {
+                $scope.metrics[metric][measurement]['verdict'] = "good";
+                return `${percent.toFixed(2)}% better!`;
             }
         };
 
@@ -4376,11 +4403,42 @@ angular.module('slickApp')
             $scope.buildReport1 = undefined;
             $scope.buildReport2 = undefined;
             $scope.resultDifferences = undefined;
+            $scope.metrics = {};
             rest.one('build-report', project_name).one(release1.name, build1.name).get().then(function (buildReport1) {
                 $scope.buildReport1 = buildReport1;
+                if ($scope.buildReport1.metrics.length > 0) {
+                    _.each($scope.buildReport1.metrics, function(metric) {
+                        _.each(metric.measurements, function(measurement) {
+                            if (!$scope.metrics[metric.name]) {
+                                $scope.metrics[metric.name] = {}
+                            }
+                            if (!$scope.metrics[metric.name][measurement.name]) {
+                                $scope.metrics[metric.name][measurement.name] = {}
+                                $scope.metrics[metric.name][measurement.name].unit = metric.unit
+                            }
+                            measurement.value = parseFloat(measurement.value)
+                            $scope.metrics[metric.name][measurement.name]['build1'] = measurement
+                        })
+                    })
+                }
             });
             rest.one('build-report', project_name).one(release2.name, build2.name).get().then(function (buildReport2) {
                 $scope.buildReport2 = buildReport2;
+                if ($scope.buildReport2.metrics.length > 0) {
+                    _.each($scope.buildReport2.metrics, function(metric) {
+                        _.each(metric.measurements, function(measurement) {
+                            if (!$scope.metrics[metric.name]) {
+                                $scope.metrics[metric.name] = {}
+                            }
+                            if (!$scope.metrics[metric.name][measurement.name]) {
+                                $scope.metrics[metric.name][measurement.name] = {}
+                                $scope.metrics[metric.name][measurement.name].unit = metric.unit
+                            }
+                            measurement.value = parseFloat(measurement.value)
+                            $scope.metrics[metric.name][measurement.name]['build2'] = measurement
+                        })
+                    })
+                }
             });
             rest.all('results').getList({q: 'and(eq(project.name,"' + project_name + '"),' + 'eq(release.releaseId,"' + release1.id + '"),eq(build.buildId,"' + build1.id + '"),or(eq(status,"PASS"),eq(status,"PASSED_ON_RETRY"),eq(status,"FAIL"),eq(status,"BROKEN_TEST"),eq(status,"NOT_TESTED"),eq(status,"SKIPPED"),eq(status,"NO_RESULT")))'}).then(function(results1) {
                 rest.all('results').getList({q: 'and(eq(project.name,"' + project_name + '"),' + 'eq(release.releaseId,"' + release2.id + '"),eq(build.buildId,"' + build2.id + '"),or(eq(status,"PASS"),eq(status,"PASSED_ON_RETRY"),eq(status,"FAIL"),eq(status,"BROKEN_TEST"),eq(status,"NOT_TESTED"),eq(status,"SKIPPED"),eq(status,"NO_RESULT")))'}).then(function(results2) {

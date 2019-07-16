@@ -1,6 +1,7 @@
 import datetime
 
 from slickqaweb.api.result import cancel_individual_result, reschedule_individual_result
+from slickqaweb.model.metric import Metric
 from slickqaweb.model.result import Result
 
 __author__ = 'Jason Corbett'
@@ -40,6 +41,7 @@ def get_build_report(project_name, release_name, build_name):
         if testrun.testplanId not in testplans:
             report.testruns.append(testrun)
             testplans.append(testrun.testplanId)
+    report.metrics = Metric.objects(project__id=project_id, release__releaseId=release_id, build__buildId=build_id).order_by("dateCreated")
     if report.state() == "FINISHED" and not report.finished:
         report.finished = datetime.datetime.utcnow()
         # report.save() Warning, be careful not to do this, build reports don't get saved

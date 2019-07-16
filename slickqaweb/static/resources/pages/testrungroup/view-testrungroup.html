@@ -91,6 +91,7 @@
                                             </md-list>
                                         </md-card-content>
                                     </md-card>
+                                    <md-button ng-show="isBuildReport" class="md-raised md-primary" ng-href="build-diff/{{ routeParams.project }}?release2={{ routeParams.release }}&build2={{ routeParams.build }}">Compare Builds</md-button>
                                 </div>
                                 <div layout="column">
                                     <md-card md-colors="{background: 'background'}">
@@ -157,6 +158,37 @@
                         <div layout="row" layout-wrap>
                             <div layout="column" flex>
                                 <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="yes">
+                                    <md-tab label="Metrics" ng-if="testrungroup.metrics.length > 0">
+
+                                        <div layout="row">
+                                            <div flex></div>
+                                            <div ng-repeat="metric in testrungroup.metrics">
+                                                <md-card>
+                                                    <md-card-header>
+                                                        <md-card-header-text>
+                                                            <span class="md-title">{{ metric.name }}</span>
+                                                        </md-card-header-text>
+                                                    </md-card-header>
+                                                    <md-divider></md-divider>
+                                                    <md-card-content>
+                                                        <table class="metrics">
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>{{metric.type}}</th>
+                                                            </tr>
+                                                            <tbody ng-repeat="measurement in metric.measurements" ngif="metrics[key][measurementKey]['build1'] && metrics[key][measurementKey]['build2']">
+                                                                <tr>
+                                                                    <td><span>{{measurement.name}}</span></td>
+                                                                    <td><span>{{measurement.value}} {{metric.unit}}</span></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </md-card-content>
+                                                </md-card>
+                                            </div>
+                                            <div flex></div>
+                                        </div>
+                                    </md-tab>
                                     <md-tab label="Individual Testruns Summary">
                                         <div flex class="testrungroup-chart-container">
                                             <google-column-chart class="testrungroup-parallel-individual-chart" data="parallelIndividualData" options="individualChartOptions"></google-column-chart>

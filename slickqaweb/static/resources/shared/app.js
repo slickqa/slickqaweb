@@ -183,6 +183,14 @@ function objectToValues(object) {
     }
 }
 
+function objectToKeys(object) {
+    if (object) {
+        return Object.keys(object)
+    } else {
+        return []
+    }
+}
+
 function summaryToStatus(summary) {
     if (summary) {
         if (summary.resultsByStatus.PASS + summary.resultsByStatus.NOT_TESTED === summary.total) {
