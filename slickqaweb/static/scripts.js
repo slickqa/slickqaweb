@@ -4377,7 +4377,7 @@ angular.module('slickApp')
                 return "No Change!";
             } else {
                 $scope.metrics[metric][measurement]['verdict'] = "good";
-                return `${percent.toFixed(2)}% better!`;
+                return `${percent.toFixed(2) * -1}% better!`;
             }
         };
 
