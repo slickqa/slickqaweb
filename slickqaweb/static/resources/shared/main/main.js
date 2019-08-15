@@ -64,7 +64,8 @@ angular.module('slickApp')
                 order: '-report.testruns[0].dateCreated',
                 limit: 25,
                 queryLimit: 25,
-                page: 1
+                page: 1,
+                search: {}
             };
         }
         $scope.setBuildsSort = function (order) {

@@ -832,7 +832,8 @@ angular.module('slickApp')
                 order: '-report.testruns[0].dateCreated',
                 limit: 25,
                 queryLimit: 25,
-                page: 1
+                page: 1,
+                search: {}
             };
         }
         $scope.setBuildsSort = function (order) {
@@ -4165,6 +4166,40 @@ angular.module('slickApp')
         window.scope = $scope;
     }]);
 
+
+const environment = {
+    iframeConfig: [
+        {
+            icon: "video_label",
+            title: "SmartLab",
+            url: "http://10.1.44.2/",
+            width: "100%",
+            height: "100vh"
+        },
+	{
+            icon: "home",
+            title: "Test House",
+            url: "http://10.254.2.184:5000",
+            width: "100%",
+            height: "100vh"
+        },
+	{
+            icon: "track_changes",
+            title: "OKR Tool",
+            url: "http://10.1.45.184/login",
+            width: "100%",
+            height: "100vh"
+        },
+	{
+            icon: "lock_open",
+            title: "Unlock Panel",
+            url: "https://unlock.vivint.com",
+            width: "100%",
+            height: "100vh"
+        },
+
+    ],
+};
 
 /**
  * User: steve.jensen

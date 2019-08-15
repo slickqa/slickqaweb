@@ -35,17 +35,33 @@
                             <table md-table>
                                 <thead md-head md-order="buildsQuery.order" md-on-reorder="setBuildsSort">
                                 <tr md-row>
-                                    <th md-column md-order-by="report.state" style="text-align: center">Status</th>
-                                    <th md-column md-order-by="project.name">Project</th>
-                                    <th md-column md-order-by="build.name">Build</th>
-                                    <th md-column md-numerical md-order-by="report.testruns.length">Testruns</th>
-                                    <th md-column>Results</th>
-                                    <th md-column md-numerical md-order-by="report.testruns[0].dateCreated">Created</th>
-                                    <th md-column md-numerical md-order-by="report.testruns[0].runFinished - report.testruns[0].dateCreated">Duration</th>
+                                    <th md-column md-order-by="report.state" style="text-align: center; vertical-align: bottom; padding-bottom: 4px">Status</th>
+                                    <th md-column>
+                                        <md-input-container>
+                                            <label>Project</label>
+                                            <input type="text" ng-model="buildsQuery.search.project.name"/>
+                                        </md-input-container>
+                                    </th>
+                                    <th md-column>
+                                        <md-input-container>
+                                            <label>Release</label>
+                                            <input type="text" ng-model="buildsQuery.search.release.name"/>
+                                        </md-input-container>
+                                    </th>
+                                    <th md-column>
+                                        <md-input-container>
+                                            <label>Build</label>
+                                            <input type="text" ng-model="buildsQuery.search.build.name"/>
+                                        </md-input-container>
+                                    </th>
+                                    <th md-column md-numerical md-order-by="report.testruns.length" style="vertical-align: bottom; padding-bottom: 4px">Testruns</th>
+                                    <th md-column style="vertical-align: bottom; padding-bottom: 8px">Results</th>
+                                    <th md-column md-numerical md-order-by="report.testruns[0].dateCreated" style="vertical-align: bottom; padding-bottom: 4px">Created</th>
+                                    <th md-column md-numerical md-order-by="report.testruns[0].runFinished - report.testruns[0].dateCreated" style="vertical-align: bottom; padding-bottom: 4px">Duration</th>
                                 </tr>
                                 </thead>
                                 <tbody md-body>
-                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildList | filter: filter.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit track by $index" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
+                                <tr md-row md-select="report.state" md-auto-select ng-repeat="build in buildList | filter: buildsQuery.search | orderBy: buildsQuery.order | limitTo: buildsQuery.limit : (buildsQuery.page -1) * buildsQuery.limit track by $index" md-colors="$index % 2 === 0 ? {background: 'background-hue-1'} : ''">
                                     <td md-cell style="text-align: center">
                                         <md-icon ng-show="build.report.groupSummary.status !== 'NO_RESULT'" class="material-icons result-status-{{ replaceOnStatus(build.report.groupSummary.status, '') }}" title="{{ replaceOnStatus(build.report.groupSummary.status, ' ') }}">{{ statusToIcon(build.report.groupSummary.status) }}</md-icon>
                                         <i ng-show="build.report.groupSummary.status === 'NO_RESULT'" class="pulse" title="RUNNING"></i>
@@ -54,7 +70,10 @@
                                         <a href="projects/{{ build.project.name }}" ng-bind="build.project.name"></a>
                                     </td>
                                     <td md-cell>
-                                        <a href="build-report/{{ build.project.name }}/{{ build.release.name }}/{{ build.build.name }}">{{ build.release.name ? build.release.name + ' Build ' + build.build.name : build.release.id + ' Build ' + build.build.id }}</a>
+                                        <a href="build-report/{{ build.project.name }}/{{ build.release.name }}/{{ build.build.name }}">{{ build.release.name ? build.release.name: build.release.id }}</a>
+                                    </td>
+                                    <td md-cell>
+                                        <a href="build-report/{{ build.project.name }}/{{ build.release.name }}/{{ build.build.name }}">{{ build.build.name ? build.build.name : build.build.id }}</a>
                                     </td>
                                     <td md-cell ng-if="build.report" ng-bind="build.report.testruns.length"></td>
                                     <td md-cell ng-if="build.report.groupSummary">
