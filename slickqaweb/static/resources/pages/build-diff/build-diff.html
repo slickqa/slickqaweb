@@ -255,10 +255,13 @@
                                                 <th>{{ releaseForComparison2.name + "." + buildForComparison2.name }}</th>
                                                 <th>Verdict</th>
                                             </tr>
-                                            <tbody ng-repeat=" measurementKey in objToKeys(metrics[key])" ngif="metrics[key][measurementKey]['build1'] && metrics[key][measurementKey]['build2']">
+                                            <tbody ng-repeat=" measurementKey in objToKeys(metrics[key]) track by measurementKey" ngif="metrics[key][measurementKey]['build1'] && metrics[key][measurementKey]['build2']">
                                                 <tr>
                                                     <td><span>{{measurementKey}}</span></td>
-                                                    <td><span>{{metrics[key][measurementKey]['build1'].value}} {{metrics[key][measurementKey].unit}}</span></td>
+                                                    <td>
+                                                        <span ng-if="metrics[key][measurementKey]['build1'].value !== undefined">{{metrics[key][measurementKey]['build1'].value}} {{metrics[key][measurementKey].unit}}</span>
+                                                        <span ng-if="metrics[key][measurementKey]['build1'].value === undefined">No Data</span>
+                                                    </td>
                                                     <td><span>{{metrics[key][measurementKey]['build2'].value}} {{metrics[key][measurementKey].unit}}</span></td>
                                                     <td><span class="verdict {{ metrics[key][measurementKey].verdict }}">{{getMetricVerdict(metrics[key][measurementKey]['build2'].value - metrics[key][measurementKey]['build1'].value, key, measurementKey)}}</span></td>
                                                 </tr>

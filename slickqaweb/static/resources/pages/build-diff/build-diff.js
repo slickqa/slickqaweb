@@ -120,14 +120,14 @@ angular.module('slickApp')
         $scope.getMetricVerdict = function (percent, metric, measurement) {
             if (percent > 0) {
                 $scope.metrics[metric][measurement]['verdict'] = "bad";
-                return `${percent.toFixed(2)}% worse!`;
+                return `${percent.toFixed(2)} ${$scope.metrics[metric][measurement].unit} worse!`;
             }
             else if(percent === 0) {
                 $scope.metrics[metric][measurement]['verdict'] = "";
                 return "No Change!";
             } else {
                 $scope.metrics[metric][measurement]['verdict'] = "good";
-                return `${percent.toFixed(2) * -1}% better!`;
+                return `${percent.toFixed(2) * -1} ${$scope.metrics[metric][measurement].unit} better!`;
             }
         };
 
