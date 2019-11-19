@@ -273,10 +273,7 @@ angular.module('slickApp')
                             }
                         }
                         if (status === "FAIL" || status === "BROKEN_TEST") {
-                            rest.one('results', 'count').get({
-                                "q": "and(eq(testrun__testrunId,\"" +
-                                $routeParams["testrunid"] + "\"),eq(status,\"" + status +
-                                "\"),ne(log__loggerName,\"slick.note\"))"
+                            rest.one('results', 'count').get({"q": `and(eq(testrun__testrunId,"${$routeParams['testrunid']}"),eq(status,"${status}"),or(ne(log__loggerName,"slick.note"),and(eq(log__loggerName,"slick.note"),ne(log__level, "WARN"))))`
                             }).then(function (count) {
                                 $scope.withoutNotesStats[status] = count;
                             });
@@ -467,7 +464,7 @@ angular.module('slickApp')
                 andQuery.push("or(" + statuses.join(',') + ")")
             }
             if ($scope.filter['withoutnotes']) {
-                andQuery.push('ne(log__loggerName,"slick.note")')
+                andQuery.push('or(ne(log__loggerName,"slick.note"),and(eq(log__loggerName,"slick.note"),ne(log__level, "WARN")))')
             }
             $scope.resultQuery = {
                 q: "and(" + andQuery.join(',') + ")"
