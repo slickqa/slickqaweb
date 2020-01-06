@@ -645,7 +645,8 @@ angular.module('slickApp')
                 } else {
                     return "text";
                 }
-
+            } else {
+                return "text";
             }
         };
 

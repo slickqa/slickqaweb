@@ -2488,7 +2488,8 @@ angular.module('slickApp')
                 } else {
                     return "text";
                 }
-
+            } else {
+                return "text";
             }
         };
 
@@ -4089,7 +4090,8 @@ angular.module('slickApp')
                 } else {
                     return "text";
                 }
-
+            } else {
+                return "text";
             }
         };
 
