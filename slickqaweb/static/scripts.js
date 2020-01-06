@@ -2466,11 +2466,13 @@ angular.module('slickApp')
             $scope.fileToDisplay = file;
             $scope.showDisplayFile = true;
             $event.preventDefault();
-            if (file && file.mimetype && (file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml")) {
-                rest.one('files', file.id).one('content', file.filename).get().then(function (text) {
-                    $scope.fileToDisplay.text = text;
-                });
-            }
+            rest.one('files', file.id).one('content', file.filename).get().then(function (text) {
+                if (text instanceof Object) {
+                    $scope.fileToDisplay.text = JSON.stringify(text.plain(), null, 4);
+                } else {
+                    $scope.fileToDisplay.text = text
+                }
+            });
         };
 
         $scope.getFileViewer = function (file) {
@@ -2483,7 +2485,7 @@ angular.module('slickApp')
                     } else {
                         return "embed-video";
                     }
-                } else if (file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml") {
+                } else {
                     return "text";
                 }
 
@@ -4061,15 +4063,17 @@ angular.module('slickApp')
             });
         };
 
-        $scope.displayFile = function(file, $event) {
+        $scope.displayFile = function (file, $event) {
             $scope.fileToDisplay = file;
             $scope.showDisplayFile = true;
             $event.preventDefault();
-            if(file && file.mimetype && (file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml")) {
-                rest.one('files', file.id).one('content', file.filename).get().then(function(text) {
-                    $scope.fileToDisplay.text = text;
-                });
-            }
+            rest.one('files', file.id).one('content', file.filename).get().then(function (text) {
+                if (text instanceof Object) {
+                    $scope.fileToDisplay.text = JSON.stringify(text.plain(), null, 4);
+                } else {
+                    $scope.fileToDisplay.text = text
+                }
+            });
         };
 
         $scope.getFileViewer = function(file) {
@@ -4082,7 +4086,7 @@ angular.module('slickApp')
                     } else {
                         return "embed-video";
                     }
-                } else if(file.mimetype.indexOf("text/") >= 0 || file.mimetype == "application/xml") {
+                } else {
                     return "text";
                 }
 
