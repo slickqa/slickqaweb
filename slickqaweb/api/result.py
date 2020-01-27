@@ -598,7 +598,7 @@ def get_single_scheduled_result(hostname):
                                                                                 parameters.get('build', None))
     if project_id is not None:
         rawquery['project.id'] = project_id
-    else:
+    elif parameters.get('project', None) is not None:
         rawquery['project.name'] = parameters.get('project', None)
     if release_id is not None:
         rawquery['release.releaseId'] = release_id
