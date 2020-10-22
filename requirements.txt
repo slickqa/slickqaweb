@@ -1,5 +1,6 @@
 pymongo==3.7.1
 Flask
+cachelib
 mongoengine==0.15.3
 Flask-gzip
 CherryPy==17.4.1

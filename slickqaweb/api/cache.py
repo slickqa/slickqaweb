@@ -1,5 +1,5 @@
 
-from werkzeug.contrib.cache import SimpleCache
+from cachelib import SimpleCache
 
 from slickqaweb.api.project import get_project, get_release, get_build
 
