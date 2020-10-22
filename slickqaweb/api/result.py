@@ -435,7 +435,8 @@ def update_result(result_id):
     orig = Result.objects(id=result_id).first()
     update_event = events.UpdateEvent(before=orig)
     update = read_request()
-    print((repr(update)))
+    # this line blows up if there is a unicode character in the update and the output is configured for ascii (docker)
+    #print((repr(update)))
 
     if 'status' in update and update['status'] != None and update['status'] != orig.status:
         atomic_update = {
