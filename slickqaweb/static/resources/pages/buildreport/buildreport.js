@@ -77,124 +77,138 @@ angular.module('slickApp')
 
         var refresh_promise;
 
+        let focused = true;
+
+        window.onfocus = function () {
+            focused = true;
+        };
+
+        window.onblur = function () {
+            focused = false;
+        };
+
         $scope.getBuildReportData = function () {
-            if ($routeParams.release === 'latest') {
-                rest.all('testruns').getList({orderby: '-runStarted', limit: 5, 'project.name': $routeParams['project']}).then(function (testruns) {
-                    let goldenTestrun = _.find(testruns, function (testrun) {
-                        return angular.isDefined(testrun.build.name)
-                    });
-                    if (angular.isDefined(goldenTestrun)) {
-                        $routeParams.release = goldenTestrun.release.name;
-                        $routeParams.build = goldenTestrun.build.name;
-                    } else {
-                        rest.one('projects', $routeParams['project']).get().then(function (project) {
-                            let lastRelease = project.releases.length - 1;
-                            $routeParams.release = project.releases[lastRelease]['name'];
-                            let lastBuild = project.releases[lastRelease]['builds'].length - 1;
-                            $routeParams.build = project.releases[lastRelease]['builds'][lastBuild]['name']
+            if (focused) {
+                if ($routeParams.release === 'latest') {
+                    rest.all('testruns').getList({orderby: '-runStarted', limit: 5, 'project.name': $routeParams['project']}).then(function (testruns) {
+                        let goldenTestrun = _.find(testruns, function (testrun) {
+                            return angular.isDefined(testrun.build.name)
                         });
-                    }
-                });
-            } else if ($routeParams.build === 'latest') {
-                rest.all('testruns').getList({orderby: '-runStarted', limit: 5, 'project.name': $routeParams['project'], 'release.name': $routeParams.release}).then(function (testruns) {
-                    let goldenTestrun = _.find(testruns, function (testrun) {
-                        return angular.isDefined(testrun.build.name)
-                    });
-                    if (angular.isDefined(goldenTestrun)) {
-                        $routeParams.release = goldenTestrun.release.name;
-                        $routeParams.build = goldenTestrun.build.name;
-                    } else {
-                        rest.one('projects', $routeParams['project']).get().then(function (project) {
-                            let release = null;
-                            for (let i = 0; i < project.releases.length; i++) {
-                                if (project.releases[i]['name'] === $routeParams.release) {
-                                    release = project.releases[i];
-                                    break;
-                                }
-                            }
-                            if (release !== null) {
-                                let lastBuild = project.releases[i]['builds'].length - 1;
-                                $routeParams.build = release['builds'][lastBuild]['name']
-                            }
-                        });
-                    }
-                });
-            }
-            rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).get().then(function (buildreport) {
-                $scope.summaryChartOptions = {
-                    chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
-                    backgroundColor: "none",
-                    pieSliceBorderColor: "none",
-                    legend: 'none',
-                    colors: []
-                };
-
-                $scope.individualChartOptions = {
-                    chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
-                    backgroundColor: "none",
-                    isStacked: true,
-                    legend: 'none',
-                    hAxis: {
-                        textStyle: {
-                            color: '#c0c0c0'
-                        },
-                        slantedText: true
-                    },
-                    colors: []
-                };
-                $scope.routeParams = $routeParams;
-                $scope.testrungroup = buildreport;
-                $scope.estimatedTimeRemaining = "";
-                $scope.buildRunTime = "";
-                $scope.testRunsTitle = "Testruns";
-                $scope.isBuildReport = false;
-                var testrungroup = buildreport;
-                if (buildreport.hasOwnProperty('name')) {
-                    nav.setTitle(buildreport.name);
-                    let finishedRunTimes = [];
-                    for (let key in buildreport.testruns) {
-                        if (buildreport.testruns[key].hasOwnProperty('runFinished')) {
-                            finishedRunTimes.push(buildreport.testruns[key].runFinished)
+                        if (angular.isDefined(goldenTestrun)) {
+                            $routeParams.release = goldenTestrun.release.name;
+                            $routeParams.build = goldenTestrun.build.name;
+                        } else {
+                            rest.one('projects', $routeParams['project']).get().then(function (project) {
+                                let lastRelease = project.releases.length - 1;
+                                $routeParams.release = project.releases[lastRelease]['name'];
+                                let lastBuild = project.releases[lastRelease]['builds'].length - 1;
+                                $routeParams.build = project.releases[lastRelease]['builds'][lastBuild]['name']
+                            });
                         }
-                    }
-                    $scope.estimatedTimeRemaining = getEstimatedTimeRemaining(buildreport, 'build');
-                    $scope.isBuildReport = true;
-                    let createdTime = buildreport.testruns[0].dateCreated;
-                    if (finishedRunTimes.length === buildreport.testruns.length || $scope.estimatedTimeRemaining === "") {
-                        $scope.buildRunTime = finishedRunTimes.length !== 0 ? getDurationString(Math.max(...finishedRunTimes) - createdTime, true) : "";
-                    } else {
-                        $scope.buildRunTime = getDurationString(new Date().getTime() - createdTime, true);
-                    }
-                    $scope.parallelSummaryData = new google.visualization.DataTable();
-                    $scope.parallelSummaryData.addColumn('string', 'Status');
-                    $scope.parallelSummaryData.addColumn('number', 'Results');
-
-                    $scope.parallelIndividualData = new google.visualization.DataTable();
-                    $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
-
-                    refresh_promise = $timeout($scope.getBuildReportData, 3000);
-                    _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        $scope.parallelSummaryData.addRow([replaceOnStatus(status, " "), testrungroup.groupSummary.resultsByStatus[status]]);
-                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
-                        $scope.summaryChartOptions.colors.push(color);
-                        $scope.individualChartOptions.colors.push(color);
-
-                        $scope.parallelIndividualData.addColumn('number', replaceOnStatus(status, " "))
                     });
-
-                    _.each(testrungroup.testruns, function (testrun) {
-                        var row = [testrun.name];
-                        _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                            row.push(testrun.summary.resultsByStatus[status]);
+                } else if ($routeParams.build === 'latest') {
+                    rest.all('testruns').getList({orderby: '-runStarted', limit: 5, 'project.name': $routeParams['project'], 'release.name': $routeParams.release}).then(function (testruns) {
+                        let goldenTestrun = _.find(testruns, function (testrun) {
+                            return angular.isDefined(testrun.build.name)
                         });
-                        $scope.parallelIndividualData.addRow(row);
+                        if (angular.isDefined(goldenTestrun)) {
+                            $routeParams.release = goldenTestrun.release.name;
+                            $routeParams.build = goldenTestrun.build.name;
+                        } else {
+                            rest.one('projects', $routeParams['project']).get().then(function (project) {
+                                let release = null;
+                                for (let i = 0; i < project.releases.length; i++) {
+                                    if (project.releases[i]['name'] === $routeParams.release) {
+                                        release = project.releases[i];
+                                        break;
+                                    }
+                                }
+                                if (release !== null) {
+                                    let lastBuild = project.releases[i]['builds'].length - 1;
+                                    $routeParams.build = release['builds'][lastBuild]['name']
+                                }
+                            });
+                        }
                     });
-                } else {
-                    refresh_promise = $timeout($scope.getBuildReportData, 500);
                 }
-            }, function errorCallback() {
-                refresh_promise = $timeout($scope.getBuildReportData, 3000);
-            });
+                rest.one('build-report', $routeParams.project).one($routeParams.release, $routeParams.build).get().then(function (buildreport) {
+                    $scope.summaryChartOptions = {
+                        chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
+                        backgroundColor: "none",
+                        pieSliceBorderColor: "none",
+                        legend: 'none',
+                        colors: []
+                    };
+
+                    $scope.individualChartOptions = {
+                        chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
+                        backgroundColor: "none",
+                        isStacked: true,
+                        legend: 'none',
+                        hAxis: {
+                            textStyle: {
+                                color: '#c0c0c0'
+                            },
+                            slantedText: true
+                        },
+                        colors: []
+                    };
+                    $scope.routeParams = $routeParams;
+                    $scope.testrungroup = buildreport;
+                    $scope.estimatedTimeRemaining = "";
+                    $scope.buildRunTime = "";
+                    $scope.testRunsTitle = "Testruns";
+                    $scope.isBuildReport = false;
+                    var testrungroup = buildreport;
+                    if (buildreport.hasOwnProperty('name')) {
+                        nav.setTitle(buildreport.name);
+                        let finishedRunTimes = [];
+                        for (let key in buildreport.testruns) {
+                            if (buildreport.testruns[key].hasOwnProperty('runFinished')) {
+                                finishedRunTimes.push(buildreport.testruns[key].runFinished)
+                            }
+                        }
+                        $scope.estimatedTimeRemaining = getEstimatedTimeRemaining(buildreport, 'build');
+                        $scope.isBuildReport = true;
+                        let createdTime = buildreport.testruns[0].dateCreated;
+                        if (finishedRunTimes.length === buildreport.testruns.length || $scope.estimatedTimeRemaining === "") {
+                            $scope.buildRunTime = finishedRunTimes.length !== 0 ? getDurationString(Math.max(...finishedRunTimes) - createdTime, true) : "";
+                        } else {
+                            $scope.buildRunTime = getDurationString(new Date().getTime() - createdTime, true);
+                        }
+                        $scope.parallelSummaryData = new google.visualization.DataTable();
+                        $scope.parallelSummaryData.addColumn('string', 'Status');
+                        $scope.parallelSummaryData.addColumn('number', 'Results');
+
+                        $scope.parallelIndividualData = new google.visualization.DataTable();
+                        $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
+
+                        refresh_promise = $timeout($scope.getBuildReportData, 3000);
+                        _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                            $scope.parallelSummaryData.addRow([replaceOnStatus(status, " "), testrungroup.groupSummary.resultsByStatus[status]]);
+                            var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
+                            $scope.summaryChartOptions.colors.push(color);
+                            $scope.individualChartOptions.colors.push(color);
+
+                            $scope.parallelIndividualData.addColumn('number', replaceOnStatus(status, " "))
+                        });
+
+                        _.each(testrungroup.testruns, function (testrun) {
+                            var row = [testrun.name];
+                            _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                                row.push(testrun.summary.resultsByStatus[status]);
+                            });
+                            $scope.parallelIndividualData.addRow(row);
+                        });
+                    } else {
+                        refresh_promise = $timeout($scope.getBuildReportData, 500);
+                    }
+                }, function errorCallback() {
+                    refresh_promise = $timeout($scope.getBuildReportData, 3000);
+                });
+            } else {
+                refresh_promise = $timeout($scope.getBuildReportData, 500);
+            }
         };
 
         $scope.buildHistory = [];
@@ -218,57 +232,61 @@ angular.module('slickApp')
         $scope.releaseData = new google.visualization.DataTable();
         $scope.releaseData.addColumn('string', 'Build Name');
         $scope.getReleaseData = function () {
-            rest.one('release-report', $routeParams.project).one($routeParams.release).get(params).then(function (releaseReport) {
-                $scope.releaseReportOptions = {
-                    chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-                    backgroundColor: "none",
-                    vAxis: {
-                        minValue: 0,
-                        maxValue: 100,
-                        format: '#\'%\''
-                    },
-                    lineWidth: 5,
-                    legend: {
-                        textStyle: {
-                            color: "#ffffff"
-                        }
-                    },
-                    colors: []
-                };
-                if (releaseReport.hasOwnProperty('name')) {
-                    $scope.buildHistory = [];
-                    $scope.releaseData = new google.visualization.DataTable();
-                    $scope.releaseData.addColumn('date', 'Recorded');
-                    let gotXAndY = false;
-                    refresh_promise = $timeout($scope.getReleaseData, 3000);
-                    _.each(releaseReport.builds.sort(function (a, b) {
-                        return (a.testruns[0].dateCreated > b.testruns[0].dateCreated) ? 1 : ((b.testruns[0].dateCreated > a.testruns[0].dateCreated) ? -1 : 0);
-                    }), function (build, index) {
-                        $scope.buildHistory.unshift(build);
-                        let row = [new Date(build.testruns[0].dateCreated)];
-                        let sum = Object.values(build.groupSummary.resultsByStatus).reduce((a, b) => a + b, 0);
-                        if (!gotXAndY) {
+            if (focused) {
+                rest.one('release-report', $routeParams.project).one($routeParams.release).get(params).then(function (releaseReport) {
+                    $scope.releaseReportOptions = {
+                        chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+                        backgroundColor: "none",
+                        vAxis: {
+                            minValue: 0,
+                            maxValue: 100,
+                            format: '#\'%\''
+                        },
+                        lineWidth: 5,
+                        legend: {
+                            textStyle: {
+                                color: "#ffffff"
+                            }
+                        },
+                        colors: []
+                    };
+                    if (releaseReport.hasOwnProperty('name')) {
+                        $scope.buildHistory = [];
+                        $scope.releaseData = new google.visualization.DataTable();
+                        $scope.releaseData.addColumn('date', 'Recorded');
+                        let gotXAndY = false;
+                        refresh_promise = $timeout($scope.getReleaseData, 3000);
+                        _.each(releaseReport.builds.sort(function (a, b) {
+                            return (a.testruns[0].dateCreated > b.testruns[0].dateCreated) ? 1 : ((b.testruns[0].dateCreated > a.testruns[0].dateCreated) ? -1 : 0);
+                        }), function (build, index) {
+                            $scope.buildHistory.unshift(build);
+                            let row = [new Date(build.testruns[0].dateCreated)];
+                            let sum = Object.values(build.groupSummary.resultsByStatus).reduce((a, b) => a + b, 0);
+                            if (!gotXAndY) {
+                                _.each(Object.keys(build.groupSummary.resultsByStatus).sort(), function (status) {
+                                    let color = getStyle(replaceOnStatus(status, "") + "-element", "color");
+                                    $scope.releaseReportOptions.colors.push(color);
+                                    $scope.releaseData.addColumn('number', replaceOnStatus(status, " "));
+                                });
+                                gotXAndY = true;
+                                // $scope.releaseData.addColumn('string', 'Build');
+                            }
                             _.each(Object.keys(build.groupSummary.resultsByStatus).sort(), function (status) {
-                                let color = getStyle(replaceOnStatus(status, "") + "-element", "color");
-                                $scope.releaseReportOptions.colors.push(color);
-                                $scope.releaseData.addColumn('number', replaceOnStatus(status, " "));
+                                row.push(build.groupSummary.resultsByStatus[status] / sum * 100);
                             });
-                            gotXAndY = true;
-                            // $scope.releaseData.addColumn('string', 'Build');
-                        }
-                        _.each(Object.keys(build.groupSummary.resultsByStatus).sort(), function (status) {
-                            row.push(build.groupSummary.resultsByStatus[status] / sum * 100);
+                            // row.push(`${build.testruns[0].project.name}/${build.testruns[0].release.name}/${build.testruns[0].build.name}`);
+                            $scope.releaseData.addRow(row);
+                            $scope.releaseData.setRowProperties(index, {project: build.testruns[0].project.name, release: build.testruns[0].release.name, build: build.testruns[0].build.name})
                         });
-                        // row.push(`${build.testruns[0].project.name}/${build.testruns[0].release.name}/${build.testruns[0].build.name}`);
-                        $scope.releaseData.addRow(row);
-                        $scope.releaseData.setRowProperties(index, {project: build.testruns[0].project.name, release: build.testruns[0].release.name, build: build.testruns[0].build.name})
-                    });
-                } else {
-                    refresh_promise = $timeout($scope.getReleaseData, 500);
-                }
-            }, function errorCallback() {
-                refresh_promise = $timeout($scope.getReleaseData, 3000);
-            },);
+                    } else {
+                        refresh_promise = $timeout($scope.getReleaseData, 500);
+                    }
+                }, function errorCallback() {
+                    refresh_promise = $timeout($scope.getReleaseData, 3000);
+                },);
+            } else {
+                refresh_promise = $timeout($scope.getReleaseData, 500);
+            }
         };
 
         $scope.getBuildReportData();

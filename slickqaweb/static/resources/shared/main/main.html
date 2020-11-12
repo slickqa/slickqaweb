@@ -22,7 +22,7 @@
                             </md-input-container>
                             <md-input-container>
                                 <label>Project</label>
-                                <md-select ng-model="project" ng-change="fetchBuildsData()">
+                                <md-select ng-model="project" ng-change="fetchBuildsData(true)">
                                     <md-option ng-value="'All'" ng-selected="project === 'All'">All</md-option>
                                     <md-option ng-repeat="projectItem in projects | orderBy: 'name' | unique: 'name' track by $index" ng-value="projectItem.name" ng-selected="projectItem.name === project">{{ projectItem.name }}</md-option>
                                 </md-select>
@@ -347,7 +347,7 @@
                     <md-progress-linear ng-show="statsForProjects.length === 0"></md-progress-linear>
                     <md-tab-body ng-show="statsForProjects.length !== 0">
                         <md-tabs>
-                            <md-tab ng-repeat="stat in statsForProjects | orderBy: 'title' track by $index" md-on-select="getHealthData(stat.title, stat.activeRelease)">
+                            <md-tab ng-if="statsForProjects.length !== 0" ng-repeat="stat in statsForProjects | orderBy: 'title' track by $index" md-on-select="getHealthData(stat.title, stat.activeRelease)">
                                 <md-tab-label>
                                     <span>{{ stat.title }}</span>
                                 </md-tab-label>
@@ -365,7 +365,7 @@
                                                 </md-input-container>
                                                 <md-input-container>
                                                     <label>Release</label>
-                                                    <md-select ng-model="stat.activeRelease" ng-change="stat.activeRelease = release.title; getHealthData(stat.title, stat.activeRelease)">
+                                                    <md-select ng-model="stat.activeRelease" ng-change="getHealthData(stat.title, stat.activeRelease)">
                                                         <md-option ng-if="isObject(release)" ng-repeat="release in objToValues(stat)" ng-value="release.title" ng-selected="release.title === stat.activeRelease">{{ release.title }}</md-option>
                                                     </md-select>
                                                 </md-input-container>

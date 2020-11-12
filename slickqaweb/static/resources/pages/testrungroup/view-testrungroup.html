@@ -194,9 +194,9 @@
                                             <google-column-chart class="testrungroup-parallel-individual-chart" data="parallelIndividualData" options="individualChartOptions"></google-column-chart>
                                         </div>
                                     </md-tab>
-                                    <md-tab label="Release Report" ng-show="releaseData.Mf.length > 1">
-                                        <md-progress-linear ng-show="releaseData.Mf.length === 1"></md-progress-linear>
-                                        <google-area-chart ng-show="releaseData.Mf.length > 1" class="testrungroup-serial-chart" data="releaseData" options="releaseReportOptions"></google-area-chart>
+                                    <md-tab label="Release Report" ng-show="releaseData.fg.length > 1">
+                                        <md-progress-linear ng-show="releaseData.fg.length === 1"></md-progress-linear>
+                                        <google-area-chart ng-show="releaseData.fg.length > 1" class="testrungroup-serial-chart" data="releaseData" options="releaseReportOptions"></google-area-chart>
                                     </md-tab>
                                 </md-tabs>
                             </div>

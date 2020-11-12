@@ -45,94 +45,107 @@ angular.module('slickApp')
         $scope.serialData = new google.visualization.DataTable();
         $scope.serialData.addColumn('string', 'Testrun Name');
 
+        let focused = true;
+
+        window.onfocus = function () {
+            focused = true;
+        };
+
+        window.onblur = function () {
+            focused = false;
+        };
+
         $scope.getTestrunGroupData = function() {
 
-            $scope.summaryChartOptions = {
-                chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
-                backgroundColor: "none",
-                pieSliceBorderColor: "none",
-                legend: 'none',
-                colors: []
-            };
+            if (focused) {
 
-            $scope.individualChartOptions = {
-                chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
-                backgroundColor: "none",
-                isStacked: true,
-                legend: 'none',
-                hAxis: {
-                    textStyle: {
-                        color: '#ffffff'
+                $scope.summaryChartOptions = {
+                    chartArea: {left: '5%', top: '5%', width: '90%', height: '90%'},
+                    backgroundColor: "none",
+                    pieSliceBorderColor: "none",
+                    legend: 'none',
+                    colors: []
+                };
+
+                $scope.individualChartOptions = {
+                    chartArea: {left: '5%', top: '5%', width: '90%', height: '70%'},
+                    backgroundColor: "none",
+                    isStacked: true,
+                    legend: 'none',
+                    hAxis: {
+                        textStyle: {
+                            color: '#ffffff'
+                        },
+                        slantedText: true
                     },
-                    slantedText: true
-                },
-                colors: []
-            };
+                    colors: []
+                };
 
-            $scope.serialChartOptions = {
-                chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
-                backgroundColor: "none",
-                legend: {
-                    textStyle: {
-                        color: "#ffffff"
+                $scope.serialChartOptions = {
+                    chartArea: {left: '5%', top: '5%', width: '85%', height: '80%'},
+                    backgroundColor: "none",
+                    legend: {
+                        textStyle: {
+                            color: "#ffffff"
+                        }
+                    },
+                    colors: []
+                };
+
+                rest.one('testrungroups', $routeParams.id).get().then(function (testrungroup) {
+                    $scope.testrungroup = testrungroup;
+                    nav.setTitle(testrungroup.name);
+
+                    if (testrungroup.grouptype == "PARALLEL") {
+
+                        $scope.parallelSummaryData = new google.visualization.DataTable();
+                        $scope.parallelSummaryData.addColumn('string', 'Status');
+                        $scope.parallelSummaryData.addColumn('number', 'Results');
+
+                        $scope.parallelIndividualData = new google.visualization.DataTable();
+                        $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
+
+
+                        _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                            $scope.parallelSummaryData.addRow([replaceOnStatus(status, " "), testrungroup.groupSummary.resultsByStatus[status]]);
+                            var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
+                            $scope.summaryChartOptions.colors.push(color);
+                            $scope.individualChartOptions.colors.push(color);
+
+                            $scope.parallelIndividualData.addColumn('number', replaceOnStatus(status, " "))
+                        });
+
+                        _.each(testrungroup.testruns, function (testrun) {
+                            var row = [testrun.project.name + " - " + testrun.name];
+                            _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                                row.push(testrun.summary.resultsByStatus[status]);
+                            });
+                            $scope.parallelIndividualData.addRow(row);
+                        });
+                    } else {
+                        $scope.serialData = new google.visualization.DataTable();
+                        $scope.serialData.addColumn('date', 'Recorded');
+                        _.sortBy($scope.testruns, function (testrun) {
+                            return testrun.dateCreated;
+                        });
+                        _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                            var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
+                            $scope.serialChartOptions.colors.push(color);
+                            $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
+                        });
+                        _.each(testrungroup.testruns, function (testrun) {
+                            var row = [new Date(testrun.dateCreated)];
+                            _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
+                                row.push(testrun.summary.resultsByStatus[status]);
+                            });
+                            $scope.serialData.addRow(row);
+                        });
                     }
-                },
-                colors: []
-            };
-
-            rest.one('testrungroups', $routeParams.id).get().then(function (testrungroup) {
-                $scope.testrungroup = testrungroup;
-                nav.setTitle(testrungroup.name);
-
-                if (testrungroup.grouptype == "PARALLEL") {
-
-                    $scope.parallelSummaryData = new google.visualization.DataTable();
-                    $scope.parallelSummaryData.addColumn('string', 'Status');
-                    $scope.parallelSummaryData.addColumn('number', 'Results');
-
-                    $scope.parallelIndividualData = new google.visualization.DataTable();
-                    $scope.parallelIndividualData.addColumn('string', 'Testrun Name');
-
-
-                    _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        $scope.parallelSummaryData.addRow([replaceOnStatus(status, " "), testrungroup.groupSummary.resultsByStatus[status]]);
-                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
-                        $scope.summaryChartOptions.colors.push(color);
-                        $scope.individualChartOptions.colors.push(color);
-
-                        $scope.parallelIndividualData.addColumn('number', replaceOnStatus(status, " "))
-                    });
-
-                    _.each(testrungroup.testruns, function (testrun) {
-                        var row = [testrun.project.name + " - " + testrun.name];
-                        _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                            row.push(testrun.summary.resultsByStatus[status]);
-                        });
-                        $scope.parallelIndividualData.addRow(row);
-                    });
-                } else {
-                    $scope.serialData = new google.visualization.DataTable();
-                    $scope.serialData.addColumn('date', 'Recorded');
-                    _.sortBy($scope.testruns, function (testrun) {
-                        return testrun.dateCreated;
-                    });
-                    _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                        var color = getStyle(replaceOnStatus(status, "") + "-element", "color");
-                        $scope.serialChartOptions.colors.push(color);
-                        $scope.serialData.addColumn('number', replaceOnStatus(status, " "))
-                    });
-                    _.each(testrungroup.testruns, function (testrun) {
-                        var row = [new Date(testrun.dateCreated)];
-                        _.each(testrungroup.groupSummary.statusListOrdered, function (status) {
-                            row.push(testrun.summary.resultsByStatus[status]);
-                        });
-                        $scope.serialData.addRow(row);
-                    });
-                }
-                if (testrungroup.state !== "FINISHED") {
                     $scope.refreshPromise = $timeout($scope.getTestrunGroupData, 3000);
-                }
-            });
+                });
+            } else {
+                $scope.refreshPromise = $timeout($scope.getTestrunGroupData, 500);
+            }
         };
 
         $scope.getTestrunGroupData();
