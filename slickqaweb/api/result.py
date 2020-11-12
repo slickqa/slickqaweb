@@ -36,7 +36,7 @@ from bson import ObjectId
 import types
 import datetime
 from mongoengine import Q
-from flask import request, Response
+from flask import request, Response, abort
 
 __author__ = 'jcorbett'
 
@@ -172,6 +172,10 @@ def get_results():
         del args['excludestatus']
     if args.has_key('allfields'):
         del args['allfields']
+
+    if not args:
+        abort(400)
+
     if not args.has_key("orderby"):
         args["orderby"] = '-recorded'
 

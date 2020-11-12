@@ -4,7 +4,7 @@ from slickqaweb.app import app
 from slickqaweb.model.testPlan import TestPlan
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.query import queryFor
-from flask import request
+from flask import request, abort
 from .standardResponses import JsonResponse, read_request
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from mongoengine import ListField, ReferenceField
@@ -23,6 +23,10 @@ def get_testplans():
         args = args.to_dict()
         args['project.id'] = request.args['projectid']
         del args['projectid']
+
+    if not args:
+        abort(400)
+
     return JsonResponse(queryFor(TestPlan, args))
 
 @app.route('/api/testplans/<testplan_id>')

@@ -1,7 +1,7 @@
 import datetime
 
 import bson
-from flask import request
+from flask import request, abort
 from mongoengine import ListField, ReferenceField, connection
 
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
@@ -37,6 +37,9 @@ def get_testruns():
     if 'testplanid' in args:
         args['testplanId'] = args['testplanid']
         del args['testplanid']
+
+    if not args:
+        abort(400)
 
     return JsonResponse(queryFor(Testrun, args))
 
