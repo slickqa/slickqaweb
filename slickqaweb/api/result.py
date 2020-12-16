@@ -7,7 +7,7 @@ from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.query import queryFor
 from slickqaweb.app import app
 from slickqaweb.api.project import get_release, get_build
-from slickqaweb.lib.jira_util import jira
+from slickqaweb.lib import jira_util
 from slickqaweb.model.result import Result, NON_FINAL_STATUS
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.resultReference import ResultReference
@@ -487,7 +487,7 @@ def update_result(result_id):
     apply_triage_notes(orig)
     orig.save()
     if orig.attributes.get('jira_test_run_id'):
-        jira.update_test_run_status(test_run_id=orig.attributes.get('jira_test_run_id'), status=slick_to_xray_status(orig.status))
+        jira_util.jira.update_test_run_status(test_run_id=orig.attributes.get('jira_test_run_id'), status=slick_to_xray_status(orig.status))
     update_event.after(orig)
     return JsonResponse(orig)
 
