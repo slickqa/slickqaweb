@@ -486,8 +486,11 @@ def update_result(result_id):
     deserialize_that(update, orig)
     apply_triage_notes(orig)
     orig.save()
-    if orig.attributes.get('jira_test_run_id'):
-        jira_util.jira.update_test_run_status(test_run_id=orig.attributes.get('jira_test_run_id'), status=slick_to_xray_status(orig.status))
+    try:
+        if orig.attributes.get('jira_test_run_id'):
+            jira_util.jira.update_test_run_status(test_run_id=orig.attributes.get('jira_test_run_id'), status=slick_to_xray_status(orig.status))
+    except:
+        pass
     update_event.after(orig)
     return JsonResponse(orig)
 
