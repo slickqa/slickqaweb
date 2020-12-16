@@ -546,8 +546,8 @@ def reschedule_individual_result(result_id):
     Result.objects(id=result_id).update(log=log, files=[], links=[], runstatus="SCHEDULED", status="NO_RESULT", recorded=datetime.datetime.utcnow(),
                                         unset__hostname=True, unset__started=True, unset__finished=True,
                                         unset__runlength=True, unset__reason=True, attributes=orig.attributes)
-    update_jira_test_run(orig)
     orig.reload()
+    update_jira_test_run(orig)
     return JsonResponse(orig)
 
 
@@ -570,8 +570,8 @@ def cancel_individual_result(result_id):
             Testrun.objects(id=orig.testrun.testrunId).update_one(runFinished=testrun.runFinished, state=testrun.state)
     reason = request.args.get("reason") if request.args.get("reason") else "Run cancelled from slick."
     Result.objects(id=result_id).update(runstatus="FINISHED", status="SKIPPED", reason=reason)
-    update_jira_test_run(orig)
     orig.reload()
+    update_jira_test_run(orig)
     return JsonResponse(orig)
 
 
