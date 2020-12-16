@@ -9,3 +9,4 @@ class Release(EmbeddedDocument):
     status = StringField(choices=('active', 'inactive'), default='active')
     name = StringField(required=True)
     target = DateTimeField()
+    attributes = MapField(StringField())
