@@ -486,13 +486,20 @@ def update_result(result_id):
     deserialize_that(update, orig)
     apply_triage_notes(orig)
     orig.save()
-    try:
-        if orig.attributes.get('jira_test_run_id'):
-            jira_util.jira.update_test_run_status(test_run_id=orig.attributes.get('jira_test_run_id'), status=slick_to_xray_status(orig.status))
-    except:
-        pass
+    update_jira_test_run(orig)
     update_event.after(orig)
     return JsonResponse(orig)
+
+
+def update_jira_test_run(result):
+    try:
+        if result.attributes.get('jira_test_run_id'):
+            status = result.status
+            if result.runstatus == "RUNNING":
+                status = "RUNNING"
+            jira_util.jira.update_test_run_status(test_run_id=result.attributes.get('jira_test_run_id'), status=slick_to_xray_status(status))
+    except:
+        pass
 
 
 @app.route('/api/results/<result_id>/log', methods=["POST"])
@@ -539,6 +546,7 @@ def reschedule_individual_result(result_id):
     Result.objects(id=result_id).update(log=log, files=[], links=[], runstatus="SCHEDULED", status="NO_RESULT", recorded=datetime.datetime.utcnow(),
                                         unset__hostname=True, unset__started=True, unset__finished=True,
                                         unset__runlength=True, unset__reason=True, attributes=orig.attributes)
+    update_jira_test_run(orig)
     orig.reload()
     return JsonResponse(orig)
 
@@ -562,6 +570,7 @@ def cancel_individual_result(result_id):
             Testrun.objects(id=orig.testrun.testrunId).update_one(runFinished=testrun.runFinished, state=testrun.state)
     reason = request.args.get("reason") if request.args.get("reason") else "Run cancelled from slick."
     Result.objects(id=result_id).update(runstatus="FINISHED", status="SKIPPED", reason=reason)
+    update_jira_test_run(orig)
     orig.reload()
     return JsonResponse(orig)
 
