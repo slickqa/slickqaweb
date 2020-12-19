@@ -7,6 +7,7 @@ from flask import request
 from mongoengine import connection
 
 from slickqaweb import events
+from slickqaweb.lib.integrations.jira import jira_connect
 from slickqaweb.app import app
 from slickqaweb.model.build import Build
 from slickqaweb.model.component import Component
@@ -81,11 +82,14 @@ def get_project_by_name(project_name):
 @accepts(Project)
 def add_project():
     """Add a new Project to slick."""
-    new_project = deserialize_that(read_request(), Project())
-    new_project.lastUpdated = datetime.datetime.utcnow()
-    new_project.save()
-    events.CreateEvent(new_project)
-    return JsonResponse(new_project)
+    project = deserialize_that(read_request(), Project())
+    if project.attributes.get(jira_connect.ENABLED):
+        new_project = jira_connect.project(project)
+        project = new_project if new_project else project
+    project.lastUpdated = datetime.datetime.utcnow()
+    project.save()
+    events.CreateEvent(project)
+    return JsonResponse(project)
 
 
 @app.route('/api/projects/<project_name>', methods=["PUT"])
@@ -181,6 +185,9 @@ def add_release_for_project(project_id):
         project.releases = []
     if not hasattr(rel, 'builds'):
         rel.builds = []
+    if project.attributes.get(jira_connect.ENABLED):
+        new_rel = jira_connect.release(rel, project)
+        rel = new_rel if new_rel else rel
     project.releases.append(rel)
     project.save()
     return JsonResponse(rel)
@@ -294,6 +301,9 @@ def add_build(project_id, release_id):
         build.id = ObjectId()
     if not hasattr(release, 'builds'):
         release.builds = []
+    if project.attributes.get(jira_connect.ENABLED):
+        new_build = jira_connect.build(build, release, project)
+        build = new_build if new_build else build
     release.builds = release.builds + [build,]
     project.save()
     return JsonResponse(build)

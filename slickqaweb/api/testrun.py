@@ -6,6 +6,7 @@ from mongoengine import ListField, ReferenceField, connection
 
 from apidocs import add_resource, accepts, returns, argument_doc, standard_query_parameters, note
 from slickqaweb import events
+from slickqaweb.lib.integrations.jira import jira_connect
 from slickqaweb.app import app
 from slickqaweb.model.project import Project
 from slickqaweb.model.projectReference import ProjectReference
@@ -65,7 +66,7 @@ def add_testrun():
     raw = read_request()
     new_tr = deserialize_that(raw, Testrun())
     proj_id = None
-
+    project = None
     # resolve project, release and build, create if necessary
     if is_provided(new_tr, 'project'):
         project_name = new_tr.project.name
@@ -124,7 +125,12 @@ def add_testrun():
         if build is not None and is_provided(build, 'description'):
             new_tr.info = build.description
 
+    if project and project.attributes.get(jira_connect.ENABLED):
+        updated_tr = jira_connect.testrun(new_tr)
+        new_tr = updated_tr if updated_tr else new_tr
+
     new_tr.save()
+
     # add an event
     events.CreateEvent(new_tr)
 
