@@ -1,9 +1,10 @@
 import datetime
 
+from slickqaweb.model.project import Project
 from slickqaweb.utils import is_provided, is_not_provided
 
 __author__ = 'slambson'
-
+from slickqaweb.lib.integrations.jira import jira_connect
 from slickqaweb.app import app
 from slickqaweb.model.testcase import Testcase
 from slickqaweb.model.serialize import deserialize_that
@@ -65,6 +66,11 @@ def add_testcase():
     #    new_tc.author = g.user.full_name
     if is_not_provided(new_tc, 'created'):
         new_tc.created = datetime.datetime.utcnow()
+    if new_tc.project:
+        project = Project.objects(id=new_tc.project.id).only('attributes').first()
+        if project and project.attributes.get(jira_connect.ENABLED):
+            updated_tc = jira_connect.testcase(new_tc)
+            new_tc = updated_tc if updated_tc else new_tc
     new_tc.save()
     return JsonResponse(new_tc)
 

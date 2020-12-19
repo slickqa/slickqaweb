@@ -5,9 +5,9 @@ from .standardResponses import JsonResponse, read_request
 from .project import get_project
 from slickqaweb.utils import is_provided, is_not_provided
 from slickqaweb.model.query import queryFor
+from slickqaweb.lib.integrations.jira import jira_connect
 from slickqaweb.app import app
 from slickqaweb.api.project import get_release, get_build
-from slickqaweb.lib import jira_util
 from slickqaweb.model.result import Result, NON_FINAL_STATUS
 from slickqaweb.model.serialize import deserialize_that
 from slickqaweb.model.resultReference import ResultReference
@@ -42,20 +42,6 @@ from flask import request, Response, abort
 __author__ = 'jcorbett'
 
 add_resource('/results', 'Add, Update or delete results.')
-
-
-def slick_to_xray_status(slick_status):
-    status_mapping = {
-        "PASS": "PASS",
-        "FAIL": "FAIL",
-        "PASSED_ON_RETRY": "PWKI",
-        "NO_RESULT": "TODO",
-        "RUNNING": "EXECUTING",
-        "NOT_TESTED": "BLOCKED",
-        "BROKEN_TEST": "BROKEN",
-        "SKIPPED": "SKIPPED"
-    }
-    return status_mapping.get(slick_status, "BROKEN")
 
 
 def find_history(result):
@@ -451,6 +437,9 @@ def add_result(testrun_id=None):
     if new_result.attributes is None:
         new_result.attributes = {}
     new_result.attributes['estimatedRuntime'] = str(estimatedRuntime)
+    if project and project.attributes.get(jira_connect.ENABLED):
+        updated_result = jira_connect.result(new_result)
+        new_result = updated_result if updated_result else new_result
     new_result.save()
 
     events.CreateEvent(new_result)
@@ -486,20 +475,12 @@ def update_result(result_id):
     deserialize_that(update, orig)
     apply_triage_notes(orig)
     orig.save()
-    update_jira_test_run(orig)
+    if orig.project:
+        project = Project.objects(id=orig.project.id).only('attributes').first()
+        if project and project.attributes.get(jira_connect.ENABLED):
+            jira_connect.status(orig)
     update_event.after(orig)
     return JsonResponse(orig)
-
-
-def update_jira_test_run(result):
-    try:
-        if result.attributes.get('jira_test_run_id'):
-            status = result.status
-            if result.runstatus == "RUNNING":
-                status = "RUNNING"
-            jira_util.jira.update_test_run_status(test_run_id=result.attributes.get('jira_test_run_id'), status=slick_to_xray_status(status))
-    except:
-        pass
 
 
 @app.route('/api/results/<result_id>/log', methods=["POST"])
@@ -547,7 +528,10 @@ def reschedule_individual_result(result_id):
                                         unset__hostname=True, unset__started=True, unset__finished=True,
                                         unset__runlength=True, unset__reason=True, attributes=orig.attributes)
     orig.reload()
-    update_jira_test_run(orig)
+    if orig.project:
+        project = Project.objects(id=orig.project.id).only('attributes').first()
+        if project and project.attributes.get(jira_connect.ENABLED):
+            jira_connect.status(orig)
     return JsonResponse(orig)
 
 
@@ -571,7 +555,10 @@ def cancel_individual_result(result_id):
     reason = request.args.get("reason") if request.args.get("reason") else "Run cancelled from slick."
     Result.objects(id=result_id).update(runstatus="FINISHED", status="SKIPPED", reason=reason)
     orig.reload()
-    update_jira_test_run(orig)
+    if orig.project:
+        project = Project.objects(id=orig.project.id).only('attributes').first()
+        if project and project.attributes.get(jira_connect.ENABLED):
+            jira_connect.status(orig)
     return JsonResponse(orig)
 
 
