@@ -125,11 +125,13 @@ def add_testrun():
         if build is not None and is_provided(build, 'description'):
             new_tr.info = build.description
 
-    if project and project.attributes.get(jira_connect.ENABLED):
-        updated_tr = jira_connect.testrun(new_tr)
-        new_tr = updated_tr if updated_tr else new_tr
-
     new_tr.save()
+    if project and project.attributes.get(jira_connect.ENABLED):
+        new_tr.reload()
+        updated_tr = jira_connect.testrun(new_tr)
+        if updated_tr:
+            new_tr = updated_tr
+            new_tr.save()
 
     # add an event
     events.CreateEvent(new_tr)
