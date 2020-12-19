@@ -6,4 +6,3 @@ class Build(EmbeddedDocument):
     built = DateTimeField()
     name = StringField()
     description = StringField()
-    attributes = MapField(StringField())
