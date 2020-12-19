@@ -472,13 +472,13 @@ def update_result(result_id):
         if app.config['events']:
             testrun.reload()
             update_testrun_event.after(testrun)
-    deserialize_that(update, orig)
-    apply_triage_notes(orig)
-    orig.save()
-    if orig.project:
+    if orig.project and (update.get('status') != orig.status or (orig.runstatus != "RUNNING" and update.get("runstatus") == "RUNNING")):
         project = Project.objects(id=orig.project.id).only('attributes').first()
         if project and project.attributes.get(jira_connect.ENABLED):
             jira_connect.status(orig)
+    deserialize_that(update, orig)
+    apply_triage_notes(orig)
+    orig.save()
     update_event.after(orig)
     return JsonResponse(orig)
 
