@@ -750,7 +750,7 @@ angular.module('slickApp')
         };
         $scope.markResultManuallyPassed = function (result) {
             result.log.push({entryTime: new Date().getTime(), level: "WARN", loggerName: "slick.note", message: "Manually Verified!", exceptionMessage: ""});
-            rest.one('results', result.id).customPUT({status: "PASSED_ON_RETRY", run_status: "FINISHED", log: result.log});
+            rest.one('results', result.id).customPUT({status: "PASSED_ON_RETRY", runstatus: "FINISHED", log: result.log});
         };
 
         $scope.stopRefresh = function () {
