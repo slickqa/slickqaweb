@@ -161,9 +161,9 @@ class JiraConnect(BaseConnector):
                     comment += '\n*ERROR MESSAGE:*\n' \
                                '{{code}}{}{{code}}'.format(result.reason)
                 if int(result.attributes.get('retry_count', 0)) > 0:
-                    retry_logs = ["*RETRY REASONS:*\n_{}:_\n{{code}}{}{{code}}".format(x.entryTime, x.message) for x in result.log if x.level == "INFO" and x.loggerName == "slick.note"]
+                    retry_logs = ["_{}_\n{{code}}{}{{code}}".format(x.entryTime, x.message) for x in result.log if x.level == "INFO" and x.loggerName == "slick.note"]
                     if retry_logs:
-                        comment += "\n{}".format("\n".join(retry_logs))
+                        comment += "\n*RETRY REASONS:*\n{}".format("\n".join(retry_logs))
                 self.jira.update_test_run(test_run_id=result.attributes.get(self.TEST_RUN_ID), data=dict(status=self.STATUS_MAPPING.get(status, "BROKEN"),
                                                                                                          comment=comment))
             except:
