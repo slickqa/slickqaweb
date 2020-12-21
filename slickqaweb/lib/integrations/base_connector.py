@@ -1,3 +1,5 @@
+import os
+
 import logging
 
 from slickqaweb.lib import decorate_all_class_methods, handle_exception
@@ -14,6 +16,7 @@ class BaseConnector(object):
 
     def __init__(self):
         self.log = logging.getLogger(__name__)
+        self.slick_url = os.environ.get("SLICK_URL", "https://slickqa.vivint.com")
 
     def project(self, project):
         # type: (Project) -> Project

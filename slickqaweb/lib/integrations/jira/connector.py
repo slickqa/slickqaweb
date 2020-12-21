@@ -65,9 +65,10 @@ class JiraConnect(BaseConnector):
         if not attributes.get(self.PLAN_KEY):
             plan = self.jira.create_test_plan(project=project.attributes.get(self.PROJECT_KEY),
                                               summary="{}.{}".format(release.name, build.name),
-                                              description="https://slickqa.vivint.com/build-report/{}/{}/{}".format(project.name,
-                                                                                                                    release.name,
-                                                                                                                    build.name),
+                                              description="{}}/build-report/{}/{}/{}".format(self.slick_url,
+                                                                                             project.name,
+                                                                                             release.name,
+                                                                                             build.name),
                                               issuetype={'name': 'Test Plan'},
                                               customfield_11823={"value": "Not Applicable"},
                                               components=[{"name": "Test Case"}])
@@ -85,7 +86,7 @@ class JiraConnect(BaseConnector):
         if project.attributes.get(self.PROJECT_KEY) and not testrun.attributes.get(self.EXECUTION_KEY):
             execution = self.jira.create_execution(project=project.attributes.get(self.PROJECT_KEY),
                                                    summary="{}.{} - {}".format(testrun.release.name, testrun.build.name, testrun.name),
-                                                   description="https://slickqa.vivint.com/testruns/{}".format(testrun.id),
+                                                   description="{}}/testruns/{}".format(self.slick_url, testrun.id),
                                                    issuetype={'name': 'Test Execution'},
                                                    customfield_11823={"value": "Not Applicable"},
                                                    components=[{"name": "Test Case"}])
@@ -151,7 +152,20 @@ class JiraConnect(BaseConnector):
             if result.runstatus == "RUNNING":
                 status = "RUNNING"
             try:
-                self.jira.update_test_run_status(test_run_id=result.attributes.get(self.TEST_RUN_ID), status=self.STATUS_MAPPING.get(status, "BROKEN"))
+                comment = '*SLICK LINK:* {}' \
+                          '*HOSTNAME:*{}' \
+                          '*REQUIREMENTS:* {}'.format('{}/testruns/{}?result={}&all=true\n'.format(self.slick_url, result.testrun.testrunId, result.testcase.testcaseId),
+                                                      result.hostname,
+                                                      ", ".join(result.requirements))
+                if result.status == "FAIL" or result.status == "BROKEN_TEST":
+                    comment += '\n*ERROR MESSAGE:*' \
+                               '{{code}}{}{{code}}'.format(result.reason)
+                if int(result.attributes.get('retry_count', 0)) > 0:
+                    retry_logs = ["*RETRY REASONS:*\n_{}\t{}:_\n{{code}}{}{{code}}".format(x.entryTime, x.message.split('\n')[0], x.message) for x in result.log if x.level == "INFO" and x.loggerName == "slick.note"]
+                    if retry_logs:
+                        comment += "\n{}".format("\n".join(retry_logs))
+                self.jira.update_test_run(test_run_id=result.attributes.get(self.TEST_RUN_ID), data=dict(status=self.STATUS_MAPPING.get(status, "BROKEN"),
+                                                                                                         comment=comment))
             except:
                 pass
 

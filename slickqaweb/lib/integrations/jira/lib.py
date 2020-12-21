@@ -76,8 +76,11 @@ class JIRA(JiraWithoutXRay):
             if execution:
                 return next(x for x in execution if x.get('key') == test_key)
 
+    def update_test_run(self, test_run_id, data):
+        return self._session.put("{}/testrun/{}".format(self.xray_base_url, test_run_id), json=data)
+
     def update_test_run_status(self, test_run_id, status):
-        return self._session.put("{}/testrun/{}/status".format(self.xray_base_url, test_run_id), params=dict(status=status))
+        return self.update_test_run(test_run_id=test_run_id, data={"status": status})
 
 
 def init_jira():
