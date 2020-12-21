@@ -154,7 +154,7 @@ class JiraConnect(BaseConnector):
             try:
                 comment = '*SLICK LINK:* {}\n' \
                           '*HOSTNAME:* {}\n' \
-                          '*REQUIREMENTS:* {}\n'.format('{}/testruns/{}?result={}&all=true\n'.format(self.slick_url, result.testrun.testrunId, result.testcase.testcaseId),
+                          '*REQUIREMENTS:* {}'.format('{}/testruns/{}?result={}&all=true\n'.format(self.slick_url, result.testrun.testrunId, result.testcase.testcaseId),
                                                         result.hostname,
                                                         ", ".join(result.requirements))
                 if result.status == "FAIL" or result.status == "BROKEN_TEST":
