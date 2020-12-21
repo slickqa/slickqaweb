@@ -17,6 +17,7 @@ class BaseConnector(object):
     def __init__(self):
         self.log = logging.getLogger(__name__)
         self.slick_url = os.environ.get("SLICK_URL", "https://slickqa.vivint.com")
+        self.manager_url = os.environ.get("MANAGER_URL", "https://manager.smartlab.vivint.com/#!/?panelName={}")
 
     def project(self, project):
         # type: (Project) -> Project

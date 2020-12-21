@@ -155,8 +155,8 @@ class JiraConnect(BaseConnector):
                 comment = '*SLICK LINK:* {}\n' \
                           '*HOSTNAME:* {}\n' \
                           '*REQUIREMENTS:* {}'.format('[{}|{}/testruns/{}?result={}&all=true]'.format(result.testcase.name, self.slick_url, result.testrun.testrunId, result.testcase.testcaseId),
-                                                        result.hostname,
-                                                        ", ".join(result.requirements))
+                                                      "[{}|{}]".format(result.hostname, self.manager_url.format(result.hostname)),
+                                                      ", ".join(result.requirements))
                 if result.status == "FAIL" or result.status == "BROKEN_TEST":
                     comment += '\n*ERROR MESSAGE:*\n' \
                                '{{code}}{}{{code}}'.format(result.reason)
