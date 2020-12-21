@@ -152,20 +152,19 @@ class JiraConnect(BaseConnector):
             if result.runstatus == "RUNNING":
                 status = "RUNNING"
             try:
-                comment = '*SLICK LINK:* {}' \
-                          '*HOSTNAME:*{}' \
-                          '*REQUIREMENTS:* {}'.format('{}/testruns/{}?result={}&all=true\n'.format(self.slick_url, result.testrun.testrunId, result.testcase.testcaseId),
-                                                      result.hostname,
-                                                      ", ".join(result.requirements))
+                comment = '*SLICK LINK:* {}\n' \
+                          '*HOSTNAME:* {}\n' \
+                          '*REQUIREMENTS:* {}\n'.format('{}/testruns/{}?result={}&all=true\n'.format(self.slick_url, result.testrun.testrunId, result.testcase.testcaseId),
+                                                        result.hostname,
+                                                        ", ".join(result.requirements))
                 if result.status == "FAIL" or result.status == "BROKEN_TEST":
-                    comment += '\n*ERROR MESSAGE:*' \
+                    comment += '\n*ERROR MESSAGE:*\n' \
                                '{{code}}{}{{code}}'.format(result.reason)
                 if int(result.attributes.get('retry_count', 0)) > 0:
-                    retry_logs = ["*RETRY REASONS:*\n_{}\t{}:_\n{{code}}{}{{code}}".format(x.entryTime, x.message.split('\n')[0], x.message) for x in result.log if x.level == "INFO" and x.loggerName == "slick.note"]
+                    retry_logs = ["*RETRY REASONS:*\n_{}:_\n{{code}}{}{{code}}".format(x.entryTime, x.message.split('\n')[0], x.message) for x in result.log if x.level == "INFO" and x.loggerName == "slick.note"]
                     if retry_logs:
                         comment += "\n{}".format("\n".join(retry_logs))
                 self.jira.update_test_run(test_run_id=result.attributes.get(self.TEST_RUN_ID), data=dict(status=self.STATUS_MAPPING.get(status, "BROKEN"),
                                                                                                          comment=comment))
             except:
                 pass
-
