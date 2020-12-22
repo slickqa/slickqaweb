@@ -10,7 +10,7 @@ class JiraConnect(BaseConnector):
     ENABLED = "JIRA_ENABLED"
     PROJECT_KEY = "JIRA_PROJECT_KEY"  # project
     VERSION_ID = "JIRA_VERSION_ID"  # release
-    PLAN_KEY = "JIRA_PLAN_KEY"  # build
+    PLAN_KEY = "JIRA_PLAN_KEY"  # release
     EXECUTION_KEY = "JIRA_EXECUTION_KEY"  # testrun
     TEST_KEY = "JIRA_TEST_KEY"  # testcase
     TEST_RUN_ID = "JIRA_TEST_RUN_ID"  # result
@@ -45,36 +45,52 @@ class JiraConnect(BaseConnector):
             pass
         else:
             return
-        if not attributes.get(self.VERSION_ID):
-            if project.attributes.get(self.CREATE_MISSING_VERSION):
-                version = self.jira.create_version(name=release.name, project=project.attributes.get(self.PROJECT_KEY))
-                if version:
-                    release.attributes[self.VERSION_ID] = version.get('id')
-                    return release
-                pass
-            else:
-                return
-
-    def build(self, build, release, project):
-        attributes = build.attributes
-
-        if project and project.attributes.get(self.PROJECT_KEY):
-            pass
-        else:
-            return
         if not attributes.get(self.PLAN_KEY):
             plan = self.jira.create_test_plan(project=project.attributes.get(self.PROJECT_KEY),
-                                              summary="{}.{}".format(release.name, build.name),
-                                              description="{}/build-report/{}/{}/{}".format(self.slick_url,
-                                                                                             project.name,
-                                                                                             release.name,
-                                                                                             build.name),
+                                              summary=release.name,
+                                              description="{}?mainTab=Builds&project={}&release={}".format(self.slick_url, project.name, release.name),
                                               issuetype={'name': 'Test Plan'},
                                               customfield_11823={"value": "Not Applicable"},
                                               components=[{"name": "Test Case"}])
             if plan:
-                build.attributes[self.PLAN_KEY] = plan.key
-                return build
+                release.attributes[self.PLAN_KEY] = plan.key
+                return release
+        # attributes = release.attributes
+        # if project and project.attributes.get(self.PROJECT_KEY):
+        #     pass
+        # else:
+        #     return
+        # if not attributes.get(self.VERSION_ID):
+        #     if project.attributes.get(self.CREATE_MISSING_VERSION):
+        #         version = self.jira.create_version(name=release.name, project=project.attributes.get(self.PROJECT_KEY))
+        #         if version:
+        #             release.attributes[self.VERSION_ID] = version.get('id')
+        #             return release
+        #         pass
+        #     else:
+        #         return
+
+    def build(self, build, release, project):
+        pass
+        # attributes = build.attributes
+        #
+        # if project and project.attributes.get(self.PROJECT_KEY):
+        #     pass
+        # else:
+        #     return
+        # if not attributes.get(self.PLAN_KEY):
+        #     plan = self.jira.create_test_plan(project=project.attributes.get(self.PROJECT_KEY),
+        #                                       summary="{}.{}".format(release.name, build.name),
+        #                                       description="{}/build-report/{}/{}/{}".format(self.slick_url,
+        #                                                                                      project.name,
+        #                                                                                      release.name,
+        #                                                                                      build.name),
+        #                                       issuetype={'name': 'Test Plan'},
+        #                                       customfield_11823={"value": "Not Applicable"},
+        #                                       components=[{"name": "Test Case"}])
+        #     if plan:
+        #         build.attributes[self.PLAN_KEY] = plan.key
+        #         return build
 
     def testrun(self, testrun):
         from slickqaweb.api.project import get_release, get_build
@@ -92,10 +108,10 @@ class JiraConnect(BaseConnector):
                                                    components=[{"name": "Test Case"}])
             if execution:
                 testrun.attributes[self.EXECUTION_KEY] = execution.key
-                build = get_build(get_release(Project.objects(id=testrun.project.id).only('releases').first(), testrun.release.releaseId), testrun.build.buildId)
-                if build and build.attributes.get(self.PLAN_KEY):
-                    self.log.debug("Build {} has {} set!".format(build.name, self.PLAN_KEY))
-                    self.jira.add_test_execution(plan_key=build.attributes.get(self.PLAN_KEY), execution_key=execution.key)
+                release = get_release(Project.objects(id=testrun.project.id).only('releases').first(), testrun.release.releaseId)
+                if release and release.attributes.get(self.PLAN_KEY):
+                    self.log.debug("Release {} has {} set!".format(release.name, self.PLAN_KEY))
+                    self.jira.add_test_execution(plan_key=release.attributes.get(self.PLAN_KEY), execution_key=execution.key)
                 return testrun
 
     def testcase(self, testcase):
@@ -137,10 +153,10 @@ class JiraConnect(BaseConnector):
                     return
             else:
                 return
-            build = get_build(get_release(Project.objects(id=result.project.id).only('releases').first(), result.release.releaseId), result.build.buildId)
-            if build and build.attributes.get(self.PLAN_KEY):
-                self.log.debug("Build {} has {} set!".format(build.name, self.PLAN_KEY))
-                self.jira.add_test_to_plan(plan_key=build.attributes.get(self.PLAN_KEY), test_key=testcase.attributes.get(self.TEST_KEY))
+            release = get_release(Project.objects(id=result.project.id).only('releases').first(), result.release.releaseId)
+            if release and release.attributes.get(self.PLAN_KEY):
+                self.log.debug("Release {} has {} set!".format(release.name, self.PLAN_KEY))
+                self.jira.add_test_to_plan(plan_key=release.attributes.get(self.PLAN_KEY), test_key=testcase.attributes.get(self.TEST_KEY))
             else:
                 return
 

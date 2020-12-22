@@ -58,14 +58,21 @@ angular.module('slickApp')
         const buildsTabName = 'Builds';
         $scope.buildList = [];
         $scope.buildsQuery = $cookies.getObject("buildsQuery");
+        if ($scope.buildsQuery && $routeParams["release"]) {
+            $scope.buildsQuery.search = {release: {name: $routeParams["release"]}}
+        }
         if (!$scope.buildsQuery) {
+            let search = {}
+            if ($routeParams["release"]) {
+                search = {release: {name: $routeParams['release']}}
+            }
             $scope.buildsQuery = {
                 index: 0,
                 order: '-report.testruns[0].dateCreated',
                 limit: 25,
                 queryLimit: 25,
                 page: 1,
-                search: {}
+                search: search
             };
         }
         $scope.setBuildsSort = function (order) {
