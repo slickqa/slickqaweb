@@ -826,14 +826,21 @@ angular.module('slickApp')
         const buildsTabName = 'Builds';
         $scope.buildList = [];
         $scope.buildsQuery = $cookies.getObject("buildsQuery");
+        if ($scope.buildsQuery && $routeParams["release"]) {
+            $scope.buildsQuery.search = {release: {name: $routeParams["release"]}}
+        }
         if (!$scope.buildsQuery) {
+            let search = {}
+            if ($routeParams["release"]) {
+                search = {release: {name: $routeParams['release']}}
+            }
             $scope.buildsQuery = {
                 index: 0,
                 order: '-report.testruns[0].dateCreated',
                 limit: 25,
                 queryLimit: 25,
                 page: 1,
-                search: {}
+                search: search
             };
         }
         $scope.setBuildsSort = function (order) {
@@ -2618,7 +2625,7 @@ angular.module('slickApp')
         };
         $scope.markResultManuallyPassed = function (result) {
             result.log.push({entryTime: new Date().getTime(), level: "WARN", loggerName: "slick.note", message: "Manually Verified!", exceptionMessage: ""});
-            rest.one('results', result.id).customPUT({status: "PASSED_ON_RETRY", run_status: "FINISHED", log: result.log});
+            rest.one('results', result.id).customPUT({status: "PASSED_ON_RETRY", runstatus: "FINISHED", log: result.log});
         };
 
         $scope.stopRefresh = function () {
@@ -4274,26 +4281,11 @@ const environment = {
         {
             icon: "video_label",
             title: "SmartLab",
-            url: "http://10.1.44.2/",
+            url: "https://manager.smartlab.vivint.com",
             width: "100%",
             height: "100%"
         },
-	{
-            icon: "home",
-            title: "",
-            url: "http://10.1.44.2/testhouse",
-            // url: "http://10.254.2.184:5000",
-            width: "100%",
-            height: "100%"
-        },
-	{
-            icon: "track_changes",
-            title: "OKR Tool",
-            url: "http://10.1.45.184/login",
-            width: "100%",
-            height: "100%"
-        },
-	{
+        {
             icon: "lock_open",
             title: "Unlock Panel",
             url: "https://unlock.vivint.com",
