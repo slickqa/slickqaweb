@@ -111,7 +111,7 @@ class JiraConnect(BaseConnector):
                                                    description="[{}|{}/testruns/{}]".format(testrun.name, self.slick_url, testrun.id),
                                                    issuetype={'name': 'Test Execution'},
                                                    customfield_11823={"value": "Not Applicable"},
-                                                   customfield_12125={"value": self.ENVIRONMENT_MAPPING.get(testrun.config.name.lower(), "PaaS")},
+                                                   customfield_12125=[{"value": self.ENVIRONMENT_MAPPING.get(testrun.config.name.lower(), "PaaS")}],
                                                    components=[{"name": "Test Case"}])
             if execution:
                 testrun.attributes[self.EXECUTION_KEY] = execution.key
