@@ -54,7 +54,7 @@ class JiraConnect(BaseConnector):
         if not attributes.get(self.PLAN_KEY):
             plan = self.jira.create_test_plan(project=project.attributes.get(self.PROJECT_KEY),
                                               summary=release.name,
-                                              description="{}?mainTab=Builds&project={}&release={}".format(self.slick_url, project.name, release.name),
+                                              description="[{}|{}?mainTab=Builds&project={}&release={}]".format(release.name, self.slick_url, project.name, release.name),
                                               issuetype={'name': 'Test Plan'},
                                               customfield_11823={"value": "Not Applicable"},
                                               components=[{"name": "Test Case"}])
@@ -108,7 +108,7 @@ class JiraConnect(BaseConnector):
         if project.attributes.get(self.PROJECT_KEY) and not testrun.attributes.get(self.EXECUTION_KEY):
             execution = self.jira.create_execution(project=project.attributes.get(self.PROJECT_KEY),
                                                    summary="{}.{} - {}".format(testrun.release.name, testrun.build.name, testrun.name),
-                                                   description="{}/testruns/{}".format(self.slick_url, testrun.id),
+                                                   description="[{}|{}/testruns/{}]".format(testrun.name, self.slick_url, testrun.id),
                                                    issuetype={'name': 'Test Execution'},
                                                    customfield_11823={"value": "Not Applicable"},
                                                    customfield_12125={"value": self.ENVIRONMENT_MAPPING.get(testrun.config.name.lower(), "PaaS")},
