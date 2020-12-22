@@ -28,6 +28,12 @@ class JiraConnect(BaseConnector):
         "SKIPPED": "SKIPPED"
     }
 
+    ENVIRONMENT_MAPPING = {
+        "beta": "Betacloud",
+        "production": "Prod",
+        "prod": "Prod"
+    }
+
     def __init__(self):
         super(JiraConnect, self).__init__()
         self.jira = init_jira()  # type: JIRA
@@ -105,6 +111,7 @@ class JiraConnect(BaseConnector):
                                                    description="{}/testruns/{}".format(self.slick_url, testrun.id),
                                                    issuetype={'name': 'Test Execution'},
                                                    customfield_11823={"value": "Not Applicable"},
+                                                   customfield_12125={"value": self.ENVIRONMENT_MAPPING.get(testrun.config.name.lower(), "PaaS")},
                                                    components=[{"name": "Test Case"}])
             if execution:
                 testrun.attributes[self.EXECUTION_KEY] = execution.key
