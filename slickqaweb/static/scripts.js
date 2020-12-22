@@ -4283,14 +4283,14 @@ const environment = {
             title: "SmartLab",
             url: "https://manager.smartlab.vivint.com",
             width: "100%",
-            height: "100%"
+            height: "100vh"
         },
         {
             icon: "lock_open",
             title: "Unlock Panel",
             url: "https://unlock.vivint.com",
             width: "100%",
-            height: "100%"
+            height: "100vh"
         },
 
     ],
