@@ -50,6 +50,8 @@ class Event(object):
 class CreateEvent(Event):
 
     def __init__(self, created):
+        if not app.config['events']:
+            return
         super(CreateEvent, self).__init__(event_topic_mapping.get(created.__class__, created.__class__.__name__))
         self.created = dumps(serialize_this(created))
         try:
@@ -75,6 +77,8 @@ class CreateEvent(Event):
 class UpdateEvent(Event):
 
     def __init__(self, before):
+        if not app.config['events']:
+            return
         super(UpdateEvent, self).__init__(event_topic_mapping.get(before.__class__, before.__class__.__name__))
         self.before = dumps(serialize_this(before))
 
@@ -107,6 +111,8 @@ class UpdateEvent(Event):
 class DeleteEvent(Event):
 
     def __init__(self, deleted):
+        if not app.config['events']:
+            return
         super(DeleteEvent, self).__init__(event_topic_mapping.get(deleted.__class__, deleted.__class__.__name__))
         self.deleted = dumps(serialize_this(deleted))
         try:
