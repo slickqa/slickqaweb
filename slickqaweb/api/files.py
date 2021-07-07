@@ -55,7 +55,7 @@ def set_file_content(file_id):
     data = request.data
     stored_file.md5 = md5(data).hexdigest()
     stored_file.length = len(data)
-    num_of_chunks = len(data) / 262144
+    num_of_chunks = len(data) // 262144
     if (len(data) % 262144) > 0:
         num_of_chunks += 1
     for i in range(num_of_chunks):
@@ -130,8 +130,8 @@ def get_file_content(file_id, filename):
                 byte2 = possible_byte2
 
         data = []
-        start_chunk_number = byte1 / stored_file.chunkSize
-        end_chunk_number = byte2 / stored_file.chunkSize
+        start_chunk_number = byte1 // stored_file.chunkSize
+        end_chunk_number = byte2 // stored_file.chunkSize
         if byte2 % stored_file.chunkSize > 0:
             end_chunk_number += 1
         start_index = byte1 % stored_file.chunkSize
